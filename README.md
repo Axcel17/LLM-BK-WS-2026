@@ -51,7 +51,7 @@ npm install
 npm test
 ```
 
-Deben pasar 74 y fallar 11. Si falla el typecheck, o si falla alguna de las 6
+Deben pasar 76 y fallar 11. Si falla el typecheck, o si falla alguna de las 6
 de `loop`, el entorno no está bien instalado.
 
 Varios archivos pasan enteros desde el inicio: `loop` verifica la instalación,
@@ -66,7 +66,7 @@ grabadas. Solo el paso 5 llama a un modelo.
 
 ## Los cinco pasos
 
-### 1 · El bucle desde adentro — 13 min
+### 1 · El bucle desde adentro — 11 min
 
 No hay nada que completar. Abra `src/loop.ts` y córralo:
 
@@ -102,7 +102,7 @@ npm test -- schemas
 Los esquemas de Zod validan en ejecución **y** derivan los tipos: un contrato
 mal usado falla al compilar, no solo al correr.
 
-### 3 · El servidor de herramientas — 21 min
+### 3 · El servidor de herramientas — 20 min
 
 Complete el hueco de `src/mcp/client.ts`: la traducción de lo que el servidor
 declara a herramientas del arnés. El acceso tipado viene resuelto debajo.
@@ -169,7 +169,7 @@ lee. Cubre lo que no tiene respuesta mecánica —si la evidencia permite rastre
 los números, si se explican los descartes— y es una llamada aparte, sin
 herramientas, que recibe el resultado sin el razonamiento que lo produjo.
 
-### 5 · Una corrida real — 18 min
+### 5 · Una corrida real — 21 min
 
 Copie `.env.example` a `.env`, coloque una clave, y ejecute:
 
