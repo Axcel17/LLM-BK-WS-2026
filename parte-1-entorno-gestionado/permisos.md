@@ -1,6 +1,6 @@
 # Paso 1 · Decisión de permisos
 
-Se completa **antes** de conectar nada. Tres minutos, a mano.
+Se completa **antes** de conectar nada, y a mano.
 
 ---
 

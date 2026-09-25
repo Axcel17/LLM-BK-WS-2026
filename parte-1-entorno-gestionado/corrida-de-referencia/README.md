@@ -11,8 +11,8 @@ contra qué comparar. Conviene consultarla después de ejecutar el ejercicio, no
 obedecerla, normalizó el precio por caja de diez, distinguió el flete incluido del cobrado aparte,
 descartó a GlobalStock por plazo, y reportó al proveedor que no respondió.
 
-**Como respaldo de contingencia.** Si los sitios no están disponibles el día del evento, estos dos
-archivos muestran el resultado esperado.
+**Como respaldo de contingencia.** Si los sitios no están disponibles, estos dos archivos
+muestran el resultado esperado.
 
 ## Lo que este ensayo corrigió del diseño
 

@@ -1,28 +1,29 @@
 # Qué más se le puede dar a un entorno gestionado
 
-Hoja de referencia para llevarse. En el taller se configuran seis cosas; esto es el inventario
-completo, para que nadie salga creyendo que un agente es "un chat con acceso a una carpeta".
+Hoja de referencia. En la Parte 1 se configuran seis capacidades; este es el inventario completo
+de lo que un entorno gestionado admite, más allá de lo que alcanza a verse en un bloque de 45
+minutos.
 
-Marcadas con **✓** las que se tocan en la sesión.
+Marcadas con **✓** las que se configuran en el recorrido.
 
 ---
 
 ## 1 · Acceso a archivos ✓
 
 Una carpeta del disco, con lectura y escritura. El agente lee lo que hay, crea lo que falta,
-reorganiza lo que pidas.
+reorganiza lo que se le indique.
 
-**Lo que casi nadie sabe:** puede producir **archivos reales, no texto** — hojas de cálculo con
+**Capacidad poco conocida:** puede producir **archivos reales, no texto** — hojas de cálculo con
 fórmulas vivas, formato condicional y varias pestañas; presentaciones; documentos; PDF. La
 diferencia entre entregar un resumen y entregar un entregable.
 
 ## 2 · Conectores a aplicaciones ✓
 
-El puente autorizado a una aplicación real, sin compartir contraseñas. Disponibles de fábrica:
+El puente autorizado a una aplicación real, sin compartir contraseñas. Disponibles de forma nativa:
 correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de equipo, firma
 electrónica, y sistemas de gestión comercial y de tickets.
 
-**Lo crítico, y es lo que se practica hoy:** cada conector tiene permisos **por acción**. Leer,
+**El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por acción**. Leer,
 buscar, crear, enviar y eliminar se configuran por separado, con tres niveles: permitir siempre,
 requiere aprobación, o bloqueado.
 
@@ -41,7 +42,7 @@ Esto convierte cualquier sitio en una fuente de datos.
 Un conjunto de reglas, ejemplos y formato guardado con nombre propio, que se invoca cuando hace
 falta en lugar de redactarse de nuevo.
 
-**Detalle técnico que explica un comportamiento raro:** comparten un presupuesto de contexto de
+**Detalle técnico que explica un comportamiento frecuente:** comparten un presupuesto de contexto de
 alrededor del **2 % de la ventana**. Si el agente actúa como si hubiera olvidado que una existe,
 suele ser porque hay demasiadas compitiendo por ese espacio.
 
@@ -56,7 +57,7 @@ como instrucción.
 Una instrucción empaquetada que corre con cadencia —por hora, diaria, semanal, días hábiles— **del
 lado del servidor**. Sigue corriendo con la computadora apagada.
 
-**Lo que sorprende:** después de la primera corrida, el sistema reescribe sus propias instrucciones
+**Comportamiento no evidente:** después de la primera corrida, el sistema reescribe sus propias instrucciones
 según lo que aprendió — qué conector usó, dónde encontró el dato, qué funcionó. La segunda suele
 salir mejor que la primera.
 

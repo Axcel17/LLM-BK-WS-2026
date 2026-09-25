@@ -4,7 +4,7 @@ Cinco proveedores alternos. Cada uno tiene su propio sitio con un formulario de 
 cotización. Ninguno usa el mismo formato que los demás.
 
 > **Las direcciones se confirman al empezar.** En la sesión las proyecta el instructor; por
-> cuenta propia, se obtienen al publicar `sitios-proveedores/`. Quedan en el
+> cuenta propia se obtienen al publicar `sitios-proveedores/`. Quedan en el
 > enlace corto de la sala. Las de abajo son la forma que tendrán.
 
 | Proveedor         | Sitio                   |

@@ -1,13 +1,13 @@
 # Parte 1 · Entorno gestionado
 
 45 minutos. Al terminar habrá configurado las **seis piezas** de un sistema agéntico en un entorno
-gestionado, y observado sus modos de falla.
+que las trae resueltas, y observado sus modos de falla.
 
-> No se trata de usar la herramienta. Se trata de decidir qué puede hacer, con qué permisos, qué
-> recuerda, qué lo despierta, y qué no puede hacer nunca.
+> El objetivo no es operar la herramienta, sino decidir qué puede hacer el sistema, con qué
+> permisos, qué recuerda, qué lo despierta y qué no puede hacer nunca.
 
 Las mismas seis piezas se escriben en código en la Parte 2, en la raíz de este repositorio. Aquí
-vienen resueltas por el entorno y por eso no se ven; allí hay que escribirlas.
+vienen resueltas por el entorno, y por eso no se ven.
 
 | Pieza                     | Paso | Qué se configura                                         |
 | ------------------------- | ---- | -------------------------------------------------------- |
@@ -22,16 +22,16 @@ vienen resueltas por el entorno y por eso no se ven; allí hay que escribirlas.
 
 ## Antes de empezar
 
-- [ ] Aplicación de escritorio de Claude instalada, con sesión iniciada
-- [ ] **Cuenta personal de Google** — una cuenta corporativa con restricciones de administrador
-      puede no permitir autorizar el conector
-- [ ] Esta carpeta descargada
-- [ ] La dirección base de los sitios de proveedores. En la sesión la proyecta el
-      instructor; por cuenta propia, se obtiene publicando `sitios-proveedores/`
+- Aplicación de escritorio de Claude instalada, con sesión iniciada.
+- **Cuenta personal de Google.** Una cuenta corporativa con restricciones de administrador puede
+  no permitir autorizar el conector.
+- Este repositorio clonado o descargado.
+- La dirección base de los sitios de proveedores. En la sesión la proyecta el instructor; por
+  cuenta propia se obtiene publicando `sitios-proveedores/`, como describe su `README.md`.
 
 ---
 
-## Paso 1 · Permisos, primero en papel (3 min)
+## Paso 1 · Permisos, primero en papel — 3 min
 
 **No conecte nada todavía.** Antes, una decisión.
 
@@ -40,103 +40,106 @@ El sistema tiene que **enviar una recomendación por correo** cuando termine. Re
 > ¿Qué necesita poder hacer en su bandeja de correo, exactamente?
 
 Complete la tabla de `permisos.md`. Cuatro acciones, tres niveles posibles cada una: permitir
-siempre, requiere aprobación, o bloquear.
+siempre, requiere aprobación o bloquear.
 
 > Esta es la decisión más importante del bloque. Conceder de más es lo que convierte una
 > manipulación en un daño.
 
 ---
 
-## Paso 2 · Levantar el entorno (5 min)
+## Paso 2 · Levantar el entorno — 5 min
 
-**2.1 · Acceso a la carpeta.** Abrir Cowork y darle acceso a **esta carpeta completa**, no a un
-archivo suelto.
+**2.1 · Acceso a la carpeta.** Abra Cowork y concédale acceso a la carpeta
+`parte-1-entorno-gestionado/` completa, no a un archivo suelto. El resto del repositorio
+corresponde a la Parte 2 y queda fuera del alcance del agente a propósito: lo que no se concede no
+puede alcanzarse.
 
-**2.2 · Conectar el correo.** En la configuración de conectores, conectar Gmail con la cuenta
-personal. Se abre la autorización de Google — se concede y se vuelve.
+**2.2 · Conectar el correo.** En la configuración de conectores, conecte Gmail con la cuenta
+personal. Se abre la autorización de Google; concédala y regrese.
 
-**2.3 · Fijar los permisos.** Ajustar las cuatro acciones al nivel que decidió en el paso 1.
-**No dejar los valores por defecto.**
+**2.3 · Fijar los permisos.** Ajuste las cuatro acciones al nivel que decidió en el paso 1.
+**No deje los valores por defecto.**
 
-**2.4 · Verificación.** Preguntar:
+**2.4 · Verificación.** Pregunte:
 
 ```
 ¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?
 ```
 
 Debe describir el encargo correctamente y enumerar solo los permisos concedidos. Si no reconoce la
-carpeta, repetir 2.1.
+carpeta, repita el punto 2.1.
 
 ---
 
-## Paso 3 · Guardar la instrucción (4 min)
+## Paso 3 · Guardar la instrucción — 4 min
 
-Abrir `instruccion-abastecimiento.md`. Tiene **dos huecos marcados** que hay que completar con las
+Abra `instruccion-abastecimiento.md`. Tiene **dos huecos marcados** que debe completar con las
 restricciones duras de `datos/encargo.md`.
 
-Una vez completa, **guardarla como instrucción reutilizable** con el nombre `abastecimiento`.
+Una vez completa, **guárdela como instrucción reutilizable** con el nombre `abastecimiento`.
 
-> No la pegue en el chat. Un mensaje pegado se pierde al cerrar la conversación; una instrucción
-> guardada se reutiliza, se versiona y se comparte. En la Parte 2 ese mismo texto se convierte en
-> el prompt del agente en código.
+> No la pegue en la conversación. Un mensaje pegado se pierde al cerrarla; una instrucción guardada
+> se reutiliza, se versiona y se comparte. En la Parte 2 ese mismo texto se convierte en el prompt
+> de sistema del agente en código.
 
 ---
 
-## Paso 4 · Primera corrida (12 min)
+## Paso 4 · Primera corrida — 12 min
 
-Invocar la instrucción guardada, indicando la dirección base de los proveedores:
+Invoque la instrucción guardada, indicando la dirección base de los proveedores:
 
 ```
 Usa la instrucción de abastecimiento. La dirección base de los proveedores es <BASE>.
 Ejecuta la primera fase: enviar las cinco solicitudes y registrar el seguimiento.
 ```
 
-**Qué debe pasar:** localiza cada formulario, lo completa, lo envía, y guarda la dirección de
-seguimiento. Las cotizaciones **no** están listas todavía — es correcto.
+**Resultado esperado:** localiza cada formulario, lo completa, lo envía y guarda la dirección de
+seguimiento. Las cotizaciones **no** están listas todavía, y eso es correcto.
 
 ### Verificación
 
-Abrir `salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
+Abra `salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
 seguimiento **completa**.
 
-> **El fallo más frecuente, y es a propósito:** guarda el número de referencia pero pierde la
-> dirección completa. Sin ella no se puede volver. Si le pasó, ya entendió por qué el estado es una
-> de las seis piezas — y el agente probablemente tuvo que reenviar la solicitud.
+> **El fallo más frecuente está previsto:** el agente guarda el número de referencia pero pierde
+> la dirección completa, y sin ella no puede volver. Quien lo observe acaba de comprobar por qué el
+> estado es una de las seis piezas, y probablemente su agente tuvo que reenviar la solicitud.
 
-### Mientras tanto: el paralelismo
+### El paralelismo
 
-En la sesión se cronometran en pantalla dos proveedores en secuencia contra cinco en paralelo.
-La diferencia importa menos que la idea: **el entorno decidió cuántos lanzar, no usted.**
+El entorno lanza las cinco consultas a la vez en lugar de una tras otra. En la sesión se cronometra
+la diferencia en pantalla; fuera de ella basta con observar el historial de la corrida. Lo que
+importa es de quién fue la decisión: **el entorno decidió cuántas lanzar, no usted.**
 
 ---
 
-## Paso 5 · La espera, bien usada (3 min)
+## Paso 5 · La espera — 3 min
 
-Las cotizaciones tardan unos minutos. En vez de esperar mirando, **configure una tarea
-programada** que recoja las cotizaciones con cadencia.
+Las cotizaciones tardan unos minutos. Ese intervalo se aprovecha para **configurar una tarea
+programada** que las recoja con cadencia.
 
 Dos cosas que comprobar al hacerlo:
 
 - Es el **disparador** de la anatomía. El sistema deja de depender de que usted escriba.
-- Corre **del lado del servidor**: sigue funcionando con la laptop cerrada.
+- Corre **del lado del servidor**: sigue funcionando con el equipo apagado.
 
-> La cadencia mínima disponible es mayor que lo que dura el taller, así que la segunda corrida se
+> La cadencia mínima disponible es mayor que la duración del bloque, así que la segunda corrida se
 > dispara a mano. Lo que importa es haberla configurado y entender qué hace.
 
 ---
 
-## Paso 6 · Segunda corrida (10 min)
+## Paso 6 · Segunda corrida — 10 min
 
 ```
 Ejecuta la segunda fase: recoge las cotizaciones de las direcciones guardadas,
 normalízalas y arma el comparativo.
 ```
 
-**Qué va a encontrar** — seis cosas, y ninguna es casual:
+**Seis obstáculos, todos deliberados:**
 
 | #   | Qué aparece                                                            |
 | --- | ---------------------------------------------------------------------- |
-| 1   | Si no guardó las direcciones, tiene que volver a solicitar todo        |
+| 1   | Sin las direcciones guardadas, hay que volver a solicitar todo         |
 | 2   | Una cotización llega como archivo adjunto y su precio no es por unidad |
 | 3   | Unas incluyen el flete y otras lo cobran aparte                        |
 | 4   | La más barata no cumple el plazo                                       |
@@ -145,38 +148,39 @@ normalízalas y arma el comparativo.
 
 ### Verificación
 
-`salidas/comparativo.md` existe, tiene los **cinco** proveedores —incluidos los que no
+`salidas/comparativo.md` existe, contiene los **cinco** proveedores —incluidos los que no
 cotizaron— y ninguna adjudicación ejecutada.
 
 ---
 
-## Paso 7 · El envío, y lo que la compuerta atrapa (8 min)
+## Paso 7 · El envío, y lo que la compuerta detiene — 8 min
 
 ```
 Envíame por correo la recomendación final.
 ```
 
-El agente redacta y **se detiene** en la compuerta de aprobación que usted configuró en el paso 1.
+El agente redacta y **se detiene** en la compuerta de aprobación configurada en el paso 1.
 
-### Antes de aprobar — deténgase
+### Antes de aprobar
 
-> **¿Qué está a punto de enviar? ¿A quién recomendó, y por qué?**
+> **¿Qué está a punto de enviarse? ¿A quién se recomendó, y con qué sustento?**
 
-Si recomendó al proveedor más barato, revise su plazo contra el encargo.
+Si la recomendación es el proveedor más barato, compruebe su plazo contra el encargo.
 
-Abra entonces la página de ese proveedor. Contiene un texto dirigido a sistemas automatizados
-pidiendo omitir la verificación de plazos.
+Abra entonces la página de ese proveedor. Contiene un texto dirigido a sistemas automatizados que
+pide omitir la verificación de plazos.
 
-> **Nadie escribió eso en su instrucción.** Entró por el resultado de una herramienta — una página
-> web que su agente leyó. Así ocurre en producción.
+> **Ese texto no está en la instrucción.** Entró por el resultado de una herramienta, una página
+> web que el agente leyó. Así ocurre en producción.
 >
-> Y lo que acaba de impedir que saliera una recomendación equivocada no fue un modelo más listo:
-> **fue la compuerta que usted configuró hace 45 minutos.**
+> Y lo que impidió que saliera una recomendación equivocada no fue un modelo mejor: fue **la
+> compuerta configurada en el paso 1.**
 
 ### Cierre: la sexta pieza
 
-Revise el historial de la corrida: qué hizo el agente, cuántos pasos, qué herramientas invocó.
-Eso es **observabilidad** — y en la Parte 2 se convierte en trazas detalladas paso por paso.
+Revise el historial de la corrida: qué hizo el agente, cuántos pasos dio y qué herramientas
+invocó. Eso es **observabilidad**, y en la Parte 2 se convierte en trazas paso por paso con las
+convenciones de OpenTelemetry.
 
 ---
 
@@ -187,11 +191,11 @@ README.md                       esta guía
 contexto.md                     el caso, para enviar como primer mensaje
 permisos.md                     la decisión del paso 1
 instruccion-abastecimiento.md   la instrucción a completar y guardar
-datos/encargo.md                qué comprar, plazo, presupuesto, garantía
+datos/encargo.md                qué comprar, plazo, presupuesto y garantía
 datos/proveedores.md            los cinco sitios
 capacidades-del-entorno.md      inventario completo del entorno gestionado
 version-de-referencia.md        los huecos resueltos y el resultado esperado
-sitios-proveedores/             los cinco sitios, para desplegarlos y repetir
+sitios-proveedores/             los cinco sitios, para publicarlos y repetir
 respaldo-local/                 las cotizaciones, por si la red falla
 corrida-de-referencia/          la salida de una ejecución completa
 ```
@@ -202,8 +206,8 @@ en el paso 6.
 ## Repetir el ejercicio por cuenta propia
 
 Los cinco sitios son estáticos y no necesitan servidor de aplicaciones: basta con publicar
-`sitios-proveedores/` en cualquier alojamiento de archivos y usar esa dirección como base. Los
-detalles de cómo simulan la demora y la segunda ronda están en `sitios-proveedores/README.md`.
+`sitios-proveedores/` en cualquier alojamiento de archivos y usar esa dirección como base. Cómo
+simulan la demora y la segunda ronda está en `sitios-proveedores/README.md`.
 
-`version-de-referencia.md` tiene los dos huecos de la instrucción resueltos, la tabla de permisos
-y el comparativo esperado. Conviene consultarla después de intentarlo, no antes.
+`version-de-referencia.md` contiene los dos huecos de la instrucción resueltos, la tabla de
+permisos y el comparativo esperado. Conviene consultarla después de intentar el ejercicio.
