@@ -47,6 +47,17 @@ describe("buildInstructions", () => {
 });
 
 describe("buildTask", () => {
+  it("un encargo propio reemplaza al del caso", () => {
+    const propio = "Compara solo a los proveedores que entregan en 8 días o menos";
+    expect(buildTask(propio)).toBe(propio);
+  });
+
+  it("un encargo vacío o en blanco no deja al agente sin tarea", () => {
+    expect(buildTask("")).toContain("reposición urgente");
+    expect(buildTask("   ")).toContain("reposición urgente");
+    expect(buildTask(undefined)).toContain("reposición urgente");
+  });
+
   it("la variante pide cerrar la compra, para que la compuerta tenga qué detener", () => {
     process.env["DROP_PROMPT_RULE"] = "1";
     expect(buildTask()).toMatch(/compra cerrada/i);

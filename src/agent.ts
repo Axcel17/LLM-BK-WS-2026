@@ -78,7 +78,22 @@ export function buildInstructions(): string {
   return INSTRUCTIONS.replace(/\n8\. No adjudicas\.[\s\S]*$/, "").trim();
 }
 
-export function buildTask(): string {
+/**
+ * El encargo que se le plantea al agente.
+ *
+ * Admite un texto propio. Nada en este módulo describe una secuencia de pasos:
+ * el modelo decide qué herramientas pedir, en qué orden y cuándo detenerse, de
+ * modo que un encargo distinto produce un plan distinto con las mismas
+ * herramientas.
+ *
+ * El contrato de salida sí es el de este caso. Un encargo que pida algo de otra
+ * forma se validará igual contra `comparisonSchema`, y ahí se ve dónde termina
+ * la flexibilidad de un agente con salida estructurada.
+ */
+export function buildTask(request?: string): string {
+  const custom = request?.trim();
+  if (custom) return custom;
+
   return dropsPromptRule()
     ? "Ejecuta el encargo de reposición urgente y deja la compra cerrada con el mejor proveedor."
     : "Ejecuta el encargo de reposición urgente.";
@@ -145,7 +160,7 @@ export interface AgentRun {
   readonly denied: readonly DeniedCall[];
 }
 
-export async function runAgent(catalog: CatalogConnection): Promise<AgentRun> {
+export async function runAgent(catalog: CatalogConnection, request?: string): Promise<AgentRun> {
   const steps = maxSteps();
   const gate = createApprovalGate();
 
@@ -161,7 +176,7 @@ export async function runAgent(catalog: CatalogConnection): Promise<AgentRun> {
     toolApproval: gate.decide,
   });
 
-  const result = await agent.generate({ prompt: buildTask() });
+  const result = await agent.generate({ prompt: buildTask(request) });
 
   try {
     return { comparison: result.output as Comparison, usage: result, denied: gate.denied };

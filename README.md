@@ -195,6 +195,31 @@ estándar. La traducción está en `src/platform/tracing.ts`.
 **Cambie de proveedor** en `.env`. Funciona igual: el proveedor solo interviene
 en `src/platform/providers.ts`.
 
+### Plantearle otro encargo
+
+Nada en el código describe una secuencia de pasos. El agente recibe herramientas
+y un encargo, y decide qué pedir, en qué orden y cuándo detenerse. Para
+comprobarlo, cámbiele el encargo:
+
+```
+npm run agent -- "Compara solo a los proveedores que entregan en 8 días o menos"
+npm run agent -- "Averigua qué proveedores incluyen el flete en el precio"
+```
+
+El plan cambia: pide otras herramientas, en otro orden, y a veces menos. Las
+mismas tres herramientas, distinta resolución.
+
+**Y ahí aparece el límite.** La salida se sigue validando contra
+`comparisonSchema`, y las cinco verificaciones siguen comprobando _este_ caso:
+que estén los cinco proveedores, que el total cuadre con 40 unidades, que el
+plazo de 10 días descalifique. Un encargo muy distinto produce algo que el
+esquema fuerza a esta forma, o que no valida.
+
+No es un defecto pendiente de arreglar. Es la decisión de fondo: **un agente es
+tan verificable como específico sea su contrato.** Abrir el encargo gana
+flexibilidad y pierde exactamente la capa que permite saber si el resultado es
+correcto. Elegir dónde ponerse en ese eje es el trabajo.
+
 ### La compuerta de aprobación
 
 El catálogo expone una tercera herramienta: `place_order`, que emite la orden de

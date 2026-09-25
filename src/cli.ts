@@ -6,6 +6,10 @@
  * lo demás depende solo de una de las dos.
  *
  *     npm run agent
+ *     npm run agent -- "Compara solo a los proveedores que entregan en 8 días o menos"
+ *
+ * Sin argumento ejecuta el encargo del caso. Con uno, el agente replantea el
+ * plan sobre las mismas herramientas.
  *
  * Variables de entorno reconocidas:
  *
@@ -48,13 +52,16 @@ async function reportJudgement(comparison: Parameters<typeof judgeComparison>[0]
 async function main(): Promise<void> {
   if (tracingRequested()) enableTracing();
 
+  // Todo lo que siga a `--` se toma como el encargo. Sin argumentos, el del caso.
+  const request = process.argv.slice(2).join(" ");
+
   const catalog = await connectCatalog();
 
   try {
     console.log(`\n${formatIntegrity(await checkToolIntegrity(catalog.tools))}\n`);
     console.log("Ejecutando. El modelo decide qué herramientas pedir y en qué orden.");
 
-    const { comparison, usage, denied } = await runAgent(catalog);
+    const { comparison, usage, denied } = await runAgent(catalog, request);
 
     console.log(formatUsage(usage));
     console.log(formatComparison(comparison));
