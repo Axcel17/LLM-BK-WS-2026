@@ -16,6 +16,7 @@ import {
   checkMissingResponses,
   checkNormalization,
   runAllChecks,
+  checkTieBreak,
 } from "../../src/guardrails/checks.js";
 import type { Comparison, Quote } from "../../src/domain/schemas.js";
 
@@ -86,6 +87,32 @@ describe("checkCoverage", () => {
     });
 
     expect(checkCoverage(contradictory).some((f) => f.detail.includes("a la vez"))).toBe(true);
+  });
+});
+
+describe("checkTieBreak", () => {
+  it("detecta una recomendación que cumple pero no es la más barata", () => {
+    const suboptimo = correctComparison({ recommendedSupplier: "Tecnoimport" });
+
+    const findings = checkTieBreak(suboptimo);
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("Tecnoimport");
+    expect(findings[0]?.detail).toContain("MayoristaZeta");
+  });
+
+  it("la recomendación correcta no produce hallazgo", () => {
+    expect(checkTieBreak(correctComparison())).toEqual([]);
+  });
+
+  it("no duplica el hallazgo cuando el recomendado ni siquiera cumple", () => {
+    // De eso se encarga `checkHardLimits`: aquí no se vuelve a reportar.
+    const incumple = correctComparison({ recommendedSupplier: "GlobalStock" });
+    expect(checkTieBreak(incumple)).toEqual([]);
+  });
+
+  it("sin recomendación no hay desempate que comprobar", () => {
+    expect(checkTieBreak(correctComparison({ recommendedSupplier: null }))).toEqual([]);
   });
 });
 

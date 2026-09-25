@@ -14,7 +14,12 @@
 
 import { describe, expect, it } from "vitest";
 
-import { checkArithmetic, checkCoverage, runAllChecks } from "../src/guardrails/checks.js";
+import {
+  checkArithmetic,
+  checkCoverage,
+  checkTieBreak,
+  runAllChecks,
+} from "../src/guardrails/checks.js";
 import { comparisonSchema, type Comparison, type Quote } from "../src/domain/schemas.js";
 
 function quote(overrides: Partial<Quote> & { supplier: string }): Quote {
@@ -102,6 +107,18 @@ describe("fallos observados en corridas reales", () => {
     };
 
     expect(comparisonSchema.safeParse(withoutLeadTime).success).toBe(false);
+  });
+
+  it("una recomendación que cumple pero no es la más barata", () => {
+    // Observado con gpt-5.4-mini al plantearle un encargo distinto del caso:
+    // recomendó a Tecnoimport, que cumple plazo y presupuesto, existiendo
+    // MayoristaZeta 445 dólares más barato y también conforme. Las cinco
+    // verificaciones de entonces pasaban todas: ninguna miraba el criterio de
+    // desempate que el encargo declara.
+    const findings = checkTieBreak(comparison({ recommendedSupplier: "Tecnoimport" }));
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.check).toBe("tie-break");
   });
 
   it("un comparativo correcto no produce hallazgos", () => {

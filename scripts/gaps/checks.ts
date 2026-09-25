@@ -1,7 +1,7 @@
 /**
  * Verificación por código del comparativo.
  *
- * Cinco comprobaciones sobre lo que tiene respuesta mecánica. No llaman a
+ * Seis comprobaciones sobre lo que tiene respuesta mecánica. No llaman a
  * ningún modelo, no cuestan nada y devuelven siempre lo mismo para la misma
  * entrada.
  *
@@ -186,15 +186,61 @@ export function checkMissingResponses(comparison: Comparison): Finding[] {
   ];
 }
 
+/**
+ * La recomendación es la mejor entre las que cumplen.
+ *
+ * El encargo declara un criterio de desempate —menor total puesto en bodega—, y
+ * eso lo vuelve comprobable: entre las cotizaciones que superan los dos filtros
+ * duros, la recomendada debe ser la más barata.
+ *
+ * Viene resuelta, y salió de una corrida real. El agente recomendó a un
+ * proveedor que cumplía plazo y presupuesto pero costaba 445 dólares más que
+ * otro que también cumplía; las otras cinco verificaciones pasaban todas. Una
+ * recomendación defendible no es lo mismo que la correcta.
+ *
+ * La elegibilidad se calcula sobre las cifras, no sobre lo que la cotización
+ * declara de sí misma: por la misma razón que `checkHardLimits`.
+ */
+export function checkTieBreak(comparison: Comparison): Finding[] {
+  if (comparison.recommendedSupplier === null) return [];
+
+  const eligible = comparison.quotes.filter(
+    (quote) =>
+      quote.leadTimeBusinessDays !== null &&
+      quote.leadTimeBusinessDays <= MAX_LEAD_TIME_BUSINESS_DAYS &&
+      toCents(quote.totalDeliveredUsd) <= toCents(BUDGET_CAP_USD),
+  );
+
+  const recommended = eligible.find((quote) => quote.supplier === comparison.recommendedSupplier);
+  // Si el recomendado no es elegible, el hallazgo lo emite `checkHardLimits`.
+  if (!recommended) return [];
+
+  const cheapest = eligible.reduce((best, quote) =>
+    toCents(quote.totalDeliveredUsd) < toCents(best.totalDeliveredUsd) ? quote : best,
+  );
+
+  if (cheapest.supplier === recommended.supplier) return [];
+
+  return [
+    {
+      check: "tie-break",
+      detail:
+        `Se recomienda a ${recommended.supplier} por ${recommended.totalDeliveredUsd}, ` +
+        `existiendo ${cheapest.supplier} por ${cheapest.totalDeliveredUsd}, que también cumple.`,
+    },
+  ];
+}
+
 export const ALL_CHECKS = [
   checkCoverage,
   checkNormalization,
   checkArithmetic,
   checkHardLimits,
   checkMissingResponses,
+  checkTieBreak,
 ] as const;
 
-/** Corre las cinco y acumula. No se detiene en la primera. */
+/** Corre las seis y acumula. No se detiene en la primera. */
 export function runAllChecks(comparison: Comparison): Finding[] {
   return ALL_CHECKS.flatMap((check) => check(comparison));
 }

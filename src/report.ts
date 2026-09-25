@@ -172,7 +172,7 @@ export function formatChecks(findings: readonly Finding[]): string {
   const lines = ["", "CAPA 1 · VERIFICACIÓN POR CÓDIGO"];
 
   if (findings.length === 0) {
-    lines.push("  Las cinco pasan.");
+    lines.push("  Las seis pasan.");
     return lines.join("\n");
   }
 

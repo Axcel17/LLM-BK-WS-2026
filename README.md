@@ -51,7 +51,7 @@ npm install
 npm test
 ```
 
-Deben pasar 76 y fallar 11. Si falla el typecheck, o si falla alguna de las 6
+Deben pasar 81 y fallar 11. Si falla el typecheck, o si falla alguna de las 6
 de `loop`, el entorno no está bien instalado.
 
 Varios archivos pasan enteros desde el inicio: `loop` verifica la instalación,
@@ -142,9 +142,9 @@ la edición y `npm run baseline` vuelve a fijar la referencia.
 
 ### 4 · Las dos capas de evaluación — 19 min
 
-Complete los tres huecos de `src/guardrails/checks.ts`. Dos verificaciones vienen
-completas como referencia de la forma, y de otras dos viene escrita la mitad
-mecánica: lo que escribe es siempre la decisión.
+Complete los tres huecos de `src/guardrails/checks.ts`. Tres verificaciones
+vienen completas como referencia de la forma, y de otras dos viene escrita la
+mitad mecánica: lo que escribe es siempre la decisión.
 
 ```
 npm test -- checks
@@ -157,6 +157,7 @@ npm test -- checks
 | `checkHardLimits`       | 3c · solo la comprobación sobre el proveedor recomendado                             |
 | `checkNormalization`    | — viene completa                                                                     |
 | `checkMissingResponses` | — viene completa                                                                     |
+| `checkTieBreak`         | — viene completa                                                                     |
 
 **El hueco 3c es el que resiste una inyección.** Lo que viene escrito confía en
 lo que cada cotización declara sobre sí misma, y eso es justo lo que un texto
