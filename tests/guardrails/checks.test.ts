@@ -1,5 +1,5 @@
 /**
- * HUECO 3 · Las cinco verificaciones por código.
+ * HUECO 3 · Las seis verificaciones por código.
  *
  * Cada prueba construye un comparativo con un defecto concreto y exige que la
  * verificación lo detecte. Un comparativo correcto no produce hallazgos.
