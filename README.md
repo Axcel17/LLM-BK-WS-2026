@@ -335,9 +335,20 @@ npm run format:check  formato
 npm test              typecheck y suite completa
 ```
 
-`.github/workflows/ci.yml` ejecuta las dos primeras en cualquier rama, y la
-suite completa solo en `soluciones`: en `main` faltan seis decisiones a
-propósito, y once pruebas fallan por diseño.
+`.github/workflows/ci.yml` ejecuta el typecheck y el formato sobre el estado
+tal como se entrega, y después aplica las soluciones y corre la suite completa.
+Las dos ramas se validan igual y ninguna depende de la otra.
+
+**Mantener `soluciones` al día.** La rama es `main` con las soluciones puestas,
+así que se regenera en dos órdenes cada vez que `main` cambia:
+
+```
+git checkout -B soluciones main
+npm run solutions && git commit -am "chore: soluciones aplicadas"
+```
+
+Una rama `soluciones` desfasada es peor que no tenerla: `npm run solutions`
+sigue funcionando desde `main` sin conexión, y esa es la vía principal.
 
 El proyecto no lleva ESLint. La versión actual de `typescript-eslint` declara
 compatibilidad hasta TypeScript 6.1 y aquí se usa TypeScript 7, de modo que
