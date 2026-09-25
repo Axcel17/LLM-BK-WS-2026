@@ -1,7 +1,7 @@
 /**
  * Pruebas del bucle.
  *
- * Sin huecos que completar: verifican que el entorno está bien instalado y
+ * Sin `TODO` que completar: verifican que el entorno está bien instalado y
  * documentan el comportamiento del ciclo.
  *
  *     npm test -- loop

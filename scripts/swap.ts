@@ -1,10 +1,10 @@
 /**
- * Intercambia los archivos con huecos por sus soluciones, y viceversa.
+ * Intercambia los archivos con `TODO` por sus soluciones, y viceversa.
  *
- * `solutions/` tiene las versiones completas; `scripts/gaps/` las versiones con
- * huecos. `src/` contiene la que está activa.
+ * `solutions/` tiene las versiones completas; `scripts/gaps/` las que llevan los
+ * `TODO`. `src/` contiene la que está activa.
  *
- * Ejecutar el agente no altera `src/`, pero resolver los huecos durante un
+ * Ejecutar el agente no altera `src/`, pero resolver los `TODO` durante un
  * ensayo sí. Restaurar antes de distribuir el material.
  *
  *     npx tsx scripts/swap.ts gaps        lo que recibe el asistente
@@ -40,6 +40,6 @@ for (const { file, target } of SWAPPABLE) {
   markers += (readFileSync(from, "utf8").match(/TODO\(/g) ?? []).length;
 }
 
-console.log(`  src/ ahora tiene las versiones con ${mode === "gaps" ? "huecos" : "soluciones"}.`);
+console.log(`  src/ ahora tiene las versiones con ${mode === "gaps" ? "TODO" : "soluciones"}.`);
 console.log(`  Marcas TODO: ${markers}`);
 console.log(`  Verifique con: npm test`);
