@@ -15,7 +15,7 @@ vienen resueltas por el entorno, y por eso no se ven.
 | Barreras                  | 1–2  | Permisos por acción, y su verificación                 |
 | Almacén de estado         | 4    | Persistencia de las direcciones de seguimiento         |
 | Disparador                | 5    | Tarea programada con cadencia                          |
-| Entorno de ejecución      | 5    | Ejecución del lado del servidor                        |
+| Entorno de ejecución      | 5    | Dónde corre la tarea, y por qué                        |
 | Observabilidad            | 7    | Historial de la corrida                                |
 
 El agente queda conectado a **tres superficies distintas**, y cada una se concede por separado:
@@ -103,8 +103,8 @@ restricciones duras de `espacio-de-trabajo/datos/encargo.md`.
 Una vez completa, **guárdela como instrucción reutilizable** con el nombre `abastecimiento`.
 
 > No la pegue en la conversación. Un mensaje pegado se pierde al cerrarla; una instrucción guardada
-> se reutiliza, se versiona y se comparte. En la Parte 2 ese mismo texto se convierte en el prompt
-> de sistema del agente en código.
+> se reutiliza, se versiona y se comparte. En la Parte 2 esa misma política —el plazo descalifica,
+> el desempate es el menor total, no se adjudica— gobierna al agente en código.
 
 ---
 
@@ -145,7 +145,9 @@ programada** que las recoja con cadencia.
 Dos cosas que comprobar al hacerlo:
 
 - Es el **disparador** de la anatomía. El sistema deja de depender de que usted escriba.
-- Corre **del lado del servidor**: sigue funcionando con el equipo apagado.
+- **Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
+  equipo apagado. Esta toca `espacio-de-trabajo/`, así que corre en su computadora y solo mientras
+  esté despierta. Si el estado viviera en un conector y no en una carpeta, podría correr sin ella.
 
 > La cadencia mínima disponible es mayor que la duración del bloque, así que la segunda corrida se
 > dispara a mano. Lo que importa es haberla configurado y entender qué hace.

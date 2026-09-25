@@ -80,6 +80,9 @@ REGLAS PERMANENTES
 
 · Nada se compara sin normalizar.
 
+· Entre las cotizaciones que cumplen plazo y presupuesto, se recomienda la de menor total puesto
+  en bodega. Es el criterio del encargo, no una preferencia.
+
 · Lo que no llegó también se reporta. Un proveedor sin respuesta es un resultado, no un
   vacío que se omite.
 

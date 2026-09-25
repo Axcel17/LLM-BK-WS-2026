@@ -1,7 +1,7 @@
 /**
  * El bucle de un agente, sin librería de por medio.
  *
- * Percibir, planificar, actuar, observar, repetir. Unas sesenta líneas que
+ * Percibir, planificar, actuar, observar, repetir. Una función de cuarenta líneas que
  * hacen explícito lo que un arnés resuelve por debajo.
  *
  * Opera sobre el mismo catálogo que el servidor MCP expone al agente real:

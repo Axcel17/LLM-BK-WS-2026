@@ -24,7 +24,7 @@ correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de
 electrónica, y sistemas de gestión comercial y de tickets.
 
 **El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por acción**. Leer,
-buscar, crear, enviar y eliminar se configuran por separado, con tres niveles: permitir siempre,
+buscar, crear borradores, enviar y reenviar se configuran por separado, con tres niveles: permitir siempre,
 requiere aprobación, o bloqueado.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
@@ -54,8 +54,10 @@ como instrucción.
 
 ## 6 · Tareas programadas ✓
 
-Una instrucción empaquetada que corre con cadencia —por hora, diaria, semanal, días hábiles— **del
-lado del servidor**. Sigue corriendo con la computadora apagada.
+Una instrucción empaquetada que corre con cadencia —por hora, diaria, semanal, días hábiles—.
+**Dónde corre lo decide lo que toca:** si solo usa conectores, corre en la nube y sigue funcionando
+con la computadora apagada; si toca una carpeta del disco, corre en la computadora y solo mientras
+esté despierta.
 
 **Comportamiento no evidente:** después de la primera corrida, el sistema reescribe sus propias instrucciones
 según lo que aprendió — qué conector usó, dónde encontró el dato, qué funcionó. La segunda suele
@@ -114,7 +116,7 @@ Contra las seis piezas de la anatomía:
 | Pieza                    | Qué darle                                                               |
 | ------------------------ | ----------------------------------------------------------------------- |
 | **Disparador**           | Tarea programada, o disparador por API                                  |
-| **Entorno de ejecución** | Local o remoto del lado del servidor                                    |
+| **Entorno de ejecución** | En la nube si solo usa conectores; en la computadora si toca su disco   |
 | **Herramientas**         | Conectores, navegador, servidores MCP propios                           |
 | **Estado**               | Archivos, hoja de cálculo conectada, o memoria                          |
 | **Barreras**             | Permisos por acción, instrucciones permanentes, compuerta de aprobación |

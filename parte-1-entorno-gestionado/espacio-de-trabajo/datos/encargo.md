@@ -12,10 +12,11 @@
 
 ## Por qué
 
-Farmacéutica Vitalis ordenó 40 monitores con entrega pactada en 12 días. El embarque que cubría
+Farmacéutica Vitalis ordenó 40 monitores con entrega pactada en 12 días hábiles. El embarque que cubría
 ese pedido se atrasó y ahora llega en 30 días.
 
-El plazo de 10 días hábiles deja margen sobre el compromiso con el cliente. **No es negociable:**
+El plazo de 10 días hábiles deja dos días de margen para el despacho propio antes del compromiso
+con el cliente. **No es negociable:**
 una entrega en 11 días no es "casi a tiempo", es un incumplimiento.
 
 ## Cómo se elige entre las que cumplen

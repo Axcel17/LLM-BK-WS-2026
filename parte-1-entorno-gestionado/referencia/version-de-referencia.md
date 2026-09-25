@@ -31,10 +31,13 @@ habiéndolos provocado.
 | Buscar y leer   | **Bloquear**            | La tarea no lee correo. Conceder lectura amplía el radio de impacto sin contrapartida |
 | Crear borrador  | Permitir siempre        | Acción reversible, sin efecto externo                                                 |
 | Enviar          | **Requiere aprobación** | Primera acción irreversible del flujo. Aquí va la compuerta                           |
-| Eliminar        | **Bloquear**            | Irreversible y ajeno a la tarea                                                       |
+| Reenviar        | **Bloquear**            | Ajeno a la tarea. Con lectura, es la vía para sacar correo a un tercero               |
 
 El criterio que ordena la tabla: la compuerta va entre la última acción reversible —el borrador— y
 la primera irreversible —el envío.
+
+Enviar y reenviar ya piden aprobación por defecto. Lo que por defecto queda permitido, y hay que
+cambiar, es leer: esta tarea no lo necesita. El conector de Gmail no ofrece «eliminar».
 
 ---
 

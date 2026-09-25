@@ -74,7 +74,7 @@ No hay nada que completar. Abra `src/loop.ts` y córralo:
 npm test -- loop
 ```
 
-Sesenta líneas sin librería de por medio. Tres cosas que conviene ver:
+La función `run` son cuarenta líneas, sin librería de por medio. Tres cosas que conviene ver:
 
 **El modelo no ejecuta nada.** Emite una petición; la línea
 `implementation(reply.args)` la atiende. Esa tabla delimita lo que el agente

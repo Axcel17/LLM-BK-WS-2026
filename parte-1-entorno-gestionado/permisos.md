@@ -18,7 +18,7 @@ Para cada acción, un nivel. Marque uno:
 | **Buscar y leer** correos | ☐                | ☐                   | ☐        |
 | **Crear borrador**        | ☐                | ☐                   | ☐        |
 | **Enviar**                | ☐                | ☐                   | ☐        |
-| **Eliminar**              | ☐                | ☐                   | ☐        |
+| **Reenviar**              | ☐                | ☐                   | ☐        |
 
 ## Las dos preguntas que hay que hacerse en cada fila
 
@@ -28,7 +28,8 @@ No "¿podría servir algún día?". ¿Lo necesita **esta** tarea, hoy?
 **2. Si el agente fuera engañado, ¿qué haría con este permiso?**
 
 Esa segunda pregunta es el **radio de impacto**. Un agente engañado que solo puede leer, informa
-mal. Uno que puede escribir, corrompe datos. Uno que puede eliminar, elimina.
+mal. Uno que puede escribir, corrompe datos. Uno que puede leer la bandeja y reenviar, engañado por
+una página, reenvía su correo a un tercero.
 
 ---
 
