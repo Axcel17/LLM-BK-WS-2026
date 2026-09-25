@@ -1,0 +1,30 @@
+# Bloqueo por regresión.
+#
+# El typecheck y el formato corren en toda rama, porque el material con huecos
+# también debe compilar: nadie empieza el taller con errores que no puso.
+#
+# La suite completa corre solo en `soluciones`, que es donde el proyecto está
+# entero. En `main` faltan seis decisiones a propósito y once pruebas fallan
+# por diseño.
+name: ci
+
+on:
+  push:
+    branches: [main, soluciones]
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx prettier --check .
+      - name: Pruebas
+        if: github.ref_name == 'soluciones'
+        run: npm run test:only
