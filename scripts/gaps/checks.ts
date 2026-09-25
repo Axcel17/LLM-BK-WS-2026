@@ -7,7 +7,7 @@
  *
  * Lo que exige criterio no va aquí: va en `judge.ts`.
  *
- * HUECO 3 · Complete las tres partes marcadas.
+ * Tres `TODO` marcados. El editor los lista en su panel de tareas pendientes.
  *
  * `checkNormalization` y `checkMissingResponses` vienen resueltas y son la
  * referencia de la forma: conviene leerlas antes de empezar. Toda verificación
@@ -76,7 +76,7 @@ export function checkCoverage(comparison: Comparison): Finding[] {
     });
   }
 
-  // <<< HUECO 3a >>>
+  // TODO(3a): la contradicción en la cobertura
   // Lo anterior cubre al que falta y al que sobra, y aun así deja pasar un
   // informe contradictorio. El caso salió de una corrida real: el modelo
   // declaró a un proveedor sin respuesta y además le inventó una cotización.
@@ -112,7 +112,7 @@ export function checkNormalization(comparison: Comparison): Finding[] {
  * No se le pregunta a un modelo si una suma está bien.
  */
 export function checkArithmetic(comparison: Comparison): Finding[] {
-  // <<< HUECO 3b >>>
+  // TODO(3b): el total contra sus componentes
   // Un hallazgo por cada cotización cuyo total declarado no cuadre con sus
   // componentes: precio unitario × QUANTITY + flete. El detalle debe mostrar
   // ambas cifras y la diferencia, para que se pueda comprobar a mano.
@@ -158,7 +158,7 @@ export function checkHardLimits(comparison: Comparison): Finding[] {
     }
   }
 
-  // <<< HUECO 3c >>>
+  // TODO(3c): la comprobación sobre el recomendado
   // Lo anterior confía en lo que la cotización declara sobre sí misma, y eso
   // es justo lo que una inyección manipula: basta con declararse conforme.
   //

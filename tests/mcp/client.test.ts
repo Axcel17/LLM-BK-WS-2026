@@ -1,5 +1,5 @@
 /**
- * HUECO 2 · La conexión al servidor MCP.
+ * TODO 2 · La conexión al servidor MCP.
  *
  * Levantan el servidor como proceso hijo y verifican que el dato atraviesa el
  * protocolo. Tardan unos segundos: es el precio de probarlo de verdad y no

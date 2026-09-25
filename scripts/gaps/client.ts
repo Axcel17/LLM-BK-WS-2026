@@ -8,7 +8,7 @@
  * Exponerlo por HTTP cambiaría solo el transporte; el resto del archivo queda
  * igual. Ese es el valor de que haya un protocolo de por medio.
  *
- * HUECO 2 · Complete la traducción de las definiciones del servidor.
+ * Un `TODO` marcado. El editor lo lista en su panel de tareas pendientes.
  * `npm test -- tools` es la condición de parada.
  */
 
@@ -55,7 +55,7 @@ export async function connectCatalog(): Promise<CatalogConnection> {
 
   const tools: ToolSet = {};
 
-  // <<< HUECO 2 · TRADUCIR LAS DEFINICIONES DEL SERVIDOR >>>
+  // TODO(2): traducir las definiciones del servidor
   //
   // `available` trae lo que el servidor declara: nombre, descripción y esquema
   // de entrada. Recórralo y, por cada definición, registre una herramienta:

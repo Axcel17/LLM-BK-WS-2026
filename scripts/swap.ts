@@ -37,9 +37,9 @@ let markers = 0;
 for (const { file, target } of SWAPPABLE) {
   const from = join(source, file);
   copyFileSync(from, join(ROOT, "src", target));
-  markers += (readFileSync(from, "utf8").match(/HUECO/g) ?? []).length;
+  markers += (readFileSync(from, "utf8").match(/TODO\(/g) ?? []).length;
 }
 
 console.log(`  src/ ahora tiene las versiones con ${mode === "gaps" ? "huecos" : "soluciones"}.`);
-console.log(`  Marcas HUECO: ${markers}`);
+console.log(`  Marcas TODO: ${markers}`);
 console.log(`  Verifique con: npm test`);

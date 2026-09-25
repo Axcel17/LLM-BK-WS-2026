@@ -1,5 +1,5 @@
 /**
- * HUECO 1 · El contrato de datos.
+ * TODO 1 · El contrato de datos.
  *
  * Fallan hasta que los tres campos estén declarados en src/schemas.ts. Cuando
  * pasan, el contrato está bien definido.

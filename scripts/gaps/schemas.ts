@@ -10,7 +10,7 @@
  * derivan los tipos de TypeScript, de modo que un contrato mal usado falla al
  * compilar y no solo al correr.
  *
- * HUECO 1 · Complete las dos declaraciones marcadas.
+ * Dos `TODO` marcados. El editor los lista en su panel de tareas pendientes.
  * `npm test -- schemas` es la condición de parada.
  */
 
@@ -53,7 +53,7 @@ export const quoteSchema = z.object({
     .min(QUANTITY, `Un total menor que ${QUANTITY} implica menos de un dólar por unidad`)
     .max(BUDGET_CAP_USD * 3, "Total implausible: revise si el precio venía por lote"),
 
-  // <<< HUECO 1a · EL PLAZO >>>
+  // TODO(1a): el plazo
   // Tal como está, el modelo puede omitir el campo y el esquema lo acepta.
   // Sin este dato, la verificación de plazo del tramo 4 no tiene nada que
   // comprobar y pasa en verde sobre una salida incompleta.
@@ -89,7 +89,7 @@ export const comparisonSchema = z
   .object({
     quotes: z.array(quoteSchema),
 
-    // <<< HUECO 1b · LO QUE NO LLEGÓ Y LO QUE SE DETECTÓ >>>
+    // TODO(1b): lo que no llegó y lo que se detectó
     // Ambas listas tienen valor por defecto, así que el modelo puede omitirlas
     // y el esquema las rellena con vacío. Una ausencia es un resultado; una
     // lista vacía debería ser una afirmación explícita, no un descuido.

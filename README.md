@@ -26,13 +26,19 @@ abajo.
 
 ## Cómo está organizado el código
 
-Este repositorio se entrega con **seis huecos** por completar. Cada uno está
-donde el flujo se rompe si la decisión es la equivocada; lo mecánico viene
-resuelto y sirve de referencia de la forma.
+Este repositorio se entrega con **seis `TODO` por completar**, repartidos en tres
+archivos. Cada uno está donde el flujo se rompe si la decisión es la equivocada;
+lo mecánico viene resuelto y sirve de referencia de la forma.
+
+Su editor los lista en el panel de tareas pendientes. Desde la terminal:
+
+```
+grep -rn "TODO(" src/
+```
 
 | Rama         | Contenido                                                             |
 | ------------ | --------------------------------------------------------------------- |
-| `main`       | El material con los huecos puestos. Es por donde se empieza           |
+| `main`       | El material con los `TODO` puestos. Es por donde se empieza           |
 | `soluciones` | El proyecto completo, tal como estaba antes de retirar las decisiones |
 
 No hace falta cambiar de rama para consultar una solución: `npm run solutions`
@@ -88,23 +94,23 @@ indefinidamente.
 
 ### 2 · El contrato de datos — 19 min
 
-Complete los dos huecos de `src/domain/schemas.ts`.
+Complete los dos `TODO` de `src/domain/schemas.ts`.
 
 ```
 npm test -- schemas
 ```
 
-| Hueco | La decisión                                                        |
-| ----- | ------------------------------------------------------------------ |
-| 1a    | El campo tiene valor por defecto, así que el modelo puede omitirlo |
-| 1b    | Dos listas que se rellenan solas cuando el modelo no las declara   |
+| TODO | La decisión                                                        |
+| ---- | ------------------------------------------------------------------ |
+| 1a   | El campo tiene valor por defecto, así que el modelo puede omitirlo |
+| 1b   | Dos listas que se rellenan solas cuando el modelo no las declara   |
 
 Los esquemas de Zod validan en ejecución **y** derivan los tipos: un contrato
 mal usado falla al compilar, no solo al correr.
 
 ### 3 · El servidor de herramientas — 20 min
 
-Complete el hueco de `src/mcp/client.ts`: la traducción de lo que el servidor
+Complete el `TODO` de `src/mcp/client.ts`: la traducción de lo que el servidor
 declara a herramientas del arnés. El acceso tipado viene resuelto debajo.
 
 ```
@@ -117,7 +123,7 @@ que el agente consume sin saber en qué está escrito ni dónde corre.
 El agente no importa el catálogo: lo consume por protocolo. La misma
 herramienta serviría a cualquier otro cliente MCP.
 
-**La decisión del hueco es de dónde sale el esquema de entrada.** Lo natural es
+**La decisión es de dónde sale el esquema de entrada.** Lo natural es
 reescribirlo a mano mirando `get_quote`, que recibe un argumento. El catálogo
 expone además `place_order`, que recibe dos. Una de las pruebas lo discrimina.
 
@@ -142,7 +148,7 @@ la edición y `npm run baseline` vuelve a fijar la referencia.
 
 ### 4 · Las dos capas de evaluación — 19 min
 
-Complete los tres huecos de `src/guardrails/checks.ts`. Tres verificaciones
+Complete los tres `TODO` de `src/guardrails/checks.ts`. Tres verificaciones
 vienen completas como referencia de la forma, y de otras dos viene escrita la
 mitad mecánica: lo que escribe es siempre la decisión.
 
@@ -159,7 +165,7 @@ npm test -- checks
 | `checkMissingResponses` | — viene completa                                                                     |
 | `checkTieBreak`         | — viene completa                                                                     |
 
-**El hueco 3c es el que resiste una inyección.** Lo que viene escrito confía en
+**El `TODO(3c)` es el que resiste una inyección.** Lo que viene escrito confía en
 lo que cada cotización declara sobre sí misma, y eso es justo lo que un texto
 manipula: basta con declararse conforme. Falta comprobar al recomendado contra
 sus propias cifras. Un texto puede convencer a un modelo de omitir una
@@ -348,15 +354,15 @@ src/
 
   domain/             el caso y su contrato
     catalog.ts        acceso a los datos
-    schemas.ts        HUECO 1 · la forma de la salida
+    schemas.ts        TODO 1 · la forma de la salida
 
   mcp/                cómo el agente toca el mundo
     server.ts         expone el catálogo por el protocolo
-    client.ts         HUECO 2 · lo consume y lo traduce a herramientas
+    client.ts         TODO 2 · lo consume y lo traduce a herramientas
     integrity.ts      deriva del catálogo entre corridas
 
   guardrails/         las barreras
-    checks.ts         HUECO 3 · verificación por código
+    checks.ts         TODO 3 · verificación por código
     judge.ts          evaluación por modelo
     approval.ts       qué acciones no ejecuta el agente por sí mismo
 
@@ -366,7 +372,7 @@ src/
 
 tests/                refleja la estructura de src/, más las regresiones
 data/                 encargo, cotizaciones, conversación grabada y huella
-solutions/            las versiones completas de los tres archivos con huecos
+solutions/            las versiones completas de los tres archivos con TODO
 scripts/              medición, huella e intercambio de versiones
 ```
 
