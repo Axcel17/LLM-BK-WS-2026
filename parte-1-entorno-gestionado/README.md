@@ -9,14 +9,18 @@ que las trae resueltas, y observado sus modos de falla.
 Las mismas seis piezas se escriben en código en la Parte 2, en la raíz de este repositorio. Aquí
 vienen resueltas por el entorno, y por eso no se ven.
 
-| Pieza                     | Paso | Qué se configura                                         |
-| ------------------------- | ---- | -------------------------------------------------------- |
-| Herramientas y conectores | 1–2  | Conector de correo, con permisos por acción              |
-| Barreras                  | 1    | Bloqueo de lo innecesario, aprobación en lo irreversible |
-| Almacén de estado         | 4    | Persistencia de las direcciones de seguimiento           |
-| Disparador                | 5    | Tarea programada con cadencia                            |
-| Entorno de ejecución      | 5    | Ejecución del lado del servidor                          |
-| Observabilidad            | 7    | Historial de la corrida                                  |
+| Pieza                     | Paso | Qué se configura                                       |
+| ------------------------- | ---- | ------------------------------------------------------ |
+| Herramientas y conectores | 2    | Acceso a archivos, conector de correo y navegación web |
+| Barreras                  | 1–2  | Permisos por acción, y su verificación                 |
+| Almacén de estado         | 4    | Persistencia de las direcciones de seguimiento         |
+| Disparador                | 5    | Tarea programada con cadencia                          |
+| Entorno de ejecución      | 5    | Ejecución del lado del servidor                        |
+| Observabilidad            | 7    | Historial de la corrida                                |
+
+El agente queda conectado a **tres superficies distintas**, y cada una se concede por separado:
+una carpeta del disco, una aplicación externa mediante conector autorizado, y la web abierta. Son
+tres decisiones de permiso, no una.
 
 ---
 
@@ -27,7 +31,7 @@ vienen resueltas por el entorno, y por eso no se ven.
   no permitir autorizar el conector.
 - Este repositorio clonado o descargado.
 - La dirección base de los sitios de proveedores. En la sesión la proyecta el instructor; por
-  cuenta propia se obtiene publicando `sitios-proveedores/`, como describe su `README.md`.
+  cuenta propia se obtiene publicando `entorno/sitios-proveedores/`, como describe su `README.md`.
 
 ---
 
@@ -47,12 +51,19 @@ siempre, requiere aprobación o bloquear.
 
 ---
 
-## Paso 2 · Levantar el entorno — 5 min
+## Paso 2 · Levantar el entorno — 6 min
 
-**2.1 · Acceso a la carpeta.** Abra Cowork y concédale acceso a la carpeta
-`parte-1-entorno-gestionado/` completa, no a un archivo suelto. El resto del repositorio
-corresponde a la Parte 2 y queda fuera del alcance del agente a propósito: lo que no se concede no
-puede alcanzarse.
+**2.1 · Acceso a archivos.** Abra Cowork y concédale acceso a **`espacio-de-trabajo/`
+únicamente**, no a la carpeta de la Parte 1 completa.
+
+La distinción no es cosmética. Fuera de esa subcarpeta quedan `referencia/`, que contiene el
+comparativo esperado, y `entorno/respaldo-local/`, que contiene las cinco cotizaciones ya
+recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo local, sin visitar
+un solo sitio.
+
+> Esto es el privilegio mínimo aplicado a **archivos**, no solo a conectores. El alcance de
+> lectura de un agente decide qué puede llegar a saber, y casi siempre se concede de más porque
+> conceder la carpeta entera es más cómodo.
 
 **2.2 · Conectar el correo.** En la configuración de conectores, conecte Gmail con la cuenta
 personal. Se abre la autorización de Google; concédala y regrese.
@@ -60,7 +71,7 @@ personal. Se abre la autorización de Google; concédala y regrese.
 **2.3 · Fijar los permisos.** Ajuste las cuatro acciones al nivel que decidió en el paso 1.
 **No deje los valores por defecto.**
 
-**2.4 · Verificación.** Pregunte:
+**2.4 · Verificación de lo concedido.** Pregunte:
 
 ```
 ¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?
@@ -69,12 +80,25 @@ personal. Se abre la autorización de Google; concédala y regrese.
 Debe describir el encargo correctamente y enumerar solo los permisos concedidos. Si no reconoce la
 carpeta, repita el punto 2.1.
 
+**2.5 · Verificación de lo bloqueado.** Enumerar un permiso no demuestra que se aplique. Pida algo
+que haya bloqueado:
+
+```
+Busca en mi correo los mensajes de la semana pasada y resúmelos.
+```
+
+Debe negarse. Si lo hace, la barrera existe; si obedece, el nivel quedó mal configurado y conviene
+corregirlo ahora, no en el paso 7 con una acción irreversible de por medio.
+
+> Una barrera que no se comprueba es una suposición. En la Parte 2, esa comprobación se escribe
+> como prueba automatizada y corre en cada cambio.
+
 ---
 
 ## Paso 3 · Guardar la instrucción — 4 min
 
-Abra `instruccion-abastecimiento.md`. Tiene **dos huecos marcados** que debe completar con las
-restricciones duras de `datos/encargo.md`.
+Abra `espacio-de-trabajo/instruccion-abastecimiento.md`. Tiene **dos huecos marcados** que debe completar con las
+restricciones duras de `espacio-de-trabajo/datos/encargo.md`.
 
 Una vez completa, **guárdela como instrucción reutilizable** con el nombre `abastecimiento`.
 
@@ -84,7 +108,7 @@ Una vez completa, **guárdela como instrucción reutilizable** con el nombre `ab
 
 ---
 
-## Paso 4 · Primera corrida — 12 min
+## Paso 4 · Primera corrida — 11 min
 
 Invoque la instrucción guardada, indicando la dirección base de los proveedores:
 
@@ -98,7 +122,7 @@ seguimiento. Las cotizaciones **no** están listas todavía, y eso es correcto.
 
 ### Verificación
 
-Abra `salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
+Abra `espacio-de-trabajo/salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
 seguimiento **completa**.
 
 > **El fallo más frecuente está previsto:** el agente guarda el número de referencia pero pierde
@@ -148,7 +172,7 @@ normalízalas y arma el comparativo.
 
 ### Verificación
 
-`salidas/comparativo.md` existe, contiene los **cinco** proveedores —incluidos los que no
+`espacio-de-trabajo/salidas/comparativo.md` existe, contiene los **cinco** proveedores —incluidos los que no
 cotizaron— y ninguna adjudicación ejecutada.
 
 ---
@@ -184,30 +208,42 @@ convenciones de OpenTelemetry.
 
 ---
 
-## Contenido de la carpeta
+## Cómo está organizada la carpeta
+
+Tres subcarpetas, separadas por **quién puede leerlas**, no por tema. Esa división es la que
+sostiene el paso 2.
 
 ```
-README.md                       esta guía
-contexto.md                     el caso, para enviar como primer mensaje
-permisos.md                     la decisión del paso 1
-instruccion-abastecimiento.md   la instrucción a completar y guardar
-datos/encargo.md                qué comprar, plazo, presupuesto y garantía
-datos/proveedores.md            los cinco sitios
-capacidades-del-entorno.md      inventario completo del entorno gestionado
-version-de-referencia.md        los huecos resueltos y el resultado esperado
-sitios-proveedores/             los cinco sitios, para publicarlos y repetir
-respaldo-local/                 las cotizaciones, por si la red falla
-corrida-de-referencia/          la salida de una ejecución completa
+README.md                          esta guía
+permisos.md                        la decisión del paso 1, a mano
+
+espacio-de-trabajo/                ← lo único que recibe el agente
+  contexto.md                      el caso, para enviar como primer mensaje
+  instruccion-abastecimiento.md    la instrucción a completar y guardar
+  datos/encargo.md                 qué comprar, plazo, presupuesto y garantía
+  datos/proveedores.md             los cinco sitios
+  salidas/                         lo que el agente produce
+
+referencia/                        ← fuera de su alcance, a propósito
+  capacidades-del-entorno.md       inventario completo del entorno gestionado
+  version-de-referencia.md         los huecos resueltos y el resultado esperado
+  corrida-de-referencia/           la salida de una ejecución completa
+
+entorno/                           ← lo que se publica antes de empezar
+  sitios-proveedores/              los cinco sitios, estáticos
+  respaldo-local/                  las cotizaciones, por si la red falla
 ```
 
-El agente crea `salidas/` con lo que produce: `seguimiento.json` en el paso 4 y `comparativo.md`
-en el paso 6.
+El agente crea `espacio-de-trabajo/salidas/` con lo que produce: `seguimiento.json` en el paso 4 y
+`comparativo.md` en el paso 6.
 
 ## Repetir el ejercicio por cuenta propia
 
 Los cinco sitios son estáticos y no necesitan servidor de aplicaciones: basta con publicar
-`sitios-proveedores/` en cualquier alojamiento de archivos y usar esa dirección como base. Cómo
-simulan la demora y la segunda ronda está en `sitios-proveedores/README.md`.
+`entorno/sitios-proveedores/` en cualquier alojamiento de archivos y usar esa dirección como base.
+Cómo simulan la demora y la segunda ronda está en `entorno/sitios-proveedores/README.md`.
 
-`version-de-referencia.md` contiene los dos huecos de la instrucción resueltos, la tabla de
-permisos y el comparativo esperado. Conviene consultarla después de intentar el ejercicio.
+`referencia/version-de-referencia.md` contiene los dos huecos de la instrucción resueltos, la
+tabla de permisos y el comparativo esperado. Conviene consultarla después de intentar el
+ejercicio, y **no concederle acceso al agente**: la carpeta `referencia/` existe separada por esa
+razón.

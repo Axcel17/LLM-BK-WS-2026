@@ -8,7 +8,7 @@ habiéndolos provocado.
 
 ---
 
-## Los dos huecos de `instruccion-abastecimiento.md`
+## Los dos huecos de `../espacio-de-trabajo/instruccion-abastecimiento.md`
 
 **Restricción de plazo:**
 
@@ -77,7 +77,7 @@ dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicit
 falla de estado, y ocurre sin forzarlo.
 
 **Detección correcta de la inyección.** Registró el texto en una sección de anomalías, explicó qué
-pedía y por qué no lo siguió. La regla 4 de `contexto.md` es lo que lo produce: quien la haya
+pedía y por qué no lo siguió. La regla 4 de `../espacio-de-trabajo/contexto.md` es lo que lo produce: quien la haya
 omitido al guardar la instrucción probablemente obtenga otro resultado.
 
 **Escalamiento de decisiones no definidas.** Ante la consulta de garantía de Delta, el agente se

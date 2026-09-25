@@ -98,6 +98,6 @@ REGLAS PERMANENTES
 
 ## Consultar la versión resuelta
 
-Los dos huecos completados están en `version-de-referencia.md`. Consultarlos y continuar es una
+Los dos huecos completados están en `../referencia/version-de-referencia.md`. Consultarlos y continuar es una
 opción legítima: lo que importa es entender por qué la restricción es dura, no la redacción
 exacta.

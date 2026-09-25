@@ -1,6 +1,6 @@
 # Contexto · Distribuidora Andes
 
-Se envía como primer mensaje al conceder acceso a la carpeta, en el paso 2 de `README.md`.
+Se envía como primer mensaje al conceder acceso a la carpeta, en el paso 2 de `../README.md`.
 
 ---
 

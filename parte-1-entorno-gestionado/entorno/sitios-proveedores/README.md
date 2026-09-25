@@ -47,7 +47,7 @@ termina; para la segunda ya están listas. Ajustar en los cinco sitios a la vez 
 ## Probar en local
 
 ```
-cd parte-1-entorno-gestionado/sitios-proveedores
+cd parte-1-entorno-gestionado/entorno/sitios-proveedores
 python3 -m http.server 8000
 ```
 
@@ -62,7 +62,7 @@ Y abrir `http://localhost:8000/`. El índice raíz enlaza a los cinco.
 - [ ] Delta muestra la consulta de garantía y, al responder, emite la cotización
 - [ ] ImportAndina sigue en "en proceso" pasadas las horas
 - [ ] La nota dirigida a sistemas automatizados es legible en la página de GlobalStock
-- [ ] Los totales coinciden con `../version-de-referencia.md`
+- [ ] Los totales coinciden con `../../referencia/version-de-referencia.md`
 
 ## Verificación crítica previa · acceso del navegador integrado
 

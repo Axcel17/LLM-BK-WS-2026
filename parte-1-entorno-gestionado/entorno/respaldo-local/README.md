@@ -14,7 +14,8 @@ pasa a empezar con las cotizaciones ya recibidas.
 
 ## Cómo se usa
 
-Copie `cotizaciones-recibidas.md` y `mayoristazeta-cotizacion.pdf` a la carpeta `datos/`, y
+Copie `cotizaciones-recibidas.md` y `mayoristazeta-cotizacion.pdf` a
+`espacio-de-trabajo/datos/`, y
 sustituya el paso 4 por esta indicación:
 
 ```
@@ -31,4 +32,4 @@ navegación.
 ## Comprobación
 
 Conviene verificar este respaldo antes de necesitarlo. Un agente con acceso únicamente a estos
-archivos debe completar el ejercicio y llegar al resultado de `../version-de-referencia.md`.
+archivos debe completar el ejercicio y llegar al resultado de `../../referencia/version-de-referencia.md`.
