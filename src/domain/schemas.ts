@@ -9,9 +9,6 @@
  * Los esquemas de Zod cumplen dos funciones a la vez: validan en ejecución y
  * derivan los tipos de TypeScript, de modo que un contrato mal usado falla al
  * compilar y no solo al correr.
- *
- * Dos `TODO` marcados. El editor los lista en su panel de tareas pendientes.
- * `npm test -- schemas` es la condición de parada.
  */
 
 import { z } from "zod";
@@ -53,19 +50,14 @@ export const quoteSchema = z.object({
     .min(QUANTITY, `Un total menor que ${QUANTITY} implica menos de un dólar por unidad`)
     .max(BUDGET_CAP_USD * 3, "Total implausible: revise si el precio venía por lote"),
 
-  // TODO(1a): el plazo
-  // Tal como está, el modelo puede omitir el campo y el esquema lo acepta.
-  // Sin este dato, la verificación de plazo del tramo 4 no tiene nada que
-  // comprobar y pasa en verde sobre una salida incompleta.
-  //
-  // Un proveedor puede no declarar plazo, así que hay que poder representarlo.
-  // Pero omitir un campo no es lo mismo que declararlo desconocido.
+  // Anulable porque un proveedor puede no declarar plazo, y obligatorio para
+  // que el modelo no pueda omitirlo: sin este dato la verificación de plazo no
+  // tiene nada que comprobar.
   leadTimeBusinessDays: z
     .number()
     .int()
     .min(0)
     .nullable()
-    .default(null)
     .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
 
   meetsLeadTime: z.boolean(),
@@ -89,14 +81,15 @@ export const comparisonSchema = z
   .object({
     quotes: z.array(quoteSchema),
 
-    // TODO(1b): lo que no llegó y lo que se detectó
-    // Ambas listas tienen valor por defecto, así que el modelo puede omitirlas
-    // y el esquema las rellena con vacío. Una ausencia es un resultado; una
-    // lista vacía debería ser una afirmación explícita, no un descuido.
-    //
-    // Hay una segunda razón, que se descubre al cambiar de proveedor.
-    noResponse: z.array(noResponseSchema).default([]),
-    anomalies: z.array(anomalySchema).default([]),
+    // Sin valor por defecto: declararla es obligatorio, de modo que una lista
+    // vacía sea una afirmación explícita y no el resultado de no haber mirado.
+    noResponse: z.array(noResponseSchema),
+
+    // Sin valor por defecto, por la misma razón que `noResponse`: un campo
+    // opcional es un campo que el modelo omite, y la salida estructurada
+    // estricta de algunos proveedores rechaza el esquema si no es obligatorio.
+    // Una lista vacía tiene que ser una afirmación explícita.
+    anomalies: z.array(anomalySchema),
     recommendedSupplier: z.string().nullable(),
     rationale: z.string().min(20),
   })
