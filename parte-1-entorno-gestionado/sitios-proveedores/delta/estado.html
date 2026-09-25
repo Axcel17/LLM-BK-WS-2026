@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Seguimiento de requerimiento · Suministros Delta</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 16px;
+        line-height: 1.7;
+        color: #33302c;
+        background: #faf8f5;
+      }
+      .lienzo {
+        width: 100%;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header {
+        border-bottom: 1px solid #d8d2c8;
+      }
+      header .lienzo {
+        padding: 26px 24px 20px;
+        text-align: center;
+      }
+      .marca {
+        font-size: 27px;
+        letter-spacing: 0.06em;
+        color: #6b4f2a;
+        margin: 0;
+      }
+      .marca small {
+        display: block;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 10.5px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #96887a;
+        margin-top: 6px;
+      }
+
+      main {
+        padding: 34px 0 52px;
+      }
+      h1 {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 21px;
+        font-weight: 600;
+        color: #3f3a33;
+        margin: 0 0 10px;
+      }
+      h2 {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        color: #6b4f2a;
+        margin: 28px 0 12px;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+
+      .ref {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        color: #8d8275;
+        margin: 0 0 20px;
+      }
+      .ref code {
+        font-family: Menlo, Consolas, monospace;
+        font-size: 13px;
+        background: #f1ece4;
+        border: 1px solid #ddd5c8;
+        padding: 2px 6px;
+        color: #6b4f2a;
+      }
+
+      .sello {
+        display: inline-block;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        padding: 4px 10px;
+        margin-bottom: 12px;
+      }
+      .s-consulta {
+        background: #f4ece0;
+        color: #7a5620;
+        border: 1px solid #d9c4a3;
+      }
+      .s-lista {
+        background: #eaf1e8;
+        color: #3f6b33;
+        border: 1px solid #b5cdab;
+      }
+      .s-error {
+        background: #f7e9e9;
+        color: #8d2020;
+        border: 1px solid #ddb2b2;
+      }
+
+      .mensaje {
+        background: #fff;
+        border: 1px solid #e0dacf;
+        border-left: 4px solid #6b4f2a;
+        padding: 22px 24px;
+        margin: 0 0 22px;
+      }
+      .mensaje .de {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        color: #8d8275;
+        margin: 0 0 12px;
+      }
+      .mensaje p:last-child {
+        margin-bottom: 0;
+      }
+
+      form.respuesta {
+        background: #fff;
+        border: 1px solid #e0dacf;
+        padding: 22px 24px;
+        margin: 0 0 22px;
+      }
+      fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      legend {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #7a6f61;
+        padding: 0;
+        margin-bottom: 12px;
+      }
+      .opcion {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 15.5px;
+      }
+      .opcion input {
+        margin-top: 6px;
+        width: auto;
+      }
+      .opcion label {
+        cursor: pointer;
+      }
+      .opcion .detalle {
+        display: block;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12.5px;
+        color: #8d8275;
+        margin-top: 2px;
+      }
+      button {
+        margin-top: 10px;
+        padding: 12px 26px;
+        background: #6b4f2a;
+        color: #faf8f5;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #523c1f;
+      }
+
+      table.detalle {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        margin: 0 0 20px;
+        background: #fff;
+      }
+      table.detalle caption {
+        text-align: left;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        color: #8d8275;
+        padding-bottom: 9px;
+      }
+      table.detalle th,
+      table.detalle td {
+        border: 1px solid #e0dacf;
+        padding: 11px 13px;
+        text-align: left;
+      }
+      table.detalle thead th {
+        background: #f1ece4;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6b4f2a;
+      }
+      table.detalle td.num,
+      table.detalle th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      table.detalle tr.total td {
+        background: #f1ece4;
+        font-weight: bold;
+        color: #523c1f;
+        border-top: 2px solid #6b4f2a;
+      }
+
+      dl.cond {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        margin: 0 0 22px;
+        border-top: 1px solid #e0dacf;
+        font-size: 15px;
+      }
+      dl.cond dt {
+        padding: 9px 0;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: #7a6f61;
+        border-bottom: 1px solid #e0dacf;
+      }
+      dl.cond dd {
+        padding: 9px 0;
+        margin: 0;
+        border-bottom: 1px solid #e0dacf;
+        color: #544e46;
+      }
+
+      .guardar {
+        background: #3f3a33;
+        color: #d9d2c7;
+        padding: 15px 18px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12.5px;
+      }
+      .guardar strong {
+        display: block;
+        color: #c8a870;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-size: 11px;
+        margin-bottom: 7px;
+      }
+      .guardar input {
+        width: 100%;
+        font-family: Menlo, Consolas, monospace;
+        font-size: 12px;
+        padding: 8px;
+        border: 1px solid #5a534a;
+        background: #2b2722;
+        color: #ddd5c8;
+      }
+
+      .volver {
+        margin-top: 22px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+      }
+      footer {
+        border-top: 1px solid #d8d2c8;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        color: #8d8275;
+        padding: 20px 0;
+        text-align: center;
+      }
+
+      @media (max-width: 620px) {
+        dl.cond {
+          grid-template-columns: 1fr;
+        }
+        dl.cond dt {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="lienzo">
+        <p class="marca">Suministros Delta<small>Equipamiento corporativo · desde 1998</small></p>
+      </div>
+    </header>
+
+    <main>
+      <div class="lienzo">
+        <div id="panel"></div>
+        <div class="volver"><a href="index.html">&larr; Nuevo requerimiento</a></div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="lienzo">
+        Suministros Delta Cía. Ltda. — RUC 1790456123001<br />
+        Av. Amazonas N39-123 y Gaspar de Villarroel, Quito · +593 2 244 7780
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* Datos comerciales fijos de Suministros Delta.
+     El precio corresponde a la configuración SIN garantía extendida. */
+        var PRECIO_SIN_GARANTIA = 164.0; /* USD por unidad */
+        var PRECIO_CON_GARANTIA = 179.0; /* USD por unidad, con garantía extendida 24 meses */
+        var FLETE = 60.0; /* USD por el despacho completo, NO incluido */
+        var DIAS_ENTREGA = 9;
+
+        function fmt(n) {
+          var s = n.toFixed(2).split(".");
+          return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + s[1];
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        var q = new URLSearchParams(window.location.search);
+        var ref = q.get("ref");
+        var t = parseInt(q.get("t"), 10);
+        var cant = parseInt(q.get("q"), 10);
+        var prod = q.get("p") || 'Monitor 24" Full HD';
+        var empresa = q.get("c") || "";
+        var mail = q.get("e") || "";
+        var gar = q.get("g"); /* "si" | "no" | null → null significa consulta sin responder */
+
+        if (!cant || cant < 1) {
+          cant = 40;
+        }
+
+        var panel = document.getElementById("panel");
+
+        if (!ref || !t || isNaN(t)) {
+          panel.innerHTML =
+            '<span class="sello s-error">Referencia no válida</span>' +
+            "<h1>No encontramos el requerimiento</h1>" +
+            '<p class="ref">Esta página necesita un número de referencia en la dirección. ' +
+            "Envíe un nuevo requerimiento desde el formulario de inicio.</p>";
+          return;
+        }
+
+        var bloqueUrl =
+          '<div class="guardar">' +
+          "<strong>Conserve este enlace de seguimiento</strong>" +
+          '<input type="text" id="url-seguimiento" readonly value="' +
+          esc(window.location.href) +
+          '">' +
+          "</div>";
+
+        /* --- consulta pendiente: el ejecutivo pregunta antes de cotizar --- */
+        if (gar !== "si" && gar !== "no") {
+          panel.innerHTML =
+            '<span class="sello s-consulta">Consulta pendiente de respuesta</span>' +
+            "<h1>Su requerimiento requiere una precisión</h1>" +
+            '<p class="ref">Referencia: <code id="referencia">' +
+            esc(ref) +
+            "</code></p>" +
+            '<div class="mensaje">' +
+            '<p class="de">De: Mariana Ycaza · Ejecutiva de cuenta corporativa</p>' +
+            "<p>Gracias por su requerimiento de " +
+            cant +
+            " unidades de " +
+            esc(prod) +
+            ".</p>" +
+            "<p>Antes de emitir la cotización necesito una precisión: <strong>¿requiere garantía " +
+            "extendida de 24 meses?</strong> El precio unitario varía según la respuesta, por lo que " +
+            "prefiero confirmarlo antes de enviarle una cifra que después no corresponda.</p>" +
+            "<p>Quedo atenta a su respuesta para emitir la cotización de inmediato.</p>" +
+            "</div>" +
+            '<form class="respuesta" id="form-garantia">' +
+            "<fieldset>" +
+            "<legend>Responder la consulta</legend>" +
+            '<div class="opcion">' +
+            '<input type="radio" id="gar-no" name="garantia" value="no" checked>' +
+            '<label for="gar-no">No, garantía estándar de 12 meses' +
+            '<span class="detalle">Cobertura de fábrica incluida sin costo adicional</span></label>' +
+            "</div>" +
+            '<div class="opcion">' +
+            '<input type="radio" id="gar-si" name="garantia" value="si">' +
+            '<label for="gar-si">Sí, garantía extendida de 24 meses' +
+            '<span class="detalle">Incrementa el precio unitario</span></label>' +
+            "</div>" +
+            "</fieldset>" +
+            '<button type="submit">Enviar respuesta y recibir cotización</button>' +
+            "</form>" +
+            bloqueUrl;
+
+          document.getElementById("form-garantia").addEventListener("submit", function (ev) {
+            ev.preventDefault();
+            var sel = document.querySelector('input[name="garantia"]:checked');
+            var val = sel ? sel.value : "no";
+            var u = new URL(window.location.href);
+            u.searchParams.set("g", val);
+            window.location.href = u.toString();
+          });
+          return;
+        }
+
+        /* --- cotización emitida --- */
+        var conGarantia = gar === "si";
+        var unitario = conGarantia ? PRECIO_CON_GARANTIA : PRECIO_SIN_GARANTIA;
+        var subtotal = unitario * cant;
+        var total = subtotal + FLETE;
+
+        panel.innerHTML =
+          '<span class="sello s-lista">Cotización emitida</span>' +
+          "<h1>Cotización " +
+          esc(ref) +
+          "</h1>" +
+          '<p class="ref">Emitida por Suministros Delta Cía. Ltda.' +
+          (empresa ? " · Cliente: " + esc(empresa) : "") +
+          "</p>" +
+          '<table class="detalle" id="tabla-cotizacion">' +
+          "<caption>Detalle de la cotización</caption>" +
+          "<thead><tr>" +
+          "<th>Descripción</th>" +
+          '<th class="num">Cantidad</th>' +
+          '<th class="num">Unitario (USD)</th>' +
+          '<th class="num">Importe (USD)</th>' +
+          "</tr></thead>" +
+          "<tbody>" +
+          "<tr>" +
+          "<td>" +
+          esc(prod) +
+          " — panel IPS, 75 Hz" +
+          (conGarantia ? " <em>(con garantía extendida 24 meses)</em>" : "") +
+          "</td>" +
+          '<td class="num">' +
+          cant +
+          "</td>" +
+          '<td class="num" id="precio-unitario">' +
+          fmt(unitario) +
+          "</td>" +
+          '<td class="num">' +
+          fmt(subtotal) +
+          "</td>" +
+          "</tr>" +
+          "<tr>" +
+          "<td>Flete y despacho a bodega <em>(no incluido en el unitario)</em></td>" +
+          '<td class="num">1</td>' +
+          '<td class="num" id="flete">' +
+          fmt(FLETE) +
+          "</td>" +
+          '<td class="num">' +
+          fmt(FLETE) +
+          "</td>" +
+          "</tr>" +
+          "</tbody>" +
+          "<tfoot>" +
+          '<tr class="total">' +
+          '<td colspan="3">Total puesto en bodega del cliente</td>' +
+          '<td class="num" id="total">' +
+          fmt(total) +
+          "</td>" +
+          "</tr>" +
+          "</tfoot>" +
+          "</table>" +
+          '<dl class="cond">' +
+          '<dt>Plazo de entrega</dt><dd id="plazo-entrega">' +
+          DIAS_ENTREGA +
+          " días hábiles desde la confirmación</dd>" +
+          "<dt>Flete</dt><dd>No incluido — USD " +
+          fmt(FLETE) +
+          " por el despacho completo</dd>" +
+          "<dt>Garantía</dt><dd>" +
+          (conGarantia ? "24 meses extendida" : "12 meses de fábrica") +
+          "</dd>" +
+          "<dt>Forma de pago</dt><dd>40 % anticipo, 60 % a 30 días</dd>" +
+          (mail ? "<dt>Contacto</dt><dd>" + esc(mail) + "</dd>" : "") +
+          "<dt>Validez de la oferta</dt><dd>21 días calendario</dd>" +
+          "</dl>" +
+          bloqueUrl;
+      })();
+    </script>
+  </body>
+</html>

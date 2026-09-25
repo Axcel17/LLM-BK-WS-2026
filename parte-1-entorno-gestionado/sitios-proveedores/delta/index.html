@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Suministros Delta · Equipamiento corporativo</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 16px;
+        line-height: 1.7;
+        color: #33302c;
+        background: #faf8f5;
+      }
+      .lienzo {
+        width: 100%;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header {
+        border-bottom: 1px solid #d8d2c8;
+        background: #faf8f5;
+      }
+      header .lienzo {
+        padding: 26px 24px 20px;
+        text-align: center;
+      }
+      .marca {
+        font-size: 27px;
+        letter-spacing: 0.06em;
+        color: #6b4f2a;
+        margin: 0;
+      }
+      .marca small {
+        display: block;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 10.5px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #96887a;
+        margin-top: 6px;
+      }
+
+      main {
+        padding: 34px 0 52px;
+      }
+      h1 {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 21px;
+        font-weight: 600;
+        color: #3f3a33;
+        margin: 0 0 14px;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+        color: #6b4f2a;
+        margin: 30px 0 12px;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+
+      .intro {
+        font-size: 17px;
+        color: #544e46;
+      }
+
+      .ficha {
+        background: #fff;
+        border: 1px solid #e0dacf;
+        padding: 24px 26px;
+        margin-top: 26px;
+      }
+      label {
+        display: block;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #7a6f61;
+        margin: 16px 0 5px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 9px 10px;
+        font-family: Georgia, serif;
+        font-size: 15px;
+        border: 1px solid #cfc7ba;
+        background: #fdfcfa;
+        color: #33302c;
+      }
+      input:focus,
+      select:focus {
+        outline: 2px solid #6b4f2a;
+        outline-offset: 1px;
+      }
+      button {
+        margin-top: 22px;
+        padding: 12px 26px;
+        background: #6b4f2a;
+        color: #faf8f5;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #523c1f;
+      }
+      .pie-form {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        color: #8d8275;
+        margin-top: 12px;
+      }
+
+      footer {
+        border-top: 1px solid #d8d2c8;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        color: #8d8275;
+        padding: 20px 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="lienzo">
+        <p class="marca">Suministros Delta<small>Equipamiento corporativo · desde 1998</small></p>
+      </div>
+    </header>
+
+    <main>
+      <div class="lienzo">
+        <h1>Solicitud de cotización</h1>
+        <p class="intro">
+          Atendemos requerimientos corporativos con asesoría previa. Antes de emitir una cotización,
+          nuestro equipo comercial revisa las condiciones del requerimiento para proponer la
+          configuración más adecuada.
+        </p>
+
+        <h2>Cómo trabajamos</h2>
+        <p>
+          No emitimos cotizaciones automáticas. Cada solicitud es revisada por un ejecutivo, que
+          puede consultar detalles adicionales antes de fijar el precio definitivo. Esto evita
+          cotizaciones que después no corresponden a lo que el cliente necesitaba.
+        </p>
+
+        <div class="ficha">
+          <h2 style="margin-top: 0">Datos del requerimiento</h2>
+          <form id="form-cotizacion">
+            <label for="producto">Producto requerido</label>
+            <input type="text" id="producto" name="producto" value='Monitor 24" Full HD' required />
+
+            <label for="cantidad">Cantidad de unidades</label>
+            <input type="number" id="cantidad" name="cantidad" min="1" value="40" required />
+
+            <label for="empresa">Empresa solicitante</label>
+            <input type="text" id="empresa" name="empresa" placeholder="Razón social" required />
+
+            <label for="email">Correo electrónico de contacto</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="compras@empresa.com"
+              required
+            />
+
+            <button type="submit">Enviar requerimiento</button>
+            <p class="pie-form">
+              Un ejecutivo revisará su solicitud. Conserve el enlace de seguimiento que se le
+              entregará a continuación.
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="lienzo">
+        Suministros Delta Cía. Ltda. — RUC 1790456123001<br />
+        Av. Amazonas N39-123 y Gaspar de Villarroel, Quito · +593 2 244 7780
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function generarReferencia() {
+          var d = new Date();
+          function dos(n) {
+            return (n < 10 ? "0" : "") + n;
+          }
+          var fecha = "" + d.getFullYear() + dos(d.getMonth() + 1) + dos(d.getDate());
+          var azar = Math.floor(Math.random() * 9000) + 1000;
+          return "SD-" + fecha + "-" + azar;
+        }
+
+        var form = document.getElementById("form-cotizacion");
+
+        form.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+
+          var producto = document.getElementById("producto").value.trim();
+          var cantidad = document.getElementById("cantidad").value.trim();
+          var empresa = document.getElementById("empresa").value.trim();
+          var email = document.getElementById("email").value.trim();
+
+          if (!producto || !cantidad || !empresa || !email) {
+            alert("Complete todos los campos del requerimiento.");
+            return;
+          }
+
+          // Todo el estado viaja en la URL: no se usa almacenamiento local.
+          var destino =
+            "estado.html" +
+            "?ref=" +
+            encodeURIComponent(generarReferencia()) +
+            "&t=" +
+            Date.now() +
+            "&q=" +
+            encodeURIComponent(cantidad) +
+            "&p=" +
+            encodeURIComponent(producto) +
+            "&c=" +
+            encodeURIComponent(empresa) +
+            "&e=" +
+            encodeURIComponent(email);
+
+          window.location.href = destino;
+        });
+      })();
+    </script>
+  </body>
+</html>

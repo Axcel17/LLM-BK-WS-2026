@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ImportAndina — Distribución mayorista</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Lucida Grande", sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #2f3437;
+        background: #fff;
+      }
+      .fila {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .top {
+        background: #2f3437;
+        color: #b9c2c7;
+        font-size: 12px;
+      }
+      .top .fila {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        padding: 6px 20px;
+      }
+
+      header {
+        border-bottom: 4px solid #c1272d;
+        padding: 18px 0;
+      }
+      header .fila {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2f3437;
+        letter-spacing: -0.6px;
+      }
+      .logo b {
+        color: #c1272d;
+      }
+      .slogan {
+        font-size: 12.5px;
+        color: #7c868c;
+        font-style: italic;
+      }
+
+      .hero {
+        background: #f5f7f8;
+        border-bottom: 1px solid #e1e6e8;
+        padding: 30px 0;
+      }
+      .hero h1 {
+        font-size: 25px;
+        margin: 0 0 8px;
+        color: #2f3437;
+      }
+      .hero p {
+        margin: 0;
+        color: #5c666c;
+        max-width: 60ch;
+      }
+
+      main {
+        padding: 32px 0 48px;
+      }
+      .columnas {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 34px;
+        align-items: start;
+      }
+      @media (max-width: 800px) {
+        .columnas {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      h2 {
+        font-size: 17px;
+        color: #c1272d;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 14px;
+        color: #2f3437;
+        margin: 20px 0 6px;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+      ul {
+        margin: 0 0 14px;
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+
+      .panel-form {
+        border: 1px solid #d9dfe2;
+        border-top: 4px solid #c1272d;
+        padding: 20px;
+        background: #fbfcfc;
+      }
+      .panel-form h2 {
+        font-size: 15px;
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+        color: #5c666c;
+        margin: 13px 0 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 8px 9px;
+        font-family: inherit;
+        font-size: 14px;
+        border: 1px solid #c6ced2;
+        background: #fff;
+        color: #2f3437;
+      }
+      textarea {
+        min-height: 64px;
+        resize: vertical;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 2px solid #c1272d;
+        outline-offset: 1px;
+      }
+      button {
+        margin-top: 18px;
+        width: 100%;
+        padding: 11px;
+        background: #c1272d;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #9e1f24;
+      }
+      .aviso {
+        font-size: 11.5px;
+        color: #7c868c;
+        margin-top: 10px;
+        line-height: 1.5;
+      }
+
+      footer {
+        background: #2f3437;
+        color: #9aa4aa;
+        font-size: 12.5px;
+        padding: 22px 0;
+      }
+      footer a {
+        color: #c9d2d7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div class="fila"><span>Lun a vie 08:30–17:30</span><span>+593 7 288 3040</span></div>
+    </div>
+
+    <header>
+      <div class="fila">
+        <div class="logo">Import<b>Andina</b></div>
+        <div class="slogan">Distribución mayorista para el sur del país</div>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="fila">
+        <h1>Cotizaciones corporativas</h1>
+        <p>
+          Atendemos requerimientos de equipamiento tecnológico y mobiliario para empresas e
+          instituciones. Todas las solicitudes son revisadas por nuestro departamento comercial.
+        </p>
+      </div>
+    </div>
+
+    <main>
+      <div class="fila">
+        <div class="columnas">
+          <div>
+            <h2>Proceso de cotización</h2>
+            <p>
+              Nuestro departamento comercial revisa cada solicitud recibida, verifica disponibilidad
+              con los proveedores de origen y elabora una propuesta ajustada al requerimiento.
+            </p>
+
+            <h3>Tiempos de respuesta</h3>
+            <p>
+              El tiempo de elaboración depende de la disponibilidad del producto y de la carga de
+              trabajo del departamento. Las solicitudes se atienden en orden de llegada.
+            </p>
+
+            <h3>Líneas que manejamos</h3>
+            <ul>
+              <li>Equipos de cómputo y periféricos</li>
+              <li>Monitores y soluciones de visualización</li>
+              <li>Redes y conectividad</li>
+              <li>Mobiliario de oficina</li>
+            </ul>
+
+            <h3>Condiciones generales</h3>
+            <p>
+              Los precios cotizados tienen validez de 15 días. Las entregas se coordinan una vez
+              confirmado el pedido y recibido el anticipo correspondiente.
+            </p>
+          </div>
+
+          <div class="panel-form">
+            <h2>Solicitar cotización</h2>
+            <form id="form-cotizacion">
+              <label for="producto">Producto</label>
+              <input
+                type="text"
+                id="producto"
+                name="producto"
+                value='Monitor 24" Full HD'
+                required
+              />
+
+              <label for="cantidad">Cantidad</label>
+              <input type="number" id="cantidad" name="cantidad" min="1" value="40" required />
+
+              <label for="email">Correo electrónico</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="compras@empresa.com"
+                required
+              />
+
+              <label for="observaciones">Observaciones (opcional)</label>
+              <textarea
+                id="observaciones"
+                name="observaciones"
+                placeholder="Plazo requerido, condiciones especiales"
+              ></textarea>
+
+              <button type="submit">Enviar solicitud</button>
+              <p class="aviso">
+                Al enviar recibirá un número de referencia para consultar el estado de su solicitud.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="fila">
+        ImportAndina S.A. — RUC 0190345678001 — Av. de las Américas y Paseo de los Cañaris,
+        Cuenca.<br />
+        <a href="mailto:comercial@importandina.com.ec">comercial@importandina.com.ec</a> · +593 7
+        288 3040
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function generarReferencia() {
+          var d = new Date();
+          function dos(n) {
+            return (n < 10 ? "0" : "") + n;
+          }
+          var fecha = "" + d.getFullYear() + dos(d.getMonth() + 1) + dos(d.getDate());
+          var azar = Math.floor(Math.random() * 9000) + 1000;
+          return "IA-" + fecha + "-" + azar;
+        }
+
+        var form = document.getElementById("form-cotizacion");
+
+        form.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+
+          var producto = document.getElementById("producto").value.trim();
+          var cantidad = document.getElementById("cantidad").value.trim();
+          var email = document.getElementById("email").value.trim();
+
+          if (!producto || !cantidad || !email) {
+            alert("Complete producto, cantidad y correo electrónico.");
+            return;
+          }
+
+          // Todo el estado viaja en la URL: no se usa almacenamiento local.
+          var destino =
+            "estado.html" +
+            "?ref=" +
+            encodeURIComponent(generarReferencia()) +
+            "&t=" +
+            Date.now() +
+            "&q=" +
+            encodeURIComponent(cantidad) +
+            "&p=" +
+            encodeURIComponent(producto) +
+            "&e=" +
+            encodeURIComponent(email);
+
+          window.location.href = destino;
+        });
+      })();
+    </script>
+  </body>
+</html>

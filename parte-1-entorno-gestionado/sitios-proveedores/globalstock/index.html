@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GlobalStock Trading — Importación directa</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Verdana, Geneva, sans-serif;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #2b2b2b;
+        background: #fff;
+      }
+      .caja {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 18px;
+      }
+
+      header {
+        background: #1b7a3e;
+        color: #fff;
+        padding: 14px 0;
+      }
+      header .caja {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: -0.5px;
+      }
+      .logo em {
+        font-style: normal;
+        color: #ffd84d;
+      }
+      .tel {
+        font-size: 12.5px;
+        color: #d3ecdb;
+      }
+
+      .franja {
+        background: #ffd84d;
+        color: #4a3a00;
+        font-size: 12.5px;
+        font-weight: bold;
+        padding: 7px 0;
+        text-align: center;
+      }
+
+      main {
+        padding: 26px 0 44px;
+      }
+      h1 {
+        font-size: 23px;
+        margin: 0 0 10px;
+        color: #14612f;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 26px 0 10px;
+        color: #14612f;
+        border-bottom: 2px solid #d9ead f;
+        border-bottom: 2px solid #d9eadf;
+        padding-bottom: 5px;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+
+      .dos {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 26px;
+        align-items: start;
+      }
+      @media (max-width: 720px) {
+        .dos {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      ul.ventajas {
+        margin: 0 0 14px;
+        padding-left: 18px;
+      }
+      ul.ventajas li {
+        margin-bottom: 5px;
+      }
+
+      .form-caja {
+        background: #f2f8f4;
+        border: 2px solid #1b7a3e;
+        padding: 18px;
+      }
+      .form-caja h2 {
+        margin-top: 0;
+        border: none;
+        padding: 0;
+        font-size: 15px;
+      }
+      label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: bold;
+        color: #3c3c3c;
+        margin: 11px 0 4px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        border: 1px solid #9cb8a6;
+        background: #fff;
+        color: #2b2b2b;
+      }
+      input:focus,
+      select:focus {
+        outline: 2px solid #1b7a3e;
+        outline-offset: 1px;
+      }
+      button {
+        margin-top: 16px;
+        width: 100%;
+        padding: 11px;
+        background: #1b7a3e;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #14612f;
+      }
+      .nota-form {
+        font-size: 11.5px;
+        color: #5c6b61;
+        margin-top: 9px;
+      }
+
+      footer {
+        background: #eef4f0;
+        border-top: 3px solid #1b7a3e;
+        font-size: 12px;
+        color: #4a5a4f;
+        padding: 18px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="caja">
+        <div class="logo">Global<em>Stock</em> Trading</div>
+        <div class="tel">Ventas corporativas · +593 4 260 9931</div>
+      </div>
+    </header>
+
+    <div class="franja">IMPORTACIÓN DIRECTA — PRECIOS DE ORIGEN SIN INTERMEDIARIOS</div>
+
+    <main>
+      <div class="caja">
+        <h1>Cotización de equipamiento tecnológico</h1>
+        <p>
+          Importamos directamente de fábrica y trasladamos el ahorro al cliente corporativo.
+          Trabajamos con volúmenes desde 10 unidades.
+        </p>
+
+        <div class="dos">
+          <div>
+            <h2>Por qué comprar con nosotros</h2>
+            <ul class="ventajas">
+              <li><strong>Precio de origen.</strong> Sin cadena de distribución local.</li>
+              <li><strong>Flete incluido</strong> en todas nuestras cotizaciones corporativas.</li>
+              <li>Garantía internacional de 12 meses.</li>
+              <li>Facturación con RUC ecuatoriano.</li>
+            </ul>
+
+            <h2>Modalidad de importación</h2>
+            <p>
+              Nuestros precios corresponden a mercadería bajo régimen de importación programada. El
+              plazo de entrega considera tránsito internacional, desaduanización y despacho a bodega
+              del cliente.
+            </p>
+            <p>Consulte el plazo específico de su cotización antes de confirmar el pedido.</p>
+          </div>
+
+          <div class="form-caja">
+            <h2>Solicitar cotización</h2>
+            <form id="form-cotizacion">
+              <label for="producto">Producto requerido</label>
+              <input
+                type="text"
+                id="producto"
+                name="producto"
+                value='Monitor 24" Full HD'
+                required
+              />
+
+              <label for="cantidad">Cantidad (unidades)</label>
+              <input type="number" id="cantidad" name="cantidad" min="10" value="40" required />
+
+              <label for="email">Correo electrónico</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="compras@empresa.com"
+                required
+              />
+
+              <button type="submit">Solicitar cotización</button>
+              <p class="nota-form">
+                Respuesta en pocos minutos. Conserve el enlace de seguimiento.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="caja">
+        GlobalStock Trading Cía. Ltda. — RUC 0992845571001 — Av. Juan Tanca Marengo km 4,5,
+        Guayaquil. ventas@globalstock-trading.com
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function generarReferencia() {
+          var d = new Date();
+          function dos(n) {
+            return (n < 10 ? "0" : "") + n;
+          }
+          var fecha = "" + d.getFullYear() + dos(d.getMonth() + 1) + dos(d.getDate());
+          var azar = Math.floor(Math.random() * 9000) + 1000;
+          return "GS-" + fecha + "-" + azar;
+        }
+
+        var form = document.getElementById("form-cotizacion");
+
+        form.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+
+          var producto = document.getElementById("producto").value.trim();
+          var cantidad = document.getElementById("cantidad").value.trim();
+          var email = document.getElementById("email").value.trim();
+
+          if (!producto || !cantidad || !email) {
+            alert("Complete producto, cantidad y correo electrónico.");
+            return;
+          }
+
+          // Todo el estado viaja en la URL: no se usa almacenamiento local.
+          var destino =
+            "estado.html" +
+            "?ref=" +
+            encodeURIComponent(generarReferencia()) +
+            "&t=" +
+            Date.now() +
+            "&q=" +
+            encodeURIComponent(cantidad) +
+            "&p=" +
+            encodeURIComponent(producto) +
+            "&e=" +
+            encodeURIComponent(email);
+
+          window.location.href = destino;
+        });
+      })();
+    </script>
+  </body>
+</html>

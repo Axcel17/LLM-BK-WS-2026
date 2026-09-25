@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estado de solicitud · TecnoImport S.A.</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #1f2933;
+        background: #f4f7fb;
+      }
+      a {
+        color: #12305c;
+      }
+      .interior {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .barra-util {
+        background: #0d2246;
+        color: #9fb4d4;
+        font-size: 12.5px;
+      }
+      .barra-util .interior {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 7px 22px;
+      }
+
+      header.sitio {
+        background: #12305c;
+        color: #fff;
+      }
+      header.sitio .interior {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+      .marca .logo {
+        font-size: 23px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .marca .logo span {
+        color: #f08a24;
+      }
+      nav.principal ul {
+        list-style: none;
+        display: flex;
+        gap: 22px;
+        margin: 0;
+        padding: 0;
+        font-size: 13.5px;
+      }
+      nav.principal a {
+        color: #dbe5f2;
+        text-decoration: none;
+      }
+      nav.principal a:hover {
+        color: #fff;
+      }
+
+      main {
+        padding: 34px 0 50px;
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid #ccd6e5;
+        border-top: 4px solid #f08a24;
+        padding: 28px 28px 26px;
+      }
+      h1 {
+        font-size: 25px;
+        margin: 0 0 6px;
+        color: #0d2246;
+        letter-spacing: -0.015em;
+      }
+      .ref-linea {
+        font-size: 14px;
+        color: #55657a;
+        margin: 0 0 22px;
+      }
+      .ref-linea code {
+        font-family: Menlo, Consolas, monospace;
+        font-size: 14px;
+        background: #eef3f9;
+        padding: 2px 6px;
+        border: 1px solid #d7e0ec;
+        color: #0d2246;
+      }
+
+      .estado-chip {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        padding: 4px 10px;
+        border-radius: 2px;
+        margin-bottom: 12px;
+      }
+      .chip-proceso {
+        background: #fff3e2;
+        color: #9a5a08;
+        border: 1px solid #f0c48a;
+      }
+      .chip-lista {
+        background: #e5f3ea;
+        color: #1d6b3c;
+        border: 1px solid #a3d4b6;
+      }
+      .chip-error {
+        background: #fbe9e9;
+        color: #932222;
+        border: 1px solid #e8b4b4;
+      }
+
+      table.cotizacion {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 6px 0 20px;
+        font-size: 14.5px;
+      }
+      table.cotizacion caption {
+        text-align: left;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7a8d;
+        padding-bottom: 8px;
+      }
+      table.cotizacion th,
+      table.cotizacion td {
+        border: 1px solid #d7e0ec;
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.cotizacion thead th {
+        background: #0d2246;
+        color: #fff;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        border-color: #0d2246;
+      }
+      table.cotizacion td.num,
+      table.cotizacion th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      table.cotizacion tbody tr:nth-child(even) td {
+        background: #f8fafd;
+      }
+      table.cotizacion tr.total td {
+        background: #eef3f9;
+        font-weight: 700;
+        color: #0d2246;
+        border-top: 2px solid #12305c;
+      }
+
+      dl.condiciones {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 0;
+        margin: 0 0 22px;
+        border-top: 1px solid #e2e8f1;
+        font-size: 14.5px;
+      }
+      dl.condiciones dt {
+        padding: 9px 0;
+        font-weight: 700;
+        color: #3c4a5c;
+        border-bottom: 1px solid #e2e8f1;
+      }
+      dl.condiciones dd {
+        padding: 9px 0;
+        margin: 0;
+        border-bottom: 1px solid #e2e8f1;
+        color: #46586e;
+      }
+
+      .aviso-flete {
+        background: #fff8ee;
+        border-left: 3px solid #f08a24;
+        padding: 12px 15px;
+        font-size: 14px;
+        color: #6b4a1c;
+        margin: 0 0 22px;
+      }
+      .aviso-espera {
+        background: #f8fafd;
+        border: 1px solid #dde4ee;
+        padding: 16px 18px;
+        font-size: 14.5px;
+        color: #46586e;
+        margin: 0 0 20px;
+      }
+
+      .guardar-url {
+        background: #0d2246;
+        color: #dbe5f2;
+        padding: 15px 18px;
+        font-size: 13px;
+      }
+      .guardar-url strong {
+        color: #f08a24;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-size: 11.5px;
+        margin-bottom: 7px;
+      }
+      .guardar-url input {
+        width: 100%;
+        font-family: Menlo, Consolas, monospace;
+        font-size: 12.5px;
+        padding: 8px 9px;
+        border: 1px solid #2c4a77;
+        background: #081a36;
+        color: #cfe0f5;
+        border-radius: 2px;
+      }
+
+      .acciones {
+        margin-top: 24px;
+        font-size: 14px;
+      }
+      footer.sitio {
+        background: #eef3f9;
+        border-top: 1px solid #dde4ee;
+        font-size: 13px;
+        color: #55657a;
+      }
+      footer.sitio .interior {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      @media (max-width: 680px) {
+        dl.condiciones {
+          grid-template-columns: 1fr;
+        }
+        dl.condiciones dt {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+        table.cotizacion {
+          font-size: 13.5px;
+        }
+        .panel {
+          padding: 20px 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="barra-util">
+      <div class="interior">
+        <span>Seguimiento de solicitudes</span>
+        <span>Tel. +593 2 380 4417</span>
+      </div>
+    </div>
+
+    <header class="sitio">
+      <div class="interior">
+        <div class="marca">
+          <div class="logo">Tecno<span>Import</span></div>
+        </div>
+        <nav class="principal">
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="index.html#cotizar">Nueva solicitud</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="interior">
+        <div class="panel" id="panel"></div>
+
+        <div class="acciones">
+          <a href="index.html#cotizar">&larr; Enviar otra solicitud</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="sitio">
+      <div class="interior">
+        TecnoImport S.A. — RUC 1791234567001 — Av. República del Salvador N34-183 y Suiza, Quito.
+        Tel. +593 2 380 4417 · ventas@tecnoimport-ec.com
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ------------------------------------------------------------------
+     PARÁMETRO DEL TALLER
+     Minutos que la solicitud permanece "en proceso" antes de mostrar la
+     cotización. Cambie este número para acortar o alargar la espera.
+     ------------------------------------------------------------------ */
+        var MINUTOS_ESPERA = 3;
+
+        var ESPERA_MS = MINUTOS_ESPERA * 60 * 1000;
+
+        /* Datos comerciales fijos de TecnoImport */
+        var PRECIO_UNITARIO = 168.0; /* USD por unidad */
+        var FLETE = 85.0; /* USD por el despacho completo, NO incluido */
+        var DIAS_ENTREGA = 6;
+
+        function fmt(n) {
+          var s = n.toFixed(2).split(".");
+          return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + s[1];
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        var q = new URLSearchParams(window.location.search);
+        var ref = q.get("ref");
+        var t = parseInt(q.get("t"), 10);
+        var cant = parseInt(q.get("q"), 10);
+        var prod = q.get("p") || 'Monitor 24" Full HD';
+        var mail = q.get("e") || "";
+
+        if (!cant || cant < 1) {
+          cant = 40;
+        }
+
+        var panel = document.getElementById("panel");
+
+        /* --- referencia ausente o inválida --- */
+        if (!ref || !t || isNaN(t)) {
+          panel.innerHTML =
+            '<span class="estado-chip chip-error">Referencia no válida</span>' +
+            "<h1>No encontramos la solicitud</h1>" +
+            '<p class="ref-linea">Esta página necesita un número de referencia en la dirección ' +
+            "(por ejemplo <code>estado.html?ref=TI-20260914-4821&amp;t=1757880000000</code>). " +
+            "Envíe una nueva solicitud desde el formulario de inicio.</p>";
+          return;
+        }
+
+        var transcurrido = Date.now() - t;
+        var bloqueUrl =
+          '<div class="guardar-url">' +
+          "<strong>Conserve este enlace de seguimiento</strong>" +
+          '<input type="text" id="url-seguimiento" readonly value="' +
+          esc(window.location.href) +
+          '">' +
+          "</div>";
+
+        /* --- todavía en proceso --- */
+        if (transcurrido < ESPERA_MS) {
+          var restanteMs = ESPERA_MS - transcurrido;
+          var restanteMin = Math.floor(restanteMs / 60000);
+          var restanteSeg = Math.ceil((restanteMs % 60000) / 1000);
+
+          panel.innerHTML =
+            '<span class="estado-chip chip-proceso">Solicitud en proceso</span>' +
+            "<h1>Solicitud en proceso</h1>" +
+            '<p class="ref-linea">Número de referencia: <code id="referencia">' +
+            esc(ref) +
+            "</code></p>" +
+            '<div class="aviso-espera">' +
+            '<p style="margin:0 0 8px"><strong>Su solicitud fue recibida y está en cola de cotización.</strong></p>' +
+            '<p style="margin:0">Tiempo restante estimado: <strong>' +
+            restanteMin +
+            " min " +
+            restanteSeg +
+            " s</strong>. " +
+            "Vuelva a abrir este mismo enlace pasado ese lapso para ver la cotización.</p>" +
+            "</div>" +
+            '<dl class="condiciones">' +
+            "<dt>Producto solicitado</dt><dd>" +
+            esc(prod) +
+            "</dd>" +
+            "<dt>Cantidad</dt><dd>" +
+            cant +
+            " unidades</dd>" +
+            (mail ? "<dt>Correo de contacto</dt><dd>" + esc(mail) + "</dd>" : "") +
+            "<dt>Estado</dt><dd>En proceso — pendiente de cotización</dd>" +
+            "</dl>" +
+            bloqueUrl;
+          return;
+        }
+
+        /* --- cotización lista --- */
+        var subtotal = PRECIO_UNITARIO * cant;
+        var total = subtotal + FLETE;
+
+        panel.innerHTML =
+          '<span class="estado-chip chip-lista">Cotización emitida</span>' +
+          "<h1>Cotización " +
+          esc(ref) +
+          "</h1>" +
+          '<p class="ref-linea">Emitida por TecnoImport S.A. · Válida por 15 días calendario.</p>' +
+          '<table class="cotizacion" id="tabla-cotizacion">' +
+          "<caption>Detalle de la cotización</caption>" +
+          "<thead><tr>" +
+          "<th>Descripción</th>" +
+          '<th class="num">Cantidad</th>' +
+          '<th class="num">Precio unitario (USD)</th>' +
+          '<th class="num">Importe (USD)</th>' +
+          "</tr></thead>" +
+          "<tbody>" +
+          "<tr>" +
+          "<td>" +
+          esc(prod) +
+          " — panel IPS, 75 Hz, HDMI/VGA</td>" +
+          '<td class="num">' +
+          cant +
+          "</td>" +
+          '<td class="num" id="precio-unitario">168,00</td>' +
+          '<td class="num">' +
+          fmt(subtotal) +
+          "</td>" +
+          "</tr>" +
+          "<tr>" +
+          "<td>Flete y despacho a bodega del cliente <em>(no incluido en el precio unitario)</em></td>" +
+          '<td class="num">1</td>' +
+          '<td class="num" id="flete">85,00</td>' +
+          '<td class="num">' +
+          fmt(FLETE) +
+          "</td>" +
+          "</tr>" +
+          "</tbody>" +
+          "<tfoot>" +
+          '<tr class="total">' +
+          '<td colspan="3">Total puesto en bodega del cliente</td>' +
+          '<td class="num" id="total">' +
+          fmt(total) +
+          "</td>" +
+          "</tr>" +
+          "</tfoot>" +
+          "</table>" +
+          '<p class="aviso-flete"><strong>Importante:</strong> el precio unitario de USD 168,00 <strong>no incluye flete</strong>. ' +
+          "El despacho completo a bodega del cliente se factura aparte por USD 85,00.</p>" +
+          '<dl class="condiciones">' +
+          '<dt>Plazo de entrega</dt><dd id="plazo-entrega">6 días hábiles desde la confirmación</dd>' +
+          "<dt>Flete</dt><dd>No incluido — USD 85,00 por el despacho completo</dd>" +
+          "<dt>Forma de pago</dt><dd>50 % anticipo, 50 % contra entrega</dd>" +
+          "<dt>Garantía</dt><dd>12 meses de fábrica</dd>" +
+          (mail ? "<dt>Correo de contacto</dt><dd>" + esc(mail) + "</dd>" : "") +
+          "<dt>Validez de la oferta</dt><dd>15 días calendario</dd>" +
+          "</dl>" +
+          bloqueUrl;
+      })();
+    </script>
+  </body>
+</html>

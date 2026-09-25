@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TecnoImport S.A. · Distribución mayorista de tecnología</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #1f2933;
+        background: #ffffff;
+      }
+      a {
+        color: #12305c;
+      }
+
+      /* --- barra superior --- */
+      .barra-util {
+        background: #0d2246;
+        color: #9fb4d4;
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+      .barra-util .interior {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 7px 0;
+      }
+
+      .interior {
+        width: 100%;
+        max-width: 1040px;
+        margin: 0 auto;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      /* --- cabecera / nav --- */
+      header.sitio {
+        background: #12305c;
+        color: #fff;
+      }
+      header.sitio .interior {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+      .marca {
+        display: flex;
+        align-items: baseline;
+        gap: 9px;
+      }
+      .marca .logo {
+        font-size: 23px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .marca .logo span {
+        color: #f08a24;
+      }
+      .marca .tagline {
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #9fb4d4;
+      }
+      nav.principal ul {
+        list-style: none;
+        display: flex;
+        gap: 22px;
+        margin: 0;
+        padding: 0;
+        font-size: 13.5px;
+      }
+      nav.principal a {
+        color: #dbe5f2;
+        text-decoration: none;
+        padding-bottom: 3px;
+        border-bottom: 2px solid transparent;
+      }
+      nav.principal a:hover,
+      nav.principal a.activo {
+        color: #fff;
+        border-bottom-color: #f08a24;
+      }
+
+      /* --- hero de dos columnas --- */
+      .hero {
+        background: linear-gradient(180deg, #f4f7fb 0%, #ffffff 100%);
+        border-bottom: 1px solid #dde4ee;
+      }
+      .hero .interior {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 46px;
+        padding-top: 44px;
+        padding-bottom: 44px;
+        align-items: start;
+      }
+      .hero h1 {
+        font-size: 31px;
+        line-height: 1.25;
+        margin: 0 0 14px;
+        color: #0d2246;
+        letter-spacing: -0.015em;
+      }
+      .hero p.bajada {
+        font-size: 16px;
+        color: #46586e;
+        margin: 0 0 26px;
+      }
+
+      .puntos {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .puntos li {
+        padding: 10px 0 10px 26px;
+        border-top: 1px solid #e2e8f1;
+        position: relative;
+        font-size: 14.5px;
+      }
+      .puntos li:first-child {
+        border-top: none;
+      }
+      .puntos li::before {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 17px;
+        width: 8px;
+        height: 8px;
+        background: #f08a24;
+        transform: rotate(45deg);
+      }
+      .puntos strong {
+        color: #0d2246;
+      }
+
+      /* --- tarjeta de formulario --- */
+      .tarjeta-form {
+        background: #fff;
+        border: 1px solid #ccd6e5;
+        border-top: 4px solid #f08a24;
+        padding: 26px 24px 24px;
+        box-shadow: 0 2px 14px rgba(13, 34, 70, 0.07);
+      }
+      .tarjeta-form h2 {
+        margin: 0 0 4px;
+        font-size: 19px;
+        color: #0d2246;
+      }
+      .tarjeta-form .sub {
+        margin: 0 0 20px;
+        font-size: 13px;
+        color: #6b7a8d;
+      }
+
+      .campo {
+        margin-bottom: 16px;
+      }
+      .campo label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #3c4a5c;
+        margin-bottom: 5px;
+      }
+      .campo input,
+      .campo select,
+      .campo textarea {
+        width: 100%;
+        padding: 9px 11px;
+        font: inherit;
+        font-size: 14.5px;
+        border: 1px solid #b9c5d6;
+        border-radius: 2px;
+        background: #fdfdfe;
+        color: #1f2933;
+      }
+      .campo input:focus,
+      .campo select:focus,
+      .campo textarea:focus {
+        outline: 2px solid #f08a24;
+        outline-offset: -1px;
+        border-color: #f08a24;
+      }
+      .campo .ayuda {
+        font-size: 12px;
+        color: #7b8798;
+        margin-top: 4px;
+      }
+
+      button.enviar {
+        width: 100%;
+        padding: 12px;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: #12305c;
+        color: #fff;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+      button.enviar:hover {
+        background: #0d2246;
+      }
+      .legal {
+        font-size: 11.5px;
+        color: #8a94a3;
+        margin: 12px 0 0;
+        line-height: 1.5;
+      }
+
+      /* --- franja de cifras --- */
+      .cifras {
+        background: #0d2246;
+        color: #fff;
+      }
+      .cifras .interior {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        padding-top: 26px;
+        padding-bottom: 26px;
+        text-align: center;
+      }
+      .cifras .dato {
+        font-size: 25px;
+        font-weight: 700;
+        color: #f08a24;
+        display: block;
+      }
+      .cifras .etiqueta {
+        font-size: 12px;
+        color: #9fb4d4;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      /* --- pie --- */
+      footer.sitio {
+        background: #f4f7fb;
+        border-top: 1px solid #dde4ee;
+        margin-top: 0;
+      }
+      footer.sitio .interior {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        font-size: 13.5px;
+        color: #55657a;
+      }
+      footer.sitio h3 {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #0d2246;
+        margin: 0 0 9px;
+      }
+      footer.sitio p {
+        margin: 0 0 5px;
+      }
+      .creditos {
+        border-top: 1px solid #dde4ee;
+        font-size: 12px;
+        color: #8a94a3;
+      }
+      .creditos .interior {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .hero .interior {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .cifras .interior {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        footer.sitio .interior {
+          grid-template-columns: 1fr;
+        }
+        nav.principal ul {
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+        .hero h1 {
+          font-size: 25px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="barra-util">
+      <div class="interior">
+        <span>Atención a distribuidores: lunes a viernes, 08:30 a 17:30 (GMT-5)</span>
+        <span>Tel. +593 2 380 4417 &nbsp;·&nbsp; ventas@tecnoimport-ec.com</span>
+      </div>
+    </div>
+
+    <header class="sitio">
+      <div class="interior">
+        <div class="marca">
+          <div class="logo">Tecno<span>Import</span></div>
+          <div class="tagline">Importadora mayorista</div>
+        </div>
+        <nav class="principal">
+          <ul>
+            <li><a href="index.html" class="activo">Inicio</a></li>
+            <li><a href="index.html#catalogo">Catálogo</a></li>
+            <li><a href="index.html#cotizar">Cotizar</a></li>
+            <li><a href="index.html#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="interior">
+        <div>
+          <h1>Monitores, periféricos y equipamiento de oficina para el canal mayorista</h1>
+          <p class="bajada">
+            Stock permanente en bodega Quito. Despachos a todo el país con guía de transporte y
+            factura electrónica el mismo día de la confirmación.
+          </p>
+
+          <ul class="puntos" id="catalogo">
+            <li>
+              <strong>Monitores 24&quot; Full HD</strong> — panel IPS, 75 Hz, HDMI + VGA.
+              Disponibilidad inmediata.
+            </li>
+            <li>
+              <strong>Despacho nacional</strong> — el flete se cotiza por separado según destino y
+              volumen.
+            </li>
+            <li>
+              <strong>Garantía de fábrica</strong> — 12 meses con reemplazo directo en bodega.
+            </li>
+            <li>
+              <strong>Crédito a 30 días</strong> — sujeto a evaluación para clientes recurrentes.
+            </li>
+          </ul>
+        </div>
+
+        <div class="tarjeta-form" id="cotizar">
+          <h2>Solicitud de cotización</h2>
+          <p class="sub">
+            Complete los tres campos. Recibirá un número de referencia para consultar el estado.
+          </p>
+
+          <form id="form-cotizacion" novalidate>
+            <div class="campo">
+              <label for="producto">Producto</label>
+              <input
+                type="text"
+                id="producto"
+                name="producto"
+                required
+                placeholder="Ej.: Monitor 24 pulgadas Full HD"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="cantidad">Cantidad (unidades)</label>
+              <input
+                type="number"
+                id="cantidad"
+                name="cantidad"
+                min="1"
+                step="1"
+                required
+                placeholder="Ej.: 40"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="email">Correo electrónico</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="compras@suempresa.com"
+              />
+              <div class="ayuda">Enviamos copia de la cotización a este correo.</div>
+            </div>
+
+            <button type="submit" class="enviar" id="btn-enviar">Enviar solicitud</button>
+            <p class="legal">
+              Al enviar, se genera un número de referencia. Nuestro sistema procesa las solicitudes
+              en orden de llegada; el tiempo habitual de respuesta es de pocos minutos.
+            </p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="cifras">
+      <div class="interior">
+        <div><span class="dato">18</span><span class="etiqueta">Años importando</span></div>
+        <div><span class="dato">2.400</span><span class="etiqueta">m² de bodega</span></div>
+        <div><span class="dato">640</span><span class="etiqueta">Distribuidores activos</span></div>
+        <div><span class="dato">24 h</span><span class="etiqueta">Despacho promedio</span></div>
+      </div>
+    </section>
+
+    <footer class="sitio" id="contacto">
+      <div class="interior">
+        <div>
+          <h3>TecnoImport S.A.</h3>
+          <p>RUC 1791234567001</p>
+          <p>Av. República del Salvador N34-183 y Suiza</p>
+          <p>Edificio Tempo, oficina 704 — Quito, Ecuador</p>
+        </div>
+        <div>
+          <h3>Contacto comercial</h3>
+          <p>Tel. +593 2 380 4417</p>
+          <p>Cel. +593 99 812 4470</p>
+          <p>ventas@tecnoimport-ec.com</p>
+        </div>
+        <div>
+          <h3>Horario de bodega</h3>
+          <p>Lunes a viernes: 08:30 – 17:30</p>
+          <p>Sábados: 09:00 – 13:00</p>
+          <p>Retiro en bodega con cita previa</p>
+        </div>
+      </div>
+      <div class="creditos">
+        <div class="interior">
+          © 2026 TecnoImport S.A. — Todos los derechos reservados. Precios sujetos a confirmación de
+          stock.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        function generarReferencia() {
+          var d = new Date();
+          function dos(n) {
+            return (n < 10 ? "0" : "") + n;
+          }
+          var fecha = "" + d.getFullYear() + dos(d.getMonth() + 1) + dos(d.getDate());
+          var azar = Math.floor(Math.random() * 9000) + 1000;
+          return "TI-" + fecha + "-" + azar;
+        }
+
+        var form = document.getElementById("form-cotizacion");
+
+        form.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+
+          var producto = document.getElementById("producto").value.trim();
+          var cantidad = document.getElementById("cantidad").value.trim();
+          var email = document.getElementById("email").value.trim();
+
+          if (!producto || !cantidad || !email) {
+            alert("Complete producto, cantidad y correo electrónico.");
+            return;
+          }
+
+          // Todo el estado viaja en la URL: no se usa almacenamiento local.
+          var destino =
+            "estado.html" +
+            "?ref=" +
+            encodeURIComponent(generarReferencia()) +
+            "&t=" +
+            Date.now() +
+            "&q=" +
+            encodeURIComponent(cantidad) +
+            "&p=" +
+            encodeURIComponent(producto) +
+            "&e=" +
+            encodeURIComponent(email);
+
+          window.location.href = destino;
+        });
+      })();
+    </script>
+  </body>
+</html>

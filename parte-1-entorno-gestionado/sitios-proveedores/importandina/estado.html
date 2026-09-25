@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estado de solicitud · ImportAndina</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Lucida Grande", sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #2f3437;
+        background: #fff;
+      }
+      .fila {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .top {
+        background: #2f3437;
+        color: #b9c2c7;
+        font-size: 12px;
+      }
+      .top .fila {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        padding: 6px 20px;
+      }
+
+      header {
+        border-bottom: 4px solid #c1272d;
+        padding: 18px 0;
+      }
+      header .fila {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2f3437;
+        letter-spacing: -0.6px;
+      }
+      .logo b {
+        color: #c1272d;
+      }
+      header a {
+        font-size: 12.5px;
+        color: #5c666c;
+      }
+
+      main {
+        padding: 32px 0 52px;
+        max-width: 700px;
+      }
+      h1 {
+        font-size: 23px;
+        margin: 0 0 8px;
+        color: #2f3437;
+      }
+      .ref {
+        font-size: 13px;
+        color: #7c868c;
+        margin: 0 0 20px;
+      }
+      .ref code {
+        font-family: Consolas, Menlo, monospace;
+        font-size: 13.5px;
+        background: #f2f5f6;
+        border: 1px solid #d9dfe2;
+        padding: 2px 7px;
+        color: #c1272d;
+      }
+
+      .marca-estado {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 4px 10px;
+        margin-bottom: 12px;
+      }
+      .me-proceso {
+        background: #fdf3e7;
+        color: #8a5a1a;
+        border: 1px solid #e8c79b;
+      }
+      .me-error {
+        background: #fbebeb;
+        color: #8d2020;
+        border: 1px solid #dfb0b0;
+      }
+
+      .bloque {
+        border: 1px solid #d9dfe2;
+        border-left: 4px solid #c1272d;
+        background: #fbfcfc;
+        padding: 20px 22px;
+        margin: 0 0 20px;
+      }
+      .bloque p:last-child {
+        margin-bottom: 0;
+      }
+      .bloque p {
+        margin: 0 0 11px;
+      }
+
+      dl.datos {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        margin: 0 0 22px;
+        border-top: 1px solid #e1e6e8;
+        font-size: 14.5px;
+      }
+      dl.datos dt {
+        padding: 9px 0;
+        font-size: 12.5px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #7c868c;
+        border-bottom: 1px solid #e1e6e8;
+      }
+      dl.datos dd {
+        padding: 9px 0;
+        margin: 0;
+        border-bottom: 1px solid #e1e6e8;
+        color: #3f474c;
+      }
+      @media (max-width: 620px) {
+        dl.datos {
+          grid-template-columns: 1fr;
+        }
+        dl.datos dt {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+      }
+
+      .guardar {
+        background: #2f3437;
+        color: #b9c2c7;
+        padding: 15px 18px;
+        font-size: 12.5px;
+      }
+      .guardar strong {
+        display: block;
+        color: #e8756f;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-size: 11px;
+        margin-bottom: 7px;
+      }
+      .guardar input {
+        width: 100%;
+        font-family: Consolas, Menlo, monospace;
+        font-size: 12px;
+        padding: 8px;
+        border: 1px solid #4a5257;
+        background: #21262a;
+        color: #c9d2d7;
+      }
+
+      .volver {
+        margin-top: 22px;
+        font-size: 13.5px;
+      }
+      footer {
+        background: #2f3437;
+        color: #9aa4aa;
+        font-size: 12.5px;
+        padding: 22px 0;
+      }
+      footer a {
+        color: #c9d2d7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div class="fila"><span>Lun a vie 08:30–17:30</span><span>+593 7 288 3040</span></div>
+    </div>
+
+    <header>
+      <div class="fila">
+        <div class="logo">Import<b>Andina</b></div>
+        <a href="index.html">Nueva solicitud</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="fila">
+        <div id="panel"></div>
+        <div class="volver"><a href="index.html">&larr; Volver al inicio</a></div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="fila">
+        ImportAndina S.A. — RUC 0190345678001 — Av. de las Américas y Paseo de los Cañaris,
+        Cuenca.<br />
+        <a href="mailto:comercial@importandina.com.ec">comercial@importandina.com.ec</a> · +593 7
+        288 3040
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ------------------------------------------------------------------
+     ImportAndina NUNCA emite cotización.
+     Esta página muestra siempre "en proceso", sin importar el tiempo
+     transcurrido. Es deliberado: entrena el reconocimiento de una
+     ausencia de respuesta como resultado, no como vacío que se omite.
+     ------------------------------------------------------------------ */
+
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        function fechaLegible(ms) {
+          var d = new Date(ms);
+          function dos(n) {
+            return (n < 10 ? "0" : "") + n;
+          }
+          return (
+            dos(d.getDate()) +
+            "/" +
+            dos(d.getMonth() + 1) +
+            "/" +
+            d.getFullYear() +
+            " " +
+            dos(d.getHours()) +
+            ":" +
+            dos(d.getMinutes())
+          );
+        }
+
+        var q = new URLSearchParams(window.location.search);
+        var ref = q.get("ref");
+        var t = parseInt(q.get("t"), 10);
+        var cant = parseInt(q.get("q"), 10);
+        var prod = q.get("p") || 'Monitor 24" Full HD';
+        var mail = q.get("e") || "";
+
+        if (!cant || cant < 1) {
+          cant = 40;
+        }
+
+        var panel = document.getElementById("panel");
+
+        if (!ref || !t || isNaN(t)) {
+          panel.innerHTML =
+            '<span class="marca-estado me-error">Referencia no válida</span>' +
+            "<h1>No encontramos la solicitud</h1>" +
+            '<p class="ref">Esta página necesita un número de referencia en la dirección. ' +
+            "Envíe una nueva solicitud desde el formulario de inicio.</p>";
+          return;
+        }
+
+        panel.innerHTML =
+          '<span class="marca-estado me-proceso">En proceso</span>' +
+          "<h1>Solicitud en proceso</h1>" +
+          '<p class="ref">Número de referencia: <code id="referencia">' +
+          esc(ref) +
+          "</code></p>" +
+          '<div class="bloque">' +
+          "<p><strong>Su solicitud fue recibida y será procesada por nuestro equipo comercial.</strong></p>" +
+          "<p>El departamento comercial revisa las solicitudes en orden de llegada y verifica la " +
+          "disponibilidad con los proveedores de origen antes de emitir una propuesta.</p>" +
+          "<p>No disponemos de un tiempo estimado de respuesta para esta solicitud.</p>" +
+          "</div>" +
+          '<dl class="datos">' +
+          "<dt>Producto solicitado</dt><dd>" +
+          esc(prod) +
+          "</dd>" +
+          "<dt>Cantidad</dt><dd>" +
+          cant +
+          " unidades</dd>" +
+          (mail ? "<dt>Correo de contacto</dt><dd>" + esc(mail) + "</dd>" : "") +
+          "<dt>Fecha de recepción</dt><dd>" +
+          fechaLegible(t) +
+          "</dd>" +
+          '<dt>Estado</dt><dd id="estado-solicitud">En proceso — pendiente de asignación</dd>' +
+          "<dt>Cotización</dt><dd>No emitida</dd>" +
+          "</dl>" +
+          '<div class="guardar">' +
+          "<strong>Conserve este enlace de seguimiento</strong>" +
+          '<input type="text" id="url-seguimiento" readonly value="' +
+          esc(window.location.href) +
+          '">' +
+          "</div>";
+      })();
+    </script>
+  </body>
+</html>

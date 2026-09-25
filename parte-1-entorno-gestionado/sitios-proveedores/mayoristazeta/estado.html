@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estado de solicitud | MAYORISTA ZETA</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, "Helvetica Neue", sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        color: #17181a;
+        background: #e9e9e6;
+      }
+      a {
+        color: #17181a;
+      }
+      .caja {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      header.zeta {
+        background: #17181a;
+        color: #fff;
+      }
+      .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 0;
+      }
+      .logotipo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logotipo .cuadro {
+        width: 46px;
+        height: 46px;
+        background: #ffd400;
+        color: #17181a;
+        font-family: "Arial Black", Arial, sans-serif;
+        font-size: 30px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      .logotipo .nombre {
+        font-family: "Arial Black", Arial, sans-serif;
+        font-size: 22px;
+        text-transform: uppercase;
+      }
+      .logotipo .nombre small {
+        display: block;
+        font-family: Arial, sans-serif;
+        font-weight: normal;
+        font-size: 10.5px;
+        letter-spacing: 0.26em;
+        color: #ffd400;
+        margin-top: 2px;
+      }
+      nav.zeta {
+        background: #232427;
+        border-top: 3px solid #ffd400;
+      }
+      nav.zeta ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      nav.zeta a {
+        display: block;
+        padding: 12px 20px;
+        color: #d6d6d2;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        border-right: 1px solid #333438;
+      }
+      nav.zeta a:hover {
+        background: #ffd400;
+        color: #17181a;
+      }
+
+      main {
+        padding: 34px 0 50px;
+      }
+      .ficha {
+        background: #fff;
+        border: 3px solid #17181a;
+      }
+      .ficha > .cabezal {
+        background: #ffd400;
+        padding: 18px 24px;
+        border-bottom: 3px solid #17181a;
+      }
+      .ficha > .cabezal h1 {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.15;
+      }
+      .ficha > .cabezal .ref {
+        font-family: "Courier New", Courier, monospace;
+        font-size: 15px;
+        font-weight: bold;
+        margin-top: 6px;
+        letter-spacing: 0.04em;
+      }
+      .ficha > .cuerpo {
+        padding: 24px;
+      }
+
+      .marbete {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        padding: 5px 11px;
+        border: 2px solid #17181a;
+        margin-bottom: 14px;
+        font-family: "Arial Black", Arial, sans-serif;
+      }
+      .m-proceso {
+        background: #17181a;
+        color: #ffd400;
+      }
+      .m-lista {
+        background: #1d6b3c;
+        color: #fff;
+        border-color: #1d6b3c;
+      }
+      .m-error {
+        background: #932222;
+        color: #fff;
+        border-color: #932222;
+      }
+
+      table.datos {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+        margin: 0 0 22px;
+      }
+      table.datos th,
+      table.datos td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px dashed #c9c9c4;
+      }
+      table.datos th {
+        width: 210px;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #55565a;
+        font-weight: 900;
+        font-family: "Arial Black", Arial, sans-serif;
+      }
+
+      .bloque-descarga {
+        background: #f7f7f4;
+        border: 3px solid #17181a;
+        padding: 22px;
+        text-align: center;
+        margin: 0 0 22px;
+      }
+      .bloque-descarga h2 {
+        margin: 0 0 6px;
+        font-size: 18px;
+      }
+      .bloque-descarga p {
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: #55565a;
+      }
+      a.descargar {
+        display: inline-block;
+        background: #ffd400;
+        color: #17181a;
+        border: 3px solid #17181a;
+        font-family: "Arial Black", Arial, sans-serif;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 14px 28px;
+        text-decoration: none;
+      }
+      a.descargar:hover {
+        background: #17181a;
+        color: #ffd400;
+      }
+      .archivo-nombre {
+        margin-top: 12px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 13px;
+        color: #55565a;
+      }
+
+      .aviso {
+        background: #fffbe0;
+        border-left: 6px solid #ffd400;
+        padding: 14px 16px;
+        font-size: 14px;
+        margin: 0 0 22px;
+      }
+
+      .guardar {
+        background: #17181a;
+        color: #d6d6d2;
+        padding: 16px 18px;
+        font-size: 12.5px;
+      }
+      .guardar strong {
+        display: block;
+        color: #ffd400;
+        font-family: "Arial Black", Arial, sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-bottom: 8px;
+      }
+      .guardar input {
+        width: 100%;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 12.5px;
+        padding: 8px 9px;
+        border: 2px solid #3a3b3f;
+        background: #0e0f10;
+        color: #e0e0dc;
+      }
+
+      .volver {
+        margin-top: 22px;
+        font-size: 14px;
+      }
+      footer.zeta {
+        background: #17181a;
+        color: #75767a;
+        padding: 18px 0;
+        font-size: 12px;
+      }
+
+      @media (max-width: 560px) {
+        table.datos th {
+          width: auto;
+          display: block;
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+        table.datos td {
+          display: block;
+        }
+        .ficha > .cabezal h1 {
+          font-size: 19px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="zeta">
+      <div class="caja header-top">
+        <div class="logotipo">
+          <div class="cuadro">Z</div>
+          <div class="nombre">Mayorista Zeta<small>Distribución por volumen</small></div>
+        </div>
+      </div>
+      <nav class="zeta">
+        <div class="caja" style="padding: 0">
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="index.html#cotizador">Nueva solicitud</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="caja">
+        <div class="ficha" id="ficha"></div>
+        <p class="volver"><a href="index.html#cotizador">&larr; Volver al cotizador</a></p>
+      </div>
+    </main>
+
+    <footer class="zeta">
+      <div class="caja">
+        Mayorista Zeta Cía. Ltda. — RUC 0992887461001 — Km 6.5 Vía Daule, Bodega 14, Guayaquil. Tel.
+        +593 4 216 9930 · cotizaciones@mayoristazeta.com
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        /* ------------------------------------------------------------------
+     PARÁMETRO DEL TALLER
+     Minutos que la solicitud permanece "en proceso" antes de liberar la
+     cotización en PDF. Cambie este número para acortar o alargar la espera.
+     ------------------------------------------------------------------ */
+        var MINUTOS_ESPERA = 3;
+
+        var ESPERA_MS = MINUTOS_ESPERA * 60 * 1000;
+
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+
+        var q = new URLSearchParams(window.location.search);
+        var ref = q.get("ref");
+        var t = parseInt(q.get("t"), 10);
+        var cant = parseInt(q.get("q"), 10);
+        var prod = q.get("p") || 'Monitor 24" Full HD';
+        var mail = q.get("e") || "";
+        var empresa = q.get("emp") || "";
+        var ruc = q.get("ruc") || "";
+        var ciudad = q.get("c") || "";
+
+        if (!cant || cant < 1) {
+          cant = 40;
+        }
+
+        var ficha = document.getElementById("ficha");
+
+        if (!ref || !t || isNaN(t)) {
+          ficha.innerHTML =
+            '<div class="cabezal"><h1>Referencia no encontrada</h1></div>' +
+            '<div class="cuerpo">' +
+            '<span class="marbete m-error">Sin referencia</span>' +
+            "<p>Esta página requiere un número de referencia en la dirección, por ejemplo " +
+            "<code>estado.html?ref=MZ-20260914-3310&amp;t=1757880000000</code>. " +
+            "Genere una nueva solicitud desde el cotizador.</p>" +
+            "</div>";
+          return;
+        }
+
+        var transcurrido = Date.now() - t;
+
+        var tablaDatos =
+          '<table class="datos">' +
+          "<tr><th>Producto</th><td>" +
+          esc(prod) +
+          "</td></tr>" +
+          "<tr><th>Cantidad solicitada</th><td>" +
+          cant +
+          " unidades</td></tr>" +
+          (empresa ? "<tr><th>Razón social</th><td>" + esc(empresa) + "</td></tr>" : "") +
+          (ruc ? "<tr><th>RUC</th><td>" + esc(ruc) + "</td></tr>" : "") +
+          (ciudad ? "<tr><th>Ciudad de entrega</th><td>" + esc(ciudad) + "</td></tr>" : "") +
+          (mail ? "<tr><th>Correo de contacto</th><td>" + esc(mail) + "</td></tr>" : "") +
+          "</table>";
+
+        var bloqueUrl =
+          '<div class="guardar">' +
+          "<strong>Conserve este enlace de seguimiento</strong>" +
+          '<input type="text" id="url-seguimiento" readonly value="' +
+          esc(window.location.href) +
+          '">' +
+          "</div>";
+
+        if (transcurrido < ESPERA_MS) {
+          var restanteMs = ESPERA_MS - transcurrido;
+          var restanteMin = Math.floor(restanteMs / 60000);
+          var restanteSeg = Math.ceil((restanteMs % 60000) / 1000);
+
+          ficha.innerHTML =
+            '<div class="cabezal">' +
+            "<h1>Solicitud en proceso</h1>" +
+            '<div class="ref">Referencia: <span id="referencia">' +
+            esc(ref) +
+            "</span></div>" +
+            "</div>" +
+            '<div class="cuerpo">' +
+            '<span class="marbete m-proceso">En proceso</span>' +
+            '<div class="aviso"><strong>Su solicitud ingresó a la cola de cotización.</strong><br>' +
+            "Tiempo restante estimado: <strong>" +
+            restanteMin +
+            " min " +
+            restanteSeg +
+            " s</strong>. " +
+            "Abra nuevamente este mismo enlace pasado ese lapso para descargar el PDF.</div>" +
+            tablaDatos +
+            bloqueUrl +
+            "</div>";
+          return;
+        }
+
+        /* --- cotización lista: SOLO el enlace al PDF, sin precios en la página --- */
+        ficha.innerHTML =
+          '<div class="cabezal">' +
+          "<h1>Su cotización está lista</h1>" +
+          '<div class="ref">Referencia: <span id="referencia">' +
+          esc(ref) +
+          "</span></div>" +
+          "</div>" +
+          '<div class="cuerpo">' +
+          '<span class="marbete m-lista">Cotización emitida</span>' +
+          '<div class="bloque-descarga">' +
+          "<h2>Cotización en PDF</h2>" +
+          "<p>El detalle de precios, empaque, flete y plazo de entrega se encuentra en el archivo adjunto.<br>" +
+          "Mayorista Zeta no publica precios en la página web.</p>" +
+          '<a class="descargar" id="enlace-pdf" href="cotizacion.pdf" download="cotizacion.pdf">Descargar cotización (PDF)</a>' +
+          '<div class="archivo-nombre">cotizacion.pdf &middot; 1 página</div>' +
+          "</div>" +
+          '<div class="aviso">Ver cotización adjunta. Cualquier consulta sobre el documento, comuníquese al ' +
+          "+593 4 216 9930 citando el número de referencia.</div>" +
+          tablaDatos +
+          bloqueUrl +
+          "</div>";
+      })();
+    </script>
+  </body>
+</html>

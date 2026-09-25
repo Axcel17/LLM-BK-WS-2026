@@ -1,15 +1,30 @@
 # Agente de abastecimiento
 
-Un agente que consulta proveedores por MCP, normaliza cotizaciones desiguales,
-las evalúa contra restricciones duras y verifica su propio resultado en dos
-capas antes de recomendar.
+Taller **Deja de Conversar. Empieza a Delegar.** · Innova-T Latam 2026.
 
-Parte práctica del taller **Deja de Conversar. Empieza a Delegar.**
-Innova-T Latam 2026. 90 minutos.
+Un mismo caso, resuelto dos veces: primero configurando un entorno gestionado, y
+después construyéndolo en código. Un agente que consulta cinco proveedores,
+normaliza cotizaciones desiguales, las evalúa contra restricciones duras y
+verifica su propio resultado en dos capas antes de recomendar.
+
+## Las dos partes
+
+|                            | Dónde                                                        | Duración |
+| -------------------------- | ------------------------------------------------------------ | -------- |
+| **1 · Entorno gestionado** | [`parte-1-entorno-gestionado/`](parte-1-entorno-gestionado/) | 45 min   |
+| **2 · Código**             | la raíz de este repositorio                                  | 90 min   |
+
+La Parte 1 configura las seis piezas de un sistema agéntico en un entorno que
+las resuelve por usted, y observa sus modos de falla. La Parte 2 las escribe.
+El árbol de `src/` está organizado por esas mismas seis piezas, de modo que la
+segunda mitad se lee como continuación de la primera.
+
+Cada parte se sostiene por sí sola. Quien solo quiera el código puede empezar
+abajo.
 
 ---
 
-## Cómo está organizado
+## Cómo está organizado el código
 
 Este repositorio se entrega con **seis huecos** por completar. Cada uno está
 donde el flujo se rompe si la decisión es la equivocada; lo mecánico viene
