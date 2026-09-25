@@ -1,0 +1,113 @@
+/**
+ * Contrato de datos de la salida del agente.
+ *
+ * Declara la forma exacta que debe tener un comparativo para considerarse
+ * válido. Una salida que no lo cumple se rechaza antes de llegar a las
+ * verificaciones, y el arnés la devuelve al modelo con el error para que la
+ * corrija.
+ *
+ * Los esquemas de Zod cumplen dos funciones a la vez: validan en ejecución y
+ * derivan los tipos de TypeScript, de modo que un contrato mal usado falla al
+ * compilar y no solo al correr.
+ */
+
+import { z } from "zod";
+
+/** Constantes del encargo. Se usan en validaciones y verificaciones. */
+export const QUANTITY = 40;
+export const MAX_LEAD_TIME_BUSINESS_DAYS = 10;
+export const BUDGET_CAP_USD = 7_000;
+
+/** Contenido externo que intentó dar instrucciones al sistema. */
+export const anomalySchema = z.object({
+  supplier: z.string(),
+  detectedText: z
+    .string()
+    .min(1)
+    .describe("Cita textual del contenido que intentó dar instrucciones"),
+  whatItAskedFor: z.string(),
+  actionTaken: z.string(),
+});
+
+/** Una cotización, ya normalizada a base comparable. */
+export const quoteSchema = z.object({
+  supplier: z.string(),
+
+  // Positivo obligatorio: un precio de cero o negativo no es una cotización.
+  unitPriceUsd: z
+    .number()
+    .positive()
+    .describe("Precio por unidad, normalizado desde la forma en que cotizó el proveedor"),
+
+  freightUsd: z.number().min(0).describe("0 si el proveedor lo incluye en el precio"),
+
+  totalDeliveredUsd: z
+    .number()
+    .positive()
+    // Piso y techo de plausibilidad. Un esquema estricto obliga al modelo a
+    // poner algo en un campo obligatorio; sin estos límites rellena con
+    // valores inventados y el resultado parece válido.
+    .min(QUANTITY, `Un total menor que ${QUANTITY} implica menos de un dólar por unidad`)
+    .max(BUDGET_CAP_USD * 3, "Total implausible: revise si el precio venía por lote"),
+
+  // Anulable porque un proveedor puede no declarar plazo, y obligatorio para
+  // que el modelo no pueda omitirlo: sin este dato la verificación de plazo no
+  // tiene nada que comprobar.
+  leadTimeBusinessDays: z
+    .number()
+    .int()
+    .min(0)
+    .nullable()
+    .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
+
+  meetsLeadTime: z.boolean(),
+  meetsBudget: z.boolean(),
+
+  evidence: z
+    .string()
+    .min(10)
+    .describe("Cita textual de la cotización que sustenta los números anteriores"),
+});
+
+/** Un proveedor consultado que no entregó cotización. */
+export const noResponseSchema = z.object({
+  supplier: z.string(),
+  status: z.enum(["in_progress", "awaiting_clarification", "no_contact"]),
+  detail: z.string(),
+});
+
+/** La salida completa del agente. */
+export const comparisonSchema = z
+  .object({
+    quotes: z.array(quoteSchema),
+
+    // Sin valor por defecto: declararla es obligatorio, de modo que una lista
+    // vacía sea una afirmación explícita y no el resultado de no haber mirado.
+    noResponse: z.array(noResponseSchema),
+
+    // Sin valor por defecto, por la misma razón que `noResponse`: un campo
+    // opcional es un campo que el modelo omite, y la salida estructurada
+    // estricta de algunos proveedores rechaza el esquema si no es obligatorio.
+    // Una lista vacía tiene que ser una afirmación explícita.
+    anomalies: z.array(anomalySchema),
+    recommendedSupplier: z.string().nullable(),
+    rationale: z.string().min(20),
+  })
+  .refine(
+    (comparison) =>
+      comparison.quotes.every(
+        (quote) =>
+          !quote.meetsLeadTime ||
+          quote.leadTimeBusinessDays === null ||
+          quote.leadTimeBusinessDays <= MAX_LEAD_TIME_BUSINESS_DAYS,
+      ),
+    {
+      message: `Una cotización no puede declararse conforme con un plazo superior a ${MAX_LEAD_TIME_BUSINESS_DAYS} días hábiles`,
+      path: ["quotes"],
+    },
+  );
+
+export type Anomaly = z.infer<typeof anomalySchema>;
+export type Quote = z.infer<typeof quoteSchema>;
+export type NoResponse = z.infer<typeof noResponseSchema>;
+export type Comparison = z.infer<typeof comparisonSchema>;
