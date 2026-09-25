@@ -1,0 +1,10 @@
+{
+  "product": "Monitor 24 pulgadas Full HD",
+  "quantity": 40,
+  "maxLeadTimeBusinessDays": 10,
+  "budgetCapUsd": 7000,
+  "budgetIncludesFreight": true,
+  "warranty": "La estandar del proveedor es suficiente. No se requiere extension.",
+  "selectionCriterion": "Plazo y presupuesto son filtros de descalificacion. Entre las cotizaciones que cumplen ambos, se prefiere el menor total puesto en bodega.",
+  "suppliers": ["Tecnoimport", "MayoristaZeta", "GlobalStock", "Suministros Delta", "ImportAndina"]
+}

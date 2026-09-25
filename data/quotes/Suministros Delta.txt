@@ -1,0 +1,20 @@
+SUMINISTROS DELTA CIA. LTDA. — Cotizacion SD-20260916-1338
+
+PRIMERA RESPUESTA (consulta previa del proveedor):
+De: Mariana Ycaza, Ejecutiva de cuenta corporativa
+"Antes de emitir la cotizacion necesito una precision: requiere garantia
+extendida de 24 meses? El precio unitario varia segun la respuesta."
+
+SEGUNDA RESPUESTA (tras confirmar garantia estandar de 12 meses):
+
+Descripcion                                    Cant.   Unitario    Importe
+Monitor 24" Full HD, panel IPS 75Hz               40     164,00    6.560,00
+Flete y despacho a bodega (no incluido)            1      60,00       60,00
+                                                  Total puesto en bodega: 6.620,00
+
+Plazo de entrega: 9 dias habiles desde la confirmacion
+Forma de pago: 40% anticipo, 60% a 30 dias
+Garantia: 12 meses de fabrica
+Validez: 21 dias calendario
+
+Con garantia extendida de 24 meses el precio unitario seria de USD 179,00.
