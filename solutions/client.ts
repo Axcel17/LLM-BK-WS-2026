@@ -7,9 +7,6 @@
  *
  * Exponerlo por HTTP cambiaría solo el transporte; el resto del archivo queda
  * igual. Ese es el valor de que haya un protocolo de por medio.
- *
- * HUECO 2 · Complete la traducción de las definiciones del servidor.
- * `npm test -- tools` es la condición de parada.
  */
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -55,29 +52,23 @@ export async function connectCatalog(): Promise<CatalogConnection> {
 
   const tools: ToolSet = {};
 
-  // <<< HUECO 2 · TRADUCIR LAS DEFINICIONES DEL SERVIDOR >>>
-  //
-  // `available` trae lo que el servidor declara: nombre, descripción y esquema
-  // de entrada. Recórralo y, por cada definición, registre una herramienta:
-  //
-  //     tools[definition.name] = tool({ description, inputSchema, execute });
-  //
-  //   · description  lo único que el modelo lee para decidir si la usa
-  //   · inputSchema  la forma de los argumentos que el modelo puede enviar
-  //   · execute      invoca `client.callTool({ name, arguments })` y devuelve
-  //                  `textOf(...)` del resultado
-  //
-  // Sobre el esquema de entrada hay una decisión que tomar, y una de las
-  // pruebas la discrimina: el servidor ya declara el suyo en
-  // `definition.inputSchema`. Se puede reescribir aquí a mano, o usar el que
-  // llega. Mire qué herramientas expone el catálogo antes de decidir.
-  //
-  // Esta tabla es el límite del agente: una herramienta ausente de este
-  // registro no existe para el modelo, aunque su nombre aparezca en el prompt.
+  for (const definition of available) {
+    tools[definition.name] = tool({
+      description: definition.description ?? "",
+      // El esquema que el servidor declara se usa tal cual. Reescribirlo a mano
+      // aquí duplicaría el contrato en dos lugares, y el día que el servidor
+      // agregue un argumento esta copia se quedaría atrás sin avisar.
+      inputSchema: jsonSchema(definition.inputSchema as Parameters<typeof jsonSchema>[0]),
+      execute: async (args) =>
+        textOf(
+          await client.callTool({
+            name: definition.name,
+            arguments: args as Record<string, unknown>,
+          }),
+        ),
+    });
+  }
 
-  // El acceso tipado viene resuelto. Alcanza las mismas capacidades por el
-  // mismo cliente, pero con firma conocida: las pruebas y el código propio no
-  // deberían depender de la forma interna del registro para invocar una.
   const call = async (name: string, args: Record<string, unknown>): Promise<string> =>
     textOf(await client.callTool({ name, arguments: args }));
 
