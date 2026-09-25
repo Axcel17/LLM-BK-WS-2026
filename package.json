@@ -1,0 +1,39 @@
+{
+  "name": "quote-comparison-agent",
+  "version": "1.0.0",
+  "description": "Agente de abastecimiento: consulta proveedores por MCP, normaliza cotizaciones y verifica el resultado en dos capas",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "tsc --noEmit && vitest run",
+    "test:only": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "agent": "tsx --env-file=.env src/cli.ts",
+    "mcp-server": "tsx src/mcp/server.ts",
+    "measure": "tsx --env-file=.env scripts/measure-reliability.ts",
+    "baseline": "tsx scripts/write-baseline.ts",
+    "gaps": "tsx scripts/swap.ts gaps",
+    "solutions": "tsx scripts/swap.ts solutions"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^4.0.76",
+    "@ai-sdk/openai": "^4.0.71",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@opentelemetry/sdk-node": "^0.222.0",
+    "@opentelemetry/sdk-trace-node": "^2.11.0",
+    "ai": "^7.0.107",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  }
+}
