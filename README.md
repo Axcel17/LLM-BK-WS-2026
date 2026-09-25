@@ -202,23 +202,44 @@ y un encargo, y decide qué pedir, en qué orden y cuándo detenerse. Para
 comprobarlo, cámbiele el encargo:
 
 ```
-npm run agent -- "Compara solo a los proveedores que entregan en 8 días o menos"
-npm run agent -- "Averigua qué proveedores incluyen el flete en el precio"
+npm run agent -- "Averigua únicamente qué proveedores incluyen el flete. No compares totales."
 ```
 
-El plan cambia: pide otras herramientas, en otro orden, y a veces menos. Las
-mismas tres herramientas, distinta resolución.
+El plan cambia de verdad: con el encargo del caso pide el encargo y las cinco
+cotizaciones; con este otro reparte las llamadas distinto y tarda más vueltas.
 
-**Y ahí aparece el límite.** La salida se sigue validando contra
-`comparisonSchema`, y las cinco verificaciones siguen comprobando _este_ caso:
-que estén los cinco proveedores, que el total cuadre con 40 unidades, que el
-plazo de 10 días descalifique. Un encargo muy distinto produce algo que el
-esquema fuerza a esta forma, o que no valida.
+**Y el resultado es el mismo.** Medido sobre `gemini-3.1-flash-lite`:
 
-No es un defecto pendiente de arreglar. Es la decisión de fondo: **un agente es
-tan verificable como específico sea su contrato.** Abrir el encargo gana
-flexibilidad y pierde exactamente la capa que permite saber si el resultado es
-correcto. Elegir dónde ponerse en ese eje es el trabajo.
+| Encargo         | Entrada               | Recomendación |
+| --------------- | --------------------- | ------------- |
+| El del caso     | 7.530 tokens          | MayoristaZeta |
+| «solo el flete» | 5.506 y 22.979 tokens | MayoristaZeta |
+
+Pidiendo explícitamente que **no** compare totales, entregó el comparativo
+completo con la misma recomendación, las dos veces.
+
+Eso no es un fallo del modelo. Un agente recibe tres entradas, y **la del
+usuario es la más débil de las tres**:
+
+| Entrada            | Quién la escribe | Cuánto pesa                         |
+| ------------------ | ---------------- | ----------------------------------- |
+| Instrucciones      | quien construye  | define cuál es el trabajo           |
+| Contrato de salida | quien construye  | define qué forma tiene la respuesta |
+| Encargo            | quien lo usa     | matiza, dentro de lo anterior       |
+
+Las instrucciones dicen «consigue las cotizaciones de todos, normalízalas y
+recomienda la de menor total», y `comparisonSchema` exige los cinco proveedores
+con sus totales. Entre las dos no dejan sitio para otra cosa.
+
+**La lección, que es de producción y no de taller:** un agente con contrato
+estricto no es un asistente general al que se le pide cualquier cosa. Es una
+función especializada con interfaz en lenguaje natural. Pedirle algo distinto no
+le hace hacer algo distinto — le hace hacer lo mismo, peor y más caro.
+
+Hacerlo gobernable por el encargo exige aflojar instrucciones y esquema, y eso
+cuesta exactamente la capa que permite verificar el resultado. **Un agente es
+tan verificable como específico sea su contrato**, y elegir dónde ponerse en ese
+eje es el trabajo de diseño.
 
 ### La compuerta de aprobación
 
