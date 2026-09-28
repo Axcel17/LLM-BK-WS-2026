@@ -94,10 +94,12 @@ paso 2.5.
 **2.1 · Acceso a archivos.** Abra Cowork y concédale acceso a **`parte-1-cowork/espacio-de-trabajo/`
 únicamente**, no a `parte-1-cowork/` completa.
 
-La distinción no es cosmética. Fuera de esa subcarpeta quedan `parte-1-cowork/referencia/`, que
-contiene el comparativo esperado, y el respaldo local del instructor, que contiene las cinco
-cotizaciones ya recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo
-local, sin visitar un solo sitio.
+La distinción no es cosmética. Fuera de esa subcarpeta queda `parte-1-cowork/referencia/`, que
+contiene el comparativo esperado. Un agente con acceso a esa carpeta puede resolver el encargo
+leyéndolo, sin visitar un solo portal.
+
+Por la misma razón, los portales de los proveedores no están en este repositorio: en un caso real
+tampoco se dispone del código de los sitios con los que se trabaja.
 
 El alcance de lectura de un agente determina qué información puede incorporar. El privilegio mínimo
 aplica a archivos igual que a conectores.
@@ -289,7 +291,33 @@ Solo el quinto llama a un modelo.
 | 4 · Las dos capas de evaluación | 19 min   | 3a, 3b, 3c |
 | 5 · La corrida real             | 21 min   | —          |
 
-## 1 · El bucle desde adentro
+## Antes de empezar
+
+```bash
+npm install
+npm test
+```
+
+El resultado esperado es **84 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
+
+Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
+escritas. Si falla el typecheck, o si falla alguna de las seis de `loop.test.ts`, el problema es la
+instalación y no el ejercicio.
+
+Los `TODO` aparecen en el panel de tareas pendientes del editor. Desde la terminal:
+
+```bash
+grep -rn "TODO(" src/
+```
+
+**Si un tramo se atasca:** `npm run solutions` copia las versiones completas sobre `src/`, y
+`npm run gaps` las revierte. Ambos funcionan sin conexión. Consultar una solución es una opción
+prevista: el objetivo es entender por qué cada pieza existe.
+
+El tramo 5 necesita una clave de modelo. Copie `.env.example` a `.env` antes de llegar.
+
+## Tramo 1 · El bucle desde adentro
 
 No hay nada que completar.
 
@@ -316,7 +344,7 @@ de observar. No hay un plan completo por adelantado.
 
 ---
 
-## 2 · El contrato de datos
+## Tramo 2 · El contrato de datos
 
 ```bash
 npm test -- schemas
@@ -347,7 +375,7 @@ aparecía en `quotes` con precio 1.
 
 ---
 
-## 3 · El servidor de herramientas
+## Tramo 3 · El servidor de herramientas
 
 ```bash
 npm test -- client
@@ -387,7 +415,7 @@ No detiene la ejecución, porque un cambio puede ser legítimo. Revierta la edic
 
 ---
 
-## 4 · Las dos capas de evaluación
+## Tramo 4 · Las dos capas de evaluación
 
 ```bash
 npm test -- checks
@@ -438,7 +466,7 @@ Un evaluador que ve el razonamiento tiende a validarlo.
 
 ---
 
-## 5 · La corrida real
+## Tramo 5 · La corrida real
 
 ```bash
 npm run agent

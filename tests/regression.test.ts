@@ -88,7 +88,8 @@ describe("fallos observados en corridas reales", () => {
   it("un proveedor desaparecido del informe", () => {
     // Observado durante la preparación: el informe traía cuatro proveedores de
     // los cinco del encargo, sin declarar al quinto como ausencia. Nada se
-    // reportó como error. Es la falla silenciosa del segmento 7.
+    // reportó como error: es una falla silenciosa, el modo más difícil de
+    // detectar porque nada indica que falta algo.
     const findings = checkCoverage(
       comparison({ quotes: [quote({ supplier: "MayoristaZeta" })], noResponse: [] }),
     );
