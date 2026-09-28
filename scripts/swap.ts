@@ -1,8 +1,8 @@
 /**
  * Intercambia los archivos con `TODO` por sus soluciones, y viceversa.
  *
- * `solutions/` tiene las versiones completas; `scripts/gaps/` las que llevan los
- * `TODO`. `src/` contiene la que está activa.
+ * `scripts/solutions/` tiene las versiones completas y `scripts/gaps/` las que
+ * llevan los `TODO`. `src/` contiene la que está activa.
  *
  * Ejecutar el agente no altera `src/`, pero resolver los `TODO` durante un
  * ensayo sí. Restaurar antes de distribuir el material.
@@ -31,7 +31,7 @@ if (mode !== "gaps" && mode !== "solutions") {
   process.exit(1);
 }
 
-const source = mode === "gaps" ? join(ROOT, "scripts", "gaps") : join(ROOT, "solutions");
+const source = join(ROOT, "scripts", mode === "gaps" ? "gaps" : "solutions");
 
 let markers = 0;
 for (const { file, target } of SWAPPABLE) {

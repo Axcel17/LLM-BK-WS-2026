@@ -16,7 +16,7 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  // `solutions/` y `scripts/gaps/` son plantillas: importan rutas relativas a
+  // `scripts/solutions/` y `scripts/gaps/` son plantillas: importan rutas relativas a
   // `src/` y solo compilan una vez copiadas ahí. El script de intercambio las
   // verifica en su lugar.
   "include": ["src/**/*.ts", "tests/**/*.ts", "scripts/*.ts"]

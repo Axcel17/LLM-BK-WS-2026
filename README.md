@@ -127,8 +127,9 @@ src/
 
 tests/                refleja la estructura de src/, más las regresiones
 data/                 encargo, cotizaciones, corrida grabada y huella
-solutions/            versiones completas de los tres archivos con TODO
-scripts/              medición, huella e intercambio de versiones
+scripts/              maquinaria del ejercicio y utilidades
+  gaps/               los tres archivos con los TODO puestos
+  solutions/          los mismos, resueltos
 ```
 
 `agent.ts` devuelve datos y `report.ts` les da formato. Esa separación permite verificar el
