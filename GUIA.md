@@ -62,7 +62,6 @@ parte-1-cowork/
   permisos.md                      la decisión del paso 1, a mano
 
   espacio-de-trabajo/              ← lo único que recibe el agente
-    contexto.md                    el caso, para enviar como primer mensaje
     instruccion-abastecimiento.md  la instrucción a completar y guardar
     datos/encargo.md               qué comprar, plazo, presupuesto y garantía
     datos/proveedores.md           las direcciones de los cinco portales
