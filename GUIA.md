@@ -448,13 +448,23 @@ La regla 4 del prompt de `src/agent.ts` pide al modelo que descarte a quien exce
 `checkHardLimits` comprueba ese mismo número pase lo que pase. Es la diferencia entre un umbral
 interpretado y uno impuesto, sobre el mismo dato.
 
-**`checkTieBreak` viene completa.** Se agregó tras observar que el agente recomendaba un proveedor
-conforme en plazo y presupuesto pero 445 dólares más caro que otro también conforme. Las cinco
-verificaciones anteriores comprobaban la admisibilidad de la recomendación, no su optimalidad. El
-encargo declara el criterio de desempate, lo que lo hace verificable por código.
+**`checkTieBreak` viene completa.** Tres proveedores cumplen plazo y presupuesto —MayoristaZeta por
+6.360, Suministros Delta por 6.620 y Tecnoimport por 6.805— y el encargo declara cuál elegir entre
+ellos: el menor total puesto en bodega. Las cinco verificaciones anteriores comprobaban que la
+recomendación fuera admisible, no que fuera la mejor, de modo que recomendar a cualquiera de los
+tres pasaba en verde.
 
-Efecto medido sobre `gpt-5.4-mini`: 5 de 6 corridas correctas con cinco verificaciones, 3 de 6 con
-seis. El modelo es el mismo; cambió el criterio de evaluación.
+Es el hallazgo más probable del tramo 5. Con `gpt-5.4-mini` aparece en cerca de la mitad de las
+corridas, siempre igual:
+
+```
+[tie-break] Se recomienda a Suministros Delta por 6620,
+            existiendo MayoristaZeta por 6360, que también cumple.
+```
+
+Efecto medido sobre ese mismo modelo: 5 de 6 corridas correctas con cinco verificaciones, 3 de 6 con
+seis. El modelo no empeoró; cambió lo que se comprueba. La fiabilidad que se reporta es función de
+lo que se mide, y un sistema con menos comprobaciones no es más fiable: lo parece.
 
 ### La segunda capa
 

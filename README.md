@@ -59,14 +59,15 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 
 ## Scripts
 
-| Comando                | Qué hace                                        |
-| ---------------------- | ----------------------------------------------- |
-| `npm test`             | Typecheck y suite completa                      |
-| `npm run typecheck`    | Compila sin emitir                              |
-| `npm run format:check` | Verifica el formato                             |
-| `npm run solutions`    | Copia las versiones completas sobre `src/`      |
-| `npm run gaps`         | Restituye los `TODO`                            |
-| `npm run baseline`     | Registra la huella del catálogo de herramientas |
+| Comando                | Qué hace                                                              |
+| ---------------------- | --------------------------------------------------------------------- |
+| `npm test`             | Typecheck y suite completa                                            |
+| `npm run typecheck`    | Compila sin emitir                                                    |
+| `npm run verify-state` | Comprueba el estado de entrega contra lo que documentan README y guía |
+| `npm run format:check` | Verifica el formato                                                   |
+| `npm run solutions`    | Copia las versiones completas sobre `src/`                            |
+| `npm run gaps`         | Restituye los `TODO`                                                  |
+| `npm run baseline`     | Registra la huella del catálogo de herramientas                       |
 
 ---
 
@@ -148,15 +149,15 @@ contenido del informe en `tests/report.test.ts` sin capturar salida de consola.
 | `@opentelemetry/sdk-node`       | 0.222.0 | Exportación de trazas en `src/platform/tracing.ts`                                                          |
 | `@opentelemetry/sdk-trace-node` | 2.11.0  | Procesador de spans para esa exportación                                                                    |
 
-| Herramienta   | Versión | Para qué                                           |
-| ------------- | ------- | -------------------------------------------------- |
-| `typescript`  | 7.0.2   | Modo estricto. El typecheck es parte de `npm test` |
-| `vitest`      | 5.0.1   | Suite de pruebas. 93 casos en unos dos segundos    |
-| `tsx`         | 4.23.15 | Ejecuta TypeScript sin paso de compilación         |
-| `prettier`    | 3.9.9   | Formato                                            |
-| `@types/node` | 26.6.2  | Tipos de la biblioteca estándar de Node            |
+| Herramienta   | Versión | Para qué                                                  |
+| ------------- | ------- | --------------------------------------------------------- |
+| `typescript`  | 7.0.2   | Modo estricto. El typecheck es parte de `npm test`        |
+| `vitest`      | 5.0.1   | Suite de pruebas. Corre completa en menos de dos segundos |
+| `tsx`         | 4.23.15 | Ejecuta TypeScript sin paso de compilación                |
+| `prettier`    | 3.9.9   | Formato                                                   |
+| `@types/node` | 26.6.2  | Tipos de la biblioteca estándar de Node                   |
 
-### Del paquete `ai` se usan cuatro capacidades
+### Del paquete `ai` se usan cinco capacidades
 
 | API                                      | Dónde                        |
 | ---------------------------------------- | ---------------------------- |
@@ -190,6 +191,11 @@ llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el res
 
 `.github/workflows/ci.yml` ejecuta typecheck y formato sobre el estado tal como se entrega, después
 aplica las soluciones y corre la suite completa. Las dos ramas se validan igual.
+
+Sobre `main` corre además `npm run verify-state`, que comprueba que la suite falle exactamente en
+las pruebas que los `TODO` dejan abiertas y que este README y la guía declaren esa misma cifra. Sin
+ese paso, el número que el asistente usa para saber si su instalación está bien se desfasa en
+silencio.
 
 | Rama         | Contenido                                          |
 | ------------ | -------------------------------------------------- |

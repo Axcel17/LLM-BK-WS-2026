@@ -4,6 +4,11 @@
 # porque el material con huecos también debe compilar: nadie empieza el taller
 # con errores que no puso.
 #
+# En `main` se comprueba además el estado de entrega: que la suite falle en
+# exactamente las pruebas que los `TODO` dejan abiertas, y que el README y la
+# guía declaren esa misma cifra. Es lo que el asistente usa para distinguir un
+# material desactualizado de una instalación rota.
+#
 # La suite completa se ejecuta siempre sobre el proyecto resuelto. En `main`
 # eso exige aplicar las soluciones primero; en `soluciones` ya están puestas y
 # el paso no cambia nada. Así ninguna rama depende de la otra para validarse.
@@ -25,7 +30,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npx prettier --check .
+      - run: npm run format:check
+      - name: Estado de entrega
+        if: github.ref_name == 'main'
+        run: npm run verify-state
       - name: Aplicar soluciones
         run: npm run solutions
       - name: Suite completa
