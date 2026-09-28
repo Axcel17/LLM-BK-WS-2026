@@ -172,7 +172,7 @@ export function checkHardLimits(comparison: Comparison): Finding[] {
 /**
  * Lo que no llegó está reportado. En este encargo siempre hay al menos uno.
  *
- * Viene resuelta. Es la más corta de las cinco y la que más se olvida: un
+ * Viene resuelta. Es la más corta de las seis y la que más se olvida: un
  * informe que no menciona lo que falta parece completo.
  */
 export function checkMissingResponses(comparison: Comparison): Finding[] {

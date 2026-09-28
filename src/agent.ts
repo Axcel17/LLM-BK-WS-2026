@@ -48,7 +48,14 @@ REGLAS
 8. No adjudicas. Recomiendas con evidencia; decide una persona.
 `.trim();
 
-/** Tope por defecto: seis llamadas cubren el encargo y las cinco cotizaciones. */
+/**
+ * Tope por defecto.
+ *
+ * El encargo y las cinco cotizaciones son seis llamadas; el doble deja margen
+ * para los reintentos ante un fallo de validación y para el paso que emite la
+ * salida estructurada. Con menos, el corte se vuelve el resultado habitual en
+ * lugar de la excepción que hace visible el gasto.
+ */
 const DEFAULT_MAX_STEPS = 12;
 
 /**
