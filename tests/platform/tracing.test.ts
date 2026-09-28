@@ -2,8 +2,8 @@
  * Instrumentación.
  *
  * La activación de trazas es una decisión de entorno, y el contrato de esa
- * variable conviene fijarlo: un valor que no se reconoce deja al sistema sin
- * observabilidad justo cuando se la pidió.
+ * variable queda fijado aquí: un valor no reconocido deja al sistema sin
+ * observabilidad en el momento en que se solicitó.
  *
  *     npm test -- tracing
  */

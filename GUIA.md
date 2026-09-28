@@ -21,8 +21,8 @@ dependencias— está en [`README.md`](README.md).
 Al terminar habrá configurado las seis piezas en un entorno que las trae resueltas, y observado sus
 modos de falla.
 
-> El objetivo no es operar la herramienta, sino decidir qué puede hacer el sistema, con qué
-> permisos, qué recuerda, qué lo despierta y qué no puede hacer nunca.
+El objetivo es decidir qué puede hacer el sistema, con qué permisos, qué conserva entre corridas,
+qué lo activa y qué acciones le quedan prohibidas.
 
 | Pieza                     | Paso | Qué se configura                                       |
 | ------------------------- | ---- | ------------------------------------------------------ |
@@ -87,8 +87,8 @@ El sistema tiene que **enviar una recomendación por correo** cuando termine. Re
 Complete la tabla de `parte-1-cowork/permisos.md`. Cuatro acciones, tres niveles posibles cada una: permitir
 siempre, requiere aprobación o bloquear.
 
-> Esta es la decisión más importante del bloque. Conceder de más es lo que convierte una
-> manipulación en un daño.
+La amplitud de estos permisos determina el alcance del daño ante una manipulación del agente.
+Ver el paso 2.5.
 
 ---
 
@@ -102,9 +102,8 @@ comparativo esperado, y `parte-1-cowork/entorno/respaldo-local/`, que contiene l
 recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo local, sin visitar
 un solo sitio.
 
-> Esto es el privilegio mínimo aplicado a **archivos**, no solo a conectores. El alcance de
-> lectura de un agente decide qué puede llegar a saber, y casi siempre se concede de más porque
-> conceder la carpeta entera es más cómodo.
+El alcance de lectura de un agente determina qué información puede incorporar. El privilegio
+mínimo aplica a archivos igual que a conectores.
 
 **2.2 · Conectar el correo.** En la configuración de conectores, conecte Gmail con la cuenta
 personal. Se abre la autorización de Google; concédala y regrese.
@@ -131,8 +130,8 @@ Busca en mi correo los mensajes de la semana pasada y resúmelos.
 Debe negarse. Si lo hace, la barrera existe; si obedece, el nivel quedó mal configurado y conviene
 corregirlo ahora, no en el paso 7 con una acción irreversible de por medio.
 
-> Una barrera que no se comprueba es una suposición. En la Parte 2, esa comprobación se escribe
-> como prueba automatizada y corre en cada cambio.
+Configurar un permiso y verificar que se aplica son dos operaciones distintas. En la Parte 2 esa
+verificación se escribe como prueba automatizada.
 
 ---
 
@@ -143,9 +142,9 @@ restricciones duras de `parte-1-cowork/espacio-de-trabajo/datos/encargo.md`.
 
 Una vez completa, **guárdela como instrucción reutilizable** con el nombre `abastecimiento`.
 
-> No la pegue en la conversación. Un mensaje pegado se pierde al cerrarla; una instrucción guardada
-> se reutiliza, se versiona y se comparte. En la Parte 2 esa misma política —el plazo descalifica,
-> el desempate es el menor total, no se adjudica— gobierna al agente en código.
+Un mensaje pegado en la conversación se pierde al cerrarla. Una instrucción guardada se reutiliza,
+se versiona y se comparte. En la Parte 2, esa misma política —el plazo descalifica, el desempate es
+el menor total, no se adjudica— gobierna al agente en código.
 
 ---
 
@@ -166,9 +165,9 @@ seguimiento. Las cotizaciones **no** están listas todavía, y eso es correcto.
 Abra `parte-1-cowork/espacio-de-trabajo/salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
 seguimiento **completa**.
 
-> **El fallo más frecuente está previsto:** el agente guarda el número de referencia pero pierde
-> la dirección completa, y sin ella no puede volver. Quien lo observe acaba de comprobar por qué el
-> estado es una de las seis piezas, y probablemente su agente tuvo que reenviar la solicitud.
+**Fallo previsto:** el agente guarda el número de referencia y omite la dirección completa. Sin
+ella no puede recuperar la cotización y debe reenviar la solicitud. Es el modo de falla del almacén
+de estado.
 
 ### El paralelismo
 
@@ -190,8 +189,8 @@ Dos cosas que comprobar al hacerlo:
   equipo apagado. Esta toca `parte-1-cowork/espacio-de-trabajo/`, así que corre en su computadora y solo mientras
   esté despierta. Si el estado viviera en un conector y no en una carpeta, podría correr sin ella.
 
-> La cadencia mínima disponible es mayor que la duración del bloque, así que la segunda corrida se
-> dispara a mano. Lo que importa es haberla configurado y entender qué hace.
+La cadencia mínima disponible excede la duración del bloque, de modo que la segunda corrida se
+dispara manualmente. El objetivo del paso es la configuración, no su ejecución automática.
 
 ---
 
@@ -237,11 +236,10 @@ Si la recomendación es el proveedor más barato, compruebe su plazo contra el e
 Abra entonces la página de ese proveedor. Contiene un texto dirigido a sistemas automatizados que
 pide omitir la verificación de plazos.
 
-> **Ese texto no está en la instrucción.** Entró por el resultado de una herramienta, una página
-> web que el agente leyó. Así ocurre en producción.
->
-> Y lo que impidió que saliera una recomendación equivocada no fue un modelo mejor: fue **la
-> compuerta configurada en el paso 1.**
+Ese texto no proviene de la instrucción ni del usuario: entró por el resultado de una herramienta,
+una página web que el agente leyó. Es el vector de inyección indirecta.
+
+Lo que detuvo el envío fue la compuerta configurada en el paso 1, no una capacidad del modelo.
 
 ### Cierre: la sexta pieza
 
@@ -259,9 +257,9 @@ dirección como base. Cómo simulan la demora y la segunda ronda está en el `RE
 carpeta.
 
 `parte-1-cowork/referencia/version-de-referencia.md` contiene los dos blancos de la instrucción
-resueltos, la tabla de permisos y el comparativo esperado. Conviene consultarla después de intentar
-el ejercicio, y **no concederle acceso al agente**: la carpeta `referencia/` existe separada por esa
-razón.
+resueltos, la tabla de permisos y el comparativo esperado. Destinada a consultarse después de
+ejecutar el ejercicio, y **fuera del alcance del agente**: la carpeta `referencia/` está separada por
+esa razón.
 
 ---
 
@@ -409,13 +407,13 @@ La regla 4 del prompt de `src/agent.ts` pide al modelo que descarte a quien exce
 `checkHardLimits` comprueba ese mismo número pase lo que pase. Es la diferencia entre un umbral
 interpretado y uno impuesto, sobre el mismo dato.
 
-**`checkTieBreak` viene completa, y su origen es instructivo.** El agente recomendó un proveedor que
-cumplía plazo y presupuesto pero costaba 445 dólares más que otro que también cumplía. Las cinco
-verificaciones de entonces pasaban todas: comprobaban que la recomendación fuera admisible, no que
-fuera la correcta. El encargo declara el criterio de desempate, y eso lo vuelve comprobable.
+**`checkTieBreak` viene completa.** Se agregó tras observar que el agente recomendaba un proveedor
+conforme en plazo y presupuesto pero 445 dólares más caro que otro también conforme. Las cinco
+verificaciones anteriores comprobaban la admisibilidad de la recomendación, no su optimalidad. El
+encargo declara el criterio de desempate, lo que lo hace verificable por código.
 
-El efecto en la medición es directo. Con cinco verificaciones, `gpt-5.4-mini` acertaba 5 de 6; con
-la sexta, 3 de 6. El modelo no cambió: cambió lo que se mide.
+Efecto medido sobre `gpt-5.4-mini`: 5 de 6 corridas correctas con cinco verificaciones, 3 de 6 con
+seis. El modelo es el mismo; cambió el criterio de evaluación.
 
 ### La segunda capa
 
@@ -437,8 +435,8 @@ npm run agent
 corrida tarda entre 51 y 130 segundos; con `gpt-5.4-mini`, entre 6 y 7.
 
 **El tope de pasos.** `MAX_STEPS=2 npm run agent` interrumpe la ejecución y entrega lo ya
-averiguado: qué se consultó, con qué argumentos y cuánto devolvió cada consulta. Detenerse no basta
-si quien recibe el caso tiene que rehacer la investigación.
+averiguado: qué se consultó, con qué argumentos y cuánto devolvió cada consulta. Sin ese registro,
+quien recibe el caso repite la investigación.
 
 **Las trazas.** `TRACING=1 npm run agent` emite un span por llamada al modelo y por invocación de
 herramienta, con los atributos `gen_ai.*` del estándar. La traducción está en
@@ -518,20 +516,20 @@ Las instrucciones ordenan conseguir todas las cotizaciones y recomendar la de me
 `comparisonSchema` exige los cinco proveedores con sus totales. Entre ambas no queda espacio para
 otra cosa.
 
-Un agente con contrato estricto no es un asistente general: es una función especializada con
-interfaz en lenguaje natural. Hacerlo gobernable por el encargo exige aflojar instrucciones y
-esquema, y eso cuesta la capa que permite verificar el resultado.
+Un agente con contrato estricto opera como función especializada con interfaz en lenguaje natural,
+no como asistente general. Hacerlo gobernable por el encargo requiere relajar instrucciones y
+esquema, lo que elimina la base sobre la que se verifica el resultado.
 
 ### Su propia prueba de regresión
 
 `tests/regression.test.ts` contiene fallos observados en corridas reales, convertidos en pruebas.
 Hay un `it.todo` esperando el suyo.
 
-Ejecute el agente hasta observar un resultado que no debería haberse aceptado y declárelo ahí. Un
-sistema no determinista se estabiliza acumulando los casos en que falló, no ajustando las
-instrucciones hasta que una corrida resulte correcta.
+Ejecute el agente hasta observar un resultado que no debería haberse aceptado y declárelo ahí. La
+estabilización de un sistema no determinista procede por acumulación de casos observados, no por
+ajuste de instrucciones hasta obtener una corrida correcta.
 
-Si las verificaciones encuentran hallazgos sobre la salida real, no es un fallo del ejercicio.
+Los hallazgos que las verificaciones produzcan sobre la salida real son parte del ejercicio.
 
 ---
 

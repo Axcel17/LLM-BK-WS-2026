@@ -1,6 +1,6 @@
 # Contexto · Distribuidora Andes
 
-Se envía como primer mensaje al conceder acceso a la carpeta, en el paso 2 de `LABORATORIO.md`, en la raíz del repositorio.
+Se envía como primer mensaje al conceder acceso a la carpeta, en el paso 2 de `GUIA.md`, en la raíz del repositorio.
 
 ---
 

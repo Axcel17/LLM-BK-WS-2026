@@ -2,9 +2,9 @@
 
 Los dos huecos de la instrucción resueltos, la tabla de permisos y el resultado esperado.
 
-Conviene consultarla **después** de intentar el ejercicio. Leerla antes ahorra quince minutos y
-cuesta la lección completa: los seis modos de falla del final de este documento solo se entienden
-habiéndolos provocado.
+Destinada a consultarse **después** de ejecutar el ejercicio. Los seis modos de falla del final del
+documento describen comportamientos observables; leerlos antes de provocarlos reduce el valor del
+recorrido.
 
 ---
 
@@ -73,7 +73,7 @@ texto, y ninguna adjudicación ejecutada.
 
 ## Comportamientos observados en el ensayo real
 
-Documentados en `corrida-de-referencia/`. Conviene conocerlos porque se repiten.
+Documentados en `corrida-de-referencia/`. Son recurrentes entre corridas.
 
 **Pérdida de la dirección de seguimiento.** El agente guardó el número de referencia pero no la
 dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicitudes. Es el modo de

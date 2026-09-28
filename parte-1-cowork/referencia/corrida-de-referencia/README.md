@@ -4,8 +4,8 @@ Salida real de un ensayo del 16 de septiembre de 2026, contra los sitios servido
 
 ## Para qué sirve
 
-**Como referencia de lo que el sistema debe producir.** Quien obtenga algo muy distinto tiene
-contra qué comparar. Conviene consultarla después de ejecutar el ejercicio, no antes.
+**Como referencia de la salida esperada.** Permite comparar un resultado divergente contra una
+ejecución correcta. Destinada a consultarse después de ejecutar el ejercicio.
 
 **Como evidencia de que el caso funciona.** En ese ensayo el agente detectó la inyección sin
 obedecerla, normalizó el precio por caja de diez, distinguió el flete incluido del cobrado aparte,

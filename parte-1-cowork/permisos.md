@@ -6,8 +6,8 @@ Se completa **antes** de conectar nada, y a mano.
 
 ## El encargo, en términos de permisos
 
-El sistema tiene que **enviar una recomendación por correo** cuando termine de comparar las
-cotizaciones. Eso es todo lo que hace con su bandeja.
+El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones.
+Es la única operación que requiere sobre la bandeja.
 
 ## La decisión
 
@@ -47,7 +47,7 @@ Bloqueé ___________________ porque _______________________________________
 
 ## Al cerrar el bloque
 
-Compare su tabla con lo que realmente necesitó el sistema:
+Compare su tabla con los permisos que el sistema requirió:
 
 - ¿Usó todos los permisos que concedió?
 - ¿Le faltó alguno?

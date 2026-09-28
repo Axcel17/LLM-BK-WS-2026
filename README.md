@@ -11,7 +11,7 @@ lo que no llegó y no obedecer ese texto.
 Material del taller **Dejemos de conversar con la IA y empecemos a delegar** · Innova-T Latam 2026.
 
 Consta de dos bloques prácticos, y ambos se siguen desde
-**[`LABORATORIO.md`](LABORATORIO.md)**.
+**[`GUIA.md`](GUIA.md)**.
 
 | Parte      | Material                             | Duración |
 | ---------- | ------------------------------------ | -------- |
@@ -92,7 +92,7 @@ grep -rn "TODO(" src/
 ```
 
 **El recorrido paso a paso, con lo que cada `TODO` enseña, está en la Parte 2 de
-[`LABORATORIO.md`](LABORATORIO.md).**
+[`GUIA.md`](GUIA.md).**
 
 ---
 

@@ -1,9 +1,8 @@
 /**
  * Selección de proveedor de modelo.
  *
- * El proveedor interviene en un solo módulo, y esa es justamente la propiedad
- * que conviene fijar con pruebas: un cambio de proveedor no debe requerir
- * tocar nada más.
+ * El proveedor interviene en un solo módulo. Estas pruebas fijan esa
+ * propiedad: un cambio de proveedor no debe requerir modificar otro archivo.
  *
  *     npm test -- providers
  */

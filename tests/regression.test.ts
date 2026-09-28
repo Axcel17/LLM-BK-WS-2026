@@ -1,10 +1,10 @@
 /**
  * Fallos reales, convertidos en pruebas.
  *
- * Un sistema no determinista no se estabiliza razonando sobre él: se
- * estabiliza acumulando los casos en que falló. Cada fallo observado en una
- * corrida entra aquí, y a partir de ese momento ninguna versión futura puede
- * reintroducirlo sin que las pruebas lo digan.
+ * La estabilización de un sistema no determinista procede por acumulación de
+ * casos observados. Cada fallo detectado en una corrida se declara aquí, y
+ * desde entonces ninguna versión futura puede reintroducirlo sin que las
+ * pruebas lo señalen.
  *
  * Este archivo es el que crece con el uso. Los tres primeros casos salieron de
  * corridas reales durante la preparación del taller.

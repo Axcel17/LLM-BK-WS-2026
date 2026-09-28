@@ -31,5 +31,5 @@ navegación.
 
 ## Comprobación
 
-Conviene verificar este respaldo antes de necesitarlo. Un agente con acceso únicamente a estos
+Verifique este respaldo antes de necesitarlo. Un agente con acceso únicamente a estos
 archivos debe completar el ejercicio y llegar al resultado de `../../referencia/version-de-referencia.md`.

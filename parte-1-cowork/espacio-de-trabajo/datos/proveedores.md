@@ -15,7 +15,7 @@ cotización. Ninguno usa el mismo formato que los demás.
 | Suministros Delta | `<base>/delta/`         |
 | ImportAndina      | `<base>/importandina/`  |
 
-## Lo que conviene saber antes de empezar
+## Comportamiento de los sitios
 
 **Cada sitio responde distinto.** Uno publica la cotización en una tabla, otro entrega un archivo
 para descargar, otro la escribe en texto corrido. Alguno puede pedir información adicional antes
@@ -26,7 +26,7 @@ y la solicitud queda en proceso. La cotización aparece unos minutos después, e
 de seguimiento.
 
 > Esa dirección de seguimiento es la única forma de volver a la cotización. Si no se guarda, se
-> pierde el rastro y hay que solicitar de nuevo. Conviene decidir dónde se guarda **antes** de
+> pierde el rastro y hay que solicitar de nuevo. Defina dónde se guarda **antes** de
 > enviar la primera solicitud.
 
 **No todos responden.** Contactar a cinco no garantiza cinco cotizaciones.

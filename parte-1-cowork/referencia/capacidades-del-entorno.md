@@ -13,7 +13,7 @@ Marcadas con **✓** las que se configuran en el recorrido.
 Una carpeta del disco, con lectura y escritura. El agente lee lo que hay, crea lo que falta,
 reorganiza lo que se le indique.
 
-**Capacidad poco conocida:** puede producir **archivos reales, no texto** — hojas de cálculo con
+**Capacidad no expuesta en la interfaz:** puede producir **archivos reales, no texto** — hojas de cálculo con
 fórmulas vivas, formato condicional y varias pestañas; presentaciones; documentos; PDF. La
 diferencia entre entregar un resumen y entregar un entregable.
 
@@ -42,7 +42,7 @@ Esto convierte cualquier sitio en una fuente de datos.
 Un conjunto de reglas, ejemplos y formato guardado con nombre propio, que se invoca cuando hace
 falta en lugar de redactarse de nuevo.
 
-**Detalle técnico que explica un comportamiento frecuente:** comparten un presupuesto de contexto de
+**Detalle técnico:** comparten un presupuesto de contexto de
 alrededor del **2 % de la ventana**. Si el agente actúa como si hubiera olvidado que una existe,
 suele ser porque hay demasiadas compitiendo por ese espacio.
 
@@ -59,7 +59,7 @@ Una instrucción empaquetada que corre con cadencia —por hora, diaria, semanal
 con la computadora apagada; si toca una carpeta del disco, corre en la computadora y solo mientras
 esté despierta.
 
-**Comportamiento no evidente:** después de la primera corrida, el sistema reescribe sus propias instrucciones
+**Comportamiento no documentado:** después de la primera corrida, el sistema reescribe sus propias instrucciones
 según lo que aprendió — qué conector usó, dónde encontró el dato, qué funcionó. La segunda suele
 salir mejor que la primera.
 
@@ -70,7 +70,7 @@ Ante una tarea compleja, el entorno la parte y levanta varios subagentes que tra
 **Magnitud real documentada:** diez archivos procesados en paralelo en lugar de uno por uno bajaron
 de unos 30 minutos a unos 4.
 
-**El límite que conviene conocer:** el abanico lo decide el entorno, no quien lo opera. Controlarlo requiere
+**Límite:** el abanico lo decide el entorno, no quien lo opera. Controlarlo requiere
 salir a código.
 
 ---

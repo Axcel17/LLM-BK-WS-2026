@@ -142,9 +142,7 @@ export function formatIntegrity(report: DriftReport): string {
   if (report.changed.length > 0) lines.push(`  definición distinta: ${report.changed.join(", ")}`);
   if (report.added.length > 0) lines.push(`  nuevas:              ${report.added.join(", ")}`);
   if (report.removed.length > 0) lines.push(`  desaparecidas:       ${report.removed.join(", ")}`);
-  lines.push(
-    "  El cambio puede corresponder a una versión nueva del servidor. Conviene revisarlo.",
-  );
+  lines.push("  El cambio puede corresponder a una versión nueva del servidor. Requiere revisión.");
 
   return lines.join("\n");
 }

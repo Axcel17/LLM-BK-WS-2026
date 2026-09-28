@@ -10,7 +10,7 @@
  * Tres `TODO` marcados. El editor los lista en su panel de tareas pendientes.
  *
  * `checkNormalization` y `checkMissingResponses` vienen resueltas y son la
- * referencia de la forma: conviene leerlas antes de empezar. Toda verificación
+ * referencia de la forma; leerlas primero orienta las demás. Toda verificación
  * recorre el comparativo, se queda con lo que incumple y devuelve un hallazgo
  * por caso, con el dato que lo demuestra.
  *
