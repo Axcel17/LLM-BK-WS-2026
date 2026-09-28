@@ -1,420 +1,210 @@
 # Agente de abastecimiento
 
-Taller **Deja de Conversar. Empieza a Delegar.** · Innova-T Latam 2026.
+Agente que compara cotizaciones de cinco proveedores y recomienda una, con dos capas de
+verificación sobre su propia salida.
 
-Un mismo caso, resuelto dos veces: primero configurando un entorno gestionado, y
-después construyéndolo en código. Un agente que consulta cinco proveedores,
-normaliza cotizaciones desiguales, las evalúa contra restricciones duras y
-verifica su propio resultado en dos capas antes de recomendar.
+Las cotizaciones llegan en formatos distintos —por unidad, por caja, por lote, con flete incluido o
+aparte— y una de ellas contiene texto dirigido a sistemas automatizados para alterar la
+recomendación. El agente debe normalizarlas, aplicar dos restricciones que descalifican, reportar
+lo que no llegó y no obedecer ese texto.
 
-## Las dos partes
+Material del taller **Dejemos de conversar con la IA y empecemos a delegar** · Innova-T Latam 2026.
 
-|                            | Dónde                                                        | Duración |
-| -------------------------- | ------------------------------------------------------------ | -------- |
-| **1 · Entorno gestionado** | [`parte-1-entorno-gestionado/`](parte-1-entorno-gestionado/) | 45 min   |
-| **2 · Código**             | la raíz de este repositorio                                  | 90 min   |
+| Parte                  | Ubicación                                                    | Duración |
+| ---------------------- | ------------------------------------------------------------ | -------- |
+| 1 · Entorno gestionado | [`parte-1-entorno-gestionado/`](parte-1-entorno-gestionado/) | 45 min   |
+| 2 · Código             | raíz de este repositorio                                     | 90 min   |
 
-La Parte 1 configura las seis piezas de un sistema agéntico en un entorno que
-las resuelve por usted, y observa sus modos de falla. La Parte 2 las escribe.
-El árbol de `src/` está organizado por esas mismas seis piezas, de modo que la
-segunda mitad se lee como continuación de la primera.
-
-Cada parte se sostiene por sí sola. Quien solo quiera el código puede empezar
-abajo.
+Cada parte funciona por separado.
 
 ---
 
-## Cómo está organizado el código
+## Requisitos
 
-Este repositorio se entrega con **seis `TODO` por completar**, repartidos en tres
-archivos. Cada uno está donde el flujo se rompe si la decisión es la equivocada;
-lo mecánico viene resuelto y sirve de referencia de la forma.
+- **Node.js 20** o superior.
+- **Clave de un proveedor de modelo**, solo para la ejecución real. Google AI Studio la da sin
+  tarjeta. Las pruebas corren sin clave y sin conexión.
 
-Su editor los lista en el panel de tareas pendientes. Desde la terminal:
+## Instalación
 
-```
-grep -rn "TODO(" src/
-```
-
-| Rama         | Contenido                                                             |
-| ------------ | --------------------------------------------------------------------- |
-| `main`       | El material con los `TODO` puestos. Es por donde se empieza           |
-| `soluciones` | El proyecto completo, tal como estaba antes de retirar las decisiones |
-
-No hace falta cambiar de rama para consultar una solución: `npm run solutions`
-copia las versiones completas sobre `src/`, y `npm run gaps` las revierte.
-Ambos comandos funcionan sin conexión.
-
-**Requisitos:** Node 20 o superior. Los pasos 1 a 4 no necesitan clave ni
-conexión. Solo el paso 5 llama a un modelo, y la clave es gratuita.
-
----
-
-## Antes de empezar
-
-```
+```bash
 npm install
 npm test
 ```
 
-Deben pasar 81 y fallar 11. Si falla el typecheck, o si falla alguna de las 6
-de `loop`, el entorno no está bien instalado.
+El resultado esperado es **81 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
+está correcta.
 
-Varios archivos pasan enteros desde el inicio: `loop` verifica la instalación,
-y `approval`, `judge`, `report`, `agent`, `providers`, `tracing` y `catalog`
-cubren piezas que se entregan escritas. Otros dos —`integrity` y `regression`—
-dependen de tramos posteriores y pasan a verde solos.
+## Ejecución
 
-**Los pasos 1 a 4 no necesitan clave ni conexión:** corren contra respuestas
-grabadas. Solo el paso 5 llama a un modelo.
+Copie `.env.example` a `.env` y coloque la clave.
+
+```bash
+npm run agent                      # una corrida completa
+npm run agent -- "otro encargo"    # el mismo agente, otra petición
+npm run measure -- 6               # seis corridas, con tasa de acierto
+npm run mcp-server                 # el servidor de herramientas, aislado
+```
+
+| Variable                       | Efecto                                                        |
+| ------------------------------ | ------------------------------------------------------------- |
+| `PROVIDER` `MODEL`             | Proveedor y modelo del agente                                 |
+| `JUDGE_PROVIDER` `JUDGE_MODEL` | Los del evaluador, si difieren                                |
+| `MAX_STEPS`                    | Tope de vueltas del bucle. Con 2 se observa el corte          |
+| `TRACING`                      | Emite trazas OpenTelemetry por consola                        |
+| `DROP_PROMPT_RULE`             | Retira la regla de no adjudicar, para ver actuar la compuerta |
+
+## Scripts
+
+| Comando                | Qué hace                                        |
+| ---------------------- | ----------------------------------------------- |
+| `npm test`             | Typecheck y suite completa                      |
+| `npm run typecheck`    | Compila sin emitir                              |
+| `npm run format:check` | Verifica el formato                             |
+| `npm run solutions`    | Copia las versiones completas sobre `src/`      |
+| `npm run gaps`         | Restituye los `TODO`                            |
+| `npm run baseline`     | Registra la huella del catálogo de herramientas |
 
 ---
 
-## Los cinco pasos
+## El ejercicio
 
-### 1 · El bucle desde adentro — 11 min
+Seis `TODO` repartidos en tres archivos. Cada uno es una decisión de diseño cuya prueba
+correspondiente falla hasta que se resuelve. El código mecánico viene escrito.
 
-No hay nada que completar. Abra `src/loop.ts` y córralo:
+| `TODO` | Archivo                    | Decisión                                        |
+| ------ | -------------------------- | ----------------------------------------------- |
+| 1a     | `src/domain/schemas.ts`    | Cómo se representa un plazo no declarado        |
+| 1b     | `src/domain/schemas.ts`    | Si una lista vacía puede ser un valor omitido   |
+| 2      | `src/mcp/client.ts`        | De dónde sale el esquema de cada herramienta    |
+| 3a     | `src/guardrails/checks.ts` | Detectar un informe internamente contradictorio |
+| 3b     | `src/guardrails/checks.ts` | Cómo se comparan importes monetarios            |
+| 3c     | `src/guardrails/checks.ts` | Verificar la recomendación contra sus cifras    |
 
-```
-npm test -- loop
-```
+El editor los lista en su panel de tareas pendientes. Desde la terminal:
 
-La función `run` son cuarenta líneas, sin librería de por medio. Tres cosas que conviene ver:
-
-**El modelo no ejecuta nada.** Emite una petición; la línea
-`implementation(reply.args)` la atiende. Esa tabla delimita lo que el agente
-puede hacer.
-
-**La conversación completa se reenvía en cada llamada.** Lo que no esté en
-`messages` no existe para el modelo.
-
-**`maxSteps` acota el gasto.** Sin él, un modelo que nunca devuelve texto gira
-indefinidamente.
-
-### 2 · El contrato de datos — 19 min
-
-Complete los dos `TODO` de `src/domain/schemas.ts`.
-
-```
-npm test -- schemas
+```bash
+grep -rn "TODO(" src/
 ```
 
-| TODO | La decisión                                                        |
-| ---- | ------------------------------------------------------------------ |
-| 1a   | El campo tiene valor por defecto, así que el modelo puede omitirlo |
-| 1b   | Dos listas que se rellenan solas cuando el modelo no las declara   |
-
-Los esquemas de Zod validan en ejecución **y** derivan los tipos: un contrato
-mal usado falla al compilar, no solo al correr.
-
-### 3 · El servidor de herramientas — 20 min
-
-Complete el `TODO` de `src/mcp/client.ts`: la traducción de lo que el servidor
-declara a herramientas del arnés. El acceso tipado viene resuelto debajo.
-
-```
-npm test -- client
-```
-
-`src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte
-que el agente consume sin saber en qué está escrito ni dónde corre.
-
-El agente no importa el catálogo: lo consume por protocolo. La misma
-herramienta serviría a cualquier otro cliente MCP.
-
-**La decisión es de dónde sale el esquema de entrada.** Lo natural es
-reescribirlo a mano mirando `get_quote`, que recibe un argumento. El catálogo
-expone además `place_order`, que recibe dos. Una de las pruebas lo discrimina.
-
-Las dos últimas pruebas levantan el servidor de verdad. Tardan unos segundos:
-es el precio de probar el protocolo y no una simulación.
-
-**La descripción de una herramienta es lo único que el modelo lee** para decidir
-si la usa. Quien controla el servidor puede cambiar lo que hace su agente sin
-tocar una línea de este proyecto, y el servidor no siempre es propio.
-
-`src/mcp/integrity.ts` toma una huella de cada herramienta y la compara contra
-`data/tool-baseline.json` en cada corrida. Para verlo: edite la descripción de
-`get_quote` en `src/mcp/server.ts` y ejecute `npm run agent`.
-
-```
-INTEGRIDAD  el catálogo cambió desde la última huella:
-  definición distinta: get_quote
-```
-
-No detiene la ejecución, porque un cambio puede ser legítimo. Avisa. Revierta
-la edición y `npm run baseline` vuelve a fijar la referencia.
-
-### 4 · Las dos capas de evaluación — 19 min
-
-Complete los tres `TODO` de `src/guardrails/checks.ts`. Tres verificaciones
-vienen completas como referencia de la forma, y de otras dos viene escrita la
-mitad mecánica: lo que escribe es siempre la decisión.
-
-```
-npm test -- checks
-```
-
-| Verificación            | Qué escribe                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------ |
-| `checkCoverage`         | 3a · solo el caso contradictorio: el mismo proveedor como cotización y como ausencia |
-| `checkArithmetic`       | 3b · la verificación completa                                                        |
-| `checkHardLimits`       | 3c · solo la comprobación sobre el proveedor recomendado                             |
-| `checkNormalization`    | — viene completa                                                                     |
-| `checkMissingResponses` | — viene completa                                                                     |
-| `checkTieBreak`         | — viene completa                                                                     |
-
-**El `TODO(3c)` es el que resiste una inyección.** Lo que viene escrito confía en
-lo que cada cotización declara sobre sí misma, y eso es justo lo que un texto
-manipula: basta con declararse conforme. Falta comprobar al recomendado contra
-sus propias cifras. Un texto puede convencer a un modelo de omitir una
-verificación; **no puede convencer a una comparación numérica.**
-
-**La segunda capa ya está implementada** en `src/guardrails/judge.ts`. No se completa: se
-lee. Cubre lo que no tiene respuesta mecánica —si la evidencia permite rastrear
-los números, si se explican los descartes— y es una llamada aparte, sin
-herramientas, que recibe el resultado sin el razonamiento que lo produjo.
-
-### 5 · Una corrida real — 21 min
-
-Copie `.env.example` a `.env`, coloque una clave, y ejecute:
-
-```
-npm run agent
-```
-
-Cuatro cosas que observar:
-
-**Corra dos o tres veces.** Los pasos no serán idénticos. Es el
-no-determinismo visto en datos propios, y la razón de que existan las dos capas.
-
-**Fuerce un tope:** `MAX_STEPS=2 npm run agent`. La ejecución se interrumpe
-antes de seguir gastando y entrega el expediente de lo ya averiguado: qué se
-consultó, con qué argumentos y cuánto devolvió cada consulta. Detenerse no es
-suficiente — quien recibe el caso tiene que poder continuarlo sin rehacer el
-trabajo.
-
-**Vea las trazas:** `TRACING=1 npm run agent`. Emite un span por llamada al
-modelo y por invocación de herramienta, con los atributos `gen_ai.*` del
-estándar. La traducción está en `src/platform/tracing.ts`.
-
-**Cambie de proveedor** en `.env`. Funciona igual: el proveedor solo interviene
-en `src/platform/providers.ts`.
-
-### Plantearle otro encargo
-
-Nada en el código describe una secuencia de pasos. El agente recibe herramientas
-y un encargo, y decide qué pedir, en qué orden y cuándo detenerse. Para
-comprobarlo, cámbiele el encargo:
-
-```
-npm run agent -- "Averigua únicamente qué proveedores incluyen el flete. No compares totales."
-```
-
-El plan cambia de verdad: con el encargo del caso pide el encargo y las cinco
-cotizaciones; con este otro reparte las llamadas distinto y tarda más vueltas.
-
-**Y el resultado es el mismo.** Medido sobre `gemini-3.1-flash-lite`:
-
-| Encargo         | Entrada               | Recomendación |
-| --------------- | --------------------- | ------------- |
-| El del caso     | 7.530 tokens          | MayoristaZeta |
-| «solo el flete» | 5.506 y 22.979 tokens | MayoristaZeta |
-
-Pidiendo explícitamente que **no** compare totales, entregó el comparativo
-completo con la misma recomendación, las dos veces.
-
-Eso no es un fallo del modelo. Un agente recibe tres entradas, y **la del
-usuario es la más débil de las tres**:
-
-| Entrada            | Quién la escribe | Cuánto pesa                         |
-| ------------------ | ---------------- | ----------------------------------- |
-| Instrucciones      | quien construye  | define cuál es el trabajo           |
-| Contrato de salida | quien construye  | define qué forma tiene la respuesta |
-| Encargo            | quien lo usa     | matiza, dentro de lo anterior       |
-
-Las instrucciones dicen «consigue las cotizaciones de todos, normalízalas y
-recomienda la de menor total», y `comparisonSchema` exige los cinco proveedores
-con sus totales. Entre las dos no dejan sitio para otra cosa.
-
-**La lección, que es de producción y no de taller:** un agente con contrato
-estricto no es un asistente general al que se le pide cualquier cosa. Es una
-función especializada con interfaz en lenguaje natural. Pedirle algo distinto no
-le hace hacer algo distinto — le hace hacer lo mismo, peor y más caro.
-
-Hacerlo gobernable por el encargo exige aflojar instrucciones y esquema, y eso
-cuesta exactamente la capa que permite verificar el resultado. **Un agente es
-tan verificable como específico sea su contrato**, y elegir dónde ponerse en ese
-eje es el trabajo de diseño.
-
-### La compuerta de aprobación
-
-El catálogo expone una tercera herramienta: `place_order`, que emite la orden de
-compra en firme. La capacidad existe porque en el sistema real existe.
-
-La regla 8 de las instrucciones pide que el agente no adjudique, así que en una
-corrida normal nunca lo intenta y la compuerta no se nota. Quítela:
-
-```
-DROP_PROMPT_RULE=1 npm run agent
-```
-
-```
-COMPUERTA DE APROBACIÓN
-  DENEGADO  place_order({"supplier":"Suministros Delta","totalUsd":6620})
-  Este agente recomienda, no adjudica.
-```
-
-El modelo lo intentó; el arnés no lo dejó. `src/guardrails/approval.ts` decide qué se
-ejecuta según un solo criterio: la reversibilidad. Consultar una cotización se
-deshace cerrando la ventana; emitir una orden no.
-
-La regla del prompt y esa tabla dicen lo mismo. La diferencia es que **a una se
-la puede convencer**, y un texto de proveedor tiene exactamente esa forma.
-
-En esta variante el resto del comparativo puede degradarse: se está pidiendo
-otra cosa. Lo que demuestra es la denegación.
-
-### Su propia prueba de regresión
-
-`tests/regression.test.ts` guarda fallos reales convertidos en pruebas. Los tres
-primeros salieron de corridas durante la preparación.
-
-Corra el agente hasta encontrar un resultado que no debería haber pasado y
-escríbalo ahí, donde está el `it.todo` esperando. Un sistema no determinista no
-se estabiliza razonando sobre él: se estabiliza acumulando los casos en que
-falló.
-
----
-
-## Lo que cuesta un agente de varios pasos
-
-La salida del agente incluye el desglose por paso:
-
-```
-  paso 1:    812 entrada     15 salida
-  paso 2:    950 entrada    101 salida
-  paso 3:   2089 entrada    931 salida
-  total:    3851 entrada   1047 salida  · 0 de caché (0 %)
-```
-
-La entrada crece en cada vuelta porque el bucle reenvía la conversación completa
-más las definiciones de herramientas. En un flujo largo ese crecimiento domina
-el costo: la salida es una fracción.
-
-**Sobre el caché.** Los proveedores cachean el prefijo repetido de una
-conversación, pero solo a partir de un mínimo del orden de mil tokens. Este
-agente arranca por debajo de ese umbral, así que paga la entrada completa en
-cada paso —y por eso el contador marca 0 %. En un sistema con instrucciones
-largas o muchas herramientas, la misma cuenta cambia por completo.
-
-**Lo que sí se controla:** cuánto devuelve cada herramienta. `get_quote`
-entrega el texto crudo de la cotización, que es la mayor parte del contexto.
-Resumirlo antes de devolverlo reduciría el costo y perdería la fidelidad que
-hace visible la inyección. Es una decisión de diseño con las dos caras, no una
-optimización gratuita.
-
----
-
-## Consultar una solución
-
-```
-npm run solutions
-```
-
-Copia las versiones completas sobre `src/`. Consultarlas es una opción
-legítima: el objetivo es entender por qué cada pieza existe, no llegar primero.
-
-Para volver atrás: `npm run gaps`.
-
----
-
-## Medir si funciona
-
-```
-npm run measure -- 8
-```
-
-Corre el flujo ocho veces y cuenta cuántas producen salida válida y cuántas
-pasan las verificaciones.
+**El recorrido paso a paso, con lo que cada `TODO` enseña, está en
+[`RECORRIDO.md`](RECORRIDO.md).**
 
 ---
 
 ## Estructura
 
-Las carpetas de `src/` son las piezas de un sistema agéntico, una por rol.
+Las carpetas de `src/` corresponden a los roles de un sistema agéntico.
 
 ```
 src/
-  cli.ts              punto de entrada · abre el catálogo y escribe el informe
-  agent.ts            orquestación · devuelve datos, no imprime
-  report.ts           presentación · da forma a lo ya calculado
-  loop.ts             el ciclo, sin librería de por medio
+  cli.ts              punto de entrada: abre el catálogo y escribe el informe
+  agent.ts            orquestación: devuelve datos, no imprime
+  report.ts           presentación: da forma a lo ya calculado
+  loop.ts             el ciclo del agente, sin librería de por medio
 
-  domain/             el caso y su contrato
-    catalog.ts        acceso a los datos
-    schemas.ts        TODO 1 · la forma de la salida
+  domain/             el caso y su contrato de datos
+    catalog.ts        acceso a los datos del encargo
+    schemas.ts        TODO 1 · forma de la salida
 
-  mcp/                cómo el agente toca el mundo
-    server.ts         expone el catálogo por el protocolo
-    client.ts         TODO 2 · lo consume y lo traduce a herramientas
-    integrity.ts      deriva del catálogo entre corridas
+  mcp/                conexión con el exterior
+    server.ts         expone el catálogo por el protocolo MCP
+    client.ts         TODO 2 · lo consume y traduce sus herramientas
+    integrity.ts      detecta cambios en el catálogo entre corridas
 
   guardrails/         las barreras
     checks.ts         TODO 3 · verificación por código
     judge.ts          evaluación por modelo
-    approval.ts       qué acciones no ejecuta el agente por sí mismo
+    approval.ts       acciones que el agente no ejecuta por sí mismo
 
-  platform/           lo transversal
-    providers.ts      selección de proveedor
+  platform/           infraestructura transversal
+    providers.ts      selección de proveedor de modelo
     tracing.ts        instrumentación OpenTelemetry
 
 tests/                refleja la estructura de src/, más las regresiones
-data/                 encargo, cotizaciones, conversación grabada y huella
-solutions/            las versiones completas de los tres archivos con TODO
+data/                 encargo, cotizaciones, corrida grabada y huella
+solutions/            versiones completas de los tres archivos con TODO
 scripts/              medición, huella e intercambio de versiones
 ```
 
-La separación entre `agent.ts` y `report.ts` no es decorativa: como la
-orquestación devuelve datos en lugar de imprimirlos, el contenido del informe
-se verifica en `tests/report.test.ts` sin capturar texto de consola.
+`agent.ts` devuelve datos y `report.ts` les da formato. Esa separación permite verificar el
+contenido del informe en `tests/report.test.ts` sin capturar salida de consola.
+
+---
+
+## Dependencias
+
+| Paquete                         | Versión | Para qué                                                                                                    |
+| ------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| `ai`                            | 7.0.107 | Arnés del agente: bucle de herramientas, salida estructurada, compuerta de aprobación y huella del catálogo |
+| `zod`                           | 4.6.5   | Contrato de datos en `src/domain/schemas.ts`. Valida en ejecución y deriva los tipos                        |
+| `@modelcontextprotocol/sdk`     | 1.30.0  | Servidor y cliente MCP en `src/mcp/`, sobre transporte de entrada y salida estándar                         |
+| `@ai-sdk/google`                | 4.0.76  | Proveedor Gemini                                                                                            |
+| `@ai-sdk/openai`                | 4.0.71  | Proveedor OpenAI                                                                                            |
+| `@opentelemetry/sdk-node`       | 0.222.0 | Exportación de trazas en `src/platform/tracing.ts`                                                          |
+| `@opentelemetry/sdk-trace-node` | 2.11.0  | Procesador de spans para esa exportación                                                                    |
+
+| Herramienta   | Versión | Para qué                                           |
+| ------------- | ------- | -------------------------------------------------- |
+| `typescript`  | 7.0.2   | Modo estricto. El typecheck es parte de `npm test` |
+| `vitest`      | 5.0.1   | Suite de pruebas. 93 casos en unos dos segundos    |
+| `tsx`         | 4.23.15 | Ejecuta TypeScript sin paso de compilación         |
+| `prettier`    | 3.9.9   | Formato                                            |
+| `@types/node` | 26.6.2  | Tipos de la biblioteca estándar de Node            |
+
+### Del paquete `ai` se usan cuatro capacidades
+
+| API                                      | Dónde                        |
+| ---------------------------------------- | ---------------------------- |
+| `Experimental_Agent` con `stopWhen`      | `src/agent.ts`               |
+| `Output.object` para salida estructurada | `src/agent.ts`               |
+| `toolApproval`                           | `src/guardrails/approval.ts` |
+| `fingerprintTools` y `detectToolDrift`   | `src/mcp/integrity.ts`       |
+| `registerTelemetry`                      | `src/platform/tracing.ts`    |
+
+---
+
+## Decisiones técnicas
+
+**TypeScript en modo estricto**, con `noUncheckedIndexedAccess` y `exactOptionalPropertyTypes`. Un
+contrato mal usado falla al compilar, no solo al ejecutar. El typecheck entra en `npm test`.
+
+**Sin ESLint.** La versión vigente de `typescript-eslint` declara compatibilidad hasta TypeScript
+6.1 y aquí se usa la 7, de modo que instalarlo exigiría forzar la resolución de dependencias. El
+modo estricto del compilador cubre la corrección y Prettier el formato.
+
+**Los importes se comparan en centavos enteros.** JavaScript no tiene tipo decimal: `6360.01 - 6360`
+da `0.010000000000218`, y comparar en dólares produce falsos positivos.
+
+**Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica —seis
+comprobaciones, sin llamadas a modelo—. `guardrails/judge.ts` cubre lo que exige criterio, en una
+llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el resultado.
+
+---
 
 ## Verificación continua
 
-```
-npm run typecheck     compila sin emitir
-npm run format:check  formato
-npm test              typecheck y suite completa
-```
+`.github/workflows/ci.yml` ejecuta typecheck y formato sobre el estado tal como se entrega,
+después aplica las soluciones y corre la suite completa. Las dos ramas se validan igual.
 
-`.github/workflows/ci.yml` ejecuta el typecheck y el formato sobre el estado
-tal como se entrega, y después aplica las soluciones y corre la suite completa.
-Las dos ramas se validan igual y ninguna depende de la otra.
+| Rama         | Contenido                                          |
+| ------------ | -------------------------------------------------- |
+| `main`       | El material con los `TODO`. Es el punto de partida |
+| `soluciones` | `main` con las soluciones aplicadas                |
 
-**Mantener `soluciones` al día.** La rama es `main` con las soluciones puestas,
-así que se regenera en dos órdenes cada vez que `main` cambia:
+`soluciones` se regenera cuando `main` cambia:
 
-```
+```bash
 git checkout -B soluciones main
 npm run solutions && git commit -am "chore: soluciones aplicadas"
 ```
 
-Una rama `soluciones` desfasada es peor que no tenerla: `npm run solutions`
-sigue funcionando desde `main` sin conexión, y esa es la vía principal.
+No es necesario cambiar de rama para consultar una solución: `npm run solutions` y `npm run gaps`
+funcionan sin conexión desde `main`.
 
-El proyecto no lleva ESLint. La versión actual de `typescript-eslint` declara
-compatibilidad hasta TypeScript 6.1 y aquí se usa TypeScript 7, de modo que
-instalarlo exigiría forzar la resolución de dependencias. El modo estricto del
-compilador —con `noUncheckedIndexedAccess` y `exactOptionalPropertyTypes`—
-cubre la corrección, y Prettier el formato.
+---
 
-## Stack
+## Licencia
 
-| Capa          | Elección                                             |
-| ------------- | ---------------------------------------------------- |
-| Arnés y bucle | Vercel AI SDK — agnóstico de proveedor               |
-| Contrato      | Zod — validación en ejecución y tipos en compilación |
-| Herramientas  | SDK oficial de Model Context Protocol                |
-| Trazas        | OpenTelemetry, convenciones GenAI                    |
-| Pruebas       | Vitest                                               |
+MIT. Ver [`LICENSE`](LICENSE).
