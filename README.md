@@ -210,4 +210,5 @@ funcionan sin conexión desde `main`.
 
 ## Licencia
 
-MIT. Ver [`LICENSE`](LICENSE).
+MIT. El texto vinculante es el de [`LICENSE`](LICENSE), en inglés, que es la forma canónica que
+reconocen GitHub y las herramientas de análisis de dependencias.
