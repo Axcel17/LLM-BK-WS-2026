@@ -8,11 +8,11 @@ Los dos bloques prácticos del taller, en orden. 135 minutos en total.
 | 2 · Código | Escribirlas                                         | 90 min   |
 
 **El mismo encargo, resuelto dos veces.** La Parte 1 configura las seis piezas de un sistema
-agéntico en un entorno gestionado y observa sus modos de falla. La Parte 2 las escribe. Las
-carpetas de `src/` corresponden a esas mismas seis piezas.
+agéntico en un entorno gestionado y observa sus modos de falla. La Parte 2 las escribe. Las carpetas
+de `src/` corresponden a esas mismas seis piezas.
 
-Cada parte funciona por separado. La referencia del proyecto —instalación, estructura,
-dependencias— está en [`README.md`](README.md).
+Cada parte funciona por separado. La referencia del proyecto —instalación, estructura, dependencias—
+está en [`README.md`](README.md).
 
 ---
 
@@ -43,14 +43,9 @@ decisiones de permiso, no una.
 - **Cuenta personal de Google.** Una cuenta corporativa con restricciones de administrador puede no
   permitir autorizar el conector.
 - Este repositorio clonado o descargado.
-- La dirección base de los sitios de proveedores:
-
-  ```
-  https://axcel17.github.io/proveedores-andes/
-  ```
-
-  Los cinco portales se sirven desde `github.com/Axcel17/proveedores-andes`. No hace falta
-  publicarlos ni configurarlos.
+- **Nada más.** Los cinco portales están publicados de forma permanente en
+  `https://axcel17.github.io/proveedores-andes/`, y sus direcciones ya figuran en
+  `parte-1-cowork/espacio-de-trabajo/datos/proveedores.md`.
 
 ## El material
 
@@ -86,11 +81,11 @@ El sistema tiene que **enviar una recomendación por correo** cuando termine. Re
 
 > ¿Qué necesita poder hacer en su bandeja de correo, exactamente?
 
-Complete la tabla de `parte-1-cowork/permisos.md`. Cuatro acciones, tres niveles posibles cada una: permitir
-siempre, requiere aprobación o bloquear.
+Complete la tabla de `parte-1-cowork/permisos.md`. Cuatro acciones, tres niveles posibles cada una:
+permitir siempre, requiere aprobación o bloquear.
 
-La amplitud de estos permisos determina el alcance del daño ante una manipulación del agente.
-Ver el paso 2.5.
+La amplitud de estos permisos determina el alcance del daño ante una manipulación del agente. Ver el
+paso 2.5.
 
 ---
 
@@ -99,19 +94,19 @@ Ver el paso 2.5.
 **2.1 · Acceso a archivos.** Abra Cowork y concédale acceso a **`parte-1-cowork/espacio-de-trabajo/`
 únicamente**, no a `parte-1-cowork/` completa.
 
-La distinción no es cosmética. Fuera de esa subcarpeta quedan `parte-1-cowork/referencia/`, que contiene el
-comparativo esperado, y el respaldo local del instructor, que contiene las cinco cotizaciones ya
-recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo local, sin visitar
-un solo sitio.
+La distinción no es cosmética. Fuera de esa subcarpeta quedan `parte-1-cowork/referencia/`, que
+contiene el comparativo esperado, y el respaldo local del instructor, que contiene las cinco
+cotizaciones ya recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo
+local, sin visitar un solo sitio.
 
-El alcance de lectura de un agente determina qué información puede incorporar. El privilegio
-mínimo aplica a archivos igual que a conectores.
+El alcance de lectura de un agente determina qué información puede incorporar. El privilegio mínimo
+aplica a archivos igual que a conectores.
 
 **2.2 · Conectar el correo.** En la configuración de conectores, conecte Gmail con la cuenta
 personal. Se abre la autorización de Google; concédala y regrese.
 
-**2.3 · Fijar los permisos.** Ajuste las cuatro acciones al nivel que decidió en el paso 1.
-**No deje los valores por defecto.**
+**2.3 · Fijar los permisos.** Ajuste las cuatro acciones al nivel que decidió en el paso 1. **No
+deje los valores por defecto.**
 
 **2.4 · Verificación de lo concedido.** Pregunte:
 
@@ -139,8 +134,9 @@ verificación se escribe como prueba automatizada.
 
 ## Paso 3 · Guardar la instrucción — 4 min
 
-Abra `parte-1-cowork/espacio-de-trabajo/instruccion-abastecimiento.md`. Tiene **dos blancos marcados con `<<< COMPLETAR >>>`** que debe completar con las
-restricciones duras de `parte-1-cowork/espacio-de-trabajo/datos/encargo.md`.
+Abra `parte-1-cowork/espacio-de-trabajo/instruccion-abastecimiento.md`. Tiene **dos blancos marcados
+con `<<< COMPLETAR >>>`** que debe completar con las restricciones duras de
+`parte-1-cowork/espacio-de-trabajo/datos/encargo.md`.
 
 Una vez completa, **guárdela como instrucción reutilizable** con el nombre `abastecimiento`.
 
@@ -152,24 +148,27 @@ el menor total, no se adjudica— gobierna al agente en código.
 
 ## Paso 4 · Primera corrida — 11 min
 
-Invoque la instrucción guardada, indicando la dirección base de los proveedores:
+Invoque la instrucción guardada:
 
 ```
-Usa la instrucción de abastecimiento. La dirección base de los proveedores es <BASE>.
-Ejecuta la primera fase: enviar las cinco solicitudes y registrar el seguimiento.
+Usa la instrucción de abastecimiento. Ejecuta la primera fase: enviar las cinco
+solicitudes y registrar el seguimiento.
 ```
+
+Las direcciones de los cinco portales están en `datos/proveedores.md`, que el agente ya tiene en su
+alcance. No hace falta pasárselas.
 
 **Resultado esperado:** localiza cada formulario, lo completa, lo envía y guarda la dirección de
 seguimiento. Las cotizaciones **no** están listas todavía, y eso es correcto.
 
 ### Verificación
 
-Abra `parte-1-cowork/espacio-de-trabajo/salidas/seguimiento.json`. Debe tener **cinco entradas**, cada una con la dirección de
-seguimiento **completa**.
+Abra `parte-1-cowork/espacio-de-trabajo/salidas/seguimiento.json`. Debe tener **cinco entradas**,
+cada una con la dirección de seguimiento **completa**.
 
-**Fallo previsto:** el agente guarda el número de referencia y omite la dirección completa. Sin
-ella no puede recuperar la cotización y debe reenviar la solicitud. Es el modo de falla del almacén
-de estado.
+**Fallo previsto:** el agente guarda el número de referencia y omite la dirección completa. Sin ella
+no puede recuperar la cotización y debe reenviar la solicitud. Es el modo de falla del almacén de
+estado.
 
 ### El paralelismo
 
@@ -188,8 +187,9 @@ Dos cosas que comprobar al hacerlo:
 
 - Es el **disparador** de la anatomía. El sistema deja de depender de que usted escriba.
 - **Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
-  equipo apagado. Esta toca `parte-1-cowork/espacio-de-trabajo/`, así que corre en su computadora y solo mientras
-  esté despierta. Si el estado viviera en un conector y no en una carpeta, podría correr sin ella.
+  equipo apagado. Esta toca `parte-1-cowork/espacio-de-trabajo/`, así que corre en su computadora y
+  solo mientras esté despierta. Si el estado viviera en un conector y no en una carpeta, podría
+  correr sin ella.
 
 La cadencia mínima disponible excede la duración del bloque, de modo que la segunda corrida se
 dispara manualmente. El objetivo del paso es la configuración, no su ejecución automática.
@@ -216,8 +216,8 @@ normalízalas y arma el comparativo.
 
 ### Verificación
 
-`parte-1-cowork/espacio-de-trabajo/salidas/comparativo.md` existe, contiene los **cinco** proveedores —incluidos los que no
-cotizaron— y ninguna adjudicación ejecutada.
+`parte-1-cowork/espacio-de-trabajo/salidas/comparativo.md` existe, contiene los **cinco**
+proveedores —incluidos los que no cotizaron— y ninguna adjudicación ejecutada.
 
 ---
 
@@ -245,9 +245,21 @@ Lo que detuvo el envío fue la compuerta configurada en el paso 1, no una capaci
 
 ### Cierre: la sexta pieza
 
-Revise el historial de la corrida: qué hizo el agente, cuántos pasos dio y qué herramientas
-invocó. Eso es **observabilidad**, y en la Parte 2 se convierte en trazas paso por paso con las
-convenciones de OpenTelemetry.
+Revise el historial de la corrida: qué hizo el agente, cuántos pasos dio y qué herramientas invocó.
+Eso es **observabilidad**, y en la Parte 2 se convierte en trazas paso por paso con las convenciones
+de OpenTelemetry.
+
+### La revisión de privilegio mínimo
+
+El historial indica qué permisos usó el agente en realidad. Vuelva a `parte-1-cowork/permisos.md` y
+compare con lo que concedió:
+
+- ¿Usó todos los permisos concedidos?
+- ¿Faltó alguno?
+- ¿Alguno quedó sin usar?
+
+Un permiso concedido y nunca usado es superficie de ataque sin contrapartida. Retirarlo es el
+resultado de una revisión de seguridad real, y es lo que hace la última sección de esa hoja.
 
 ---
 
@@ -259,15 +271,15 @@ cualquier momento sin configurar nada.
 
 `parte-1-cowork/referencia/version-de-referencia.md` contiene los dos blancos de la instrucción
 resueltos, la tabla de permisos y el comparativo esperado. Destinada a consultarse después de
-ejecutar el ejercicio, y **fuera del alcance del agente**: la carpeta `referencia/` está separada por
-esa razón.
+ejecutar el ejercicio, y **fuera del alcance del agente**: la carpeta `referencia/` está separada
+por esa razón.
 
 ---
 
 # Parte 2 · Código — 90 min
 
-Cinco tramos. Los cuatro primeros no necesitan clave ni conexión: corren contra una corrida
-grabada. Solo el quinto llama a un modelo.
+Cinco tramos. Los cuatro primeros no necesitan clave ni conexión: corren contra una corrida grabada.
+Solo el quinto llama a un modelo.
 
 | Tramo                           | Duración | `TODO`     |
 | ------------------------------- | -------- | ---------- |
@@ -292,12 +304,12 @@ cuarenta líneas. Tres puntos:
 atiende. La tabla `tools` delimita lo que el agente puede hacer, independientemente de lo que el
 modelo pida.
 
-**La conversación completa se reenvía en cada llamada.** Lo que no esté en `messages` no existe
-para el modelo. Esa lista es todo el estado que el agente tiene dentro de una corrida; entre
-corridas no conserva nada.
+**La conversación completa se reenvía en cada llamada.** Lo que no esté en `messages` no existe para
+el modelo. Esa lista es todo el estado que el agente tiene dentro de una corrida; entre corridas no
+conserva nada.
 
-**`maxSteps` acota el gasto.** Sin ese tope, un modelo que nunca devuelve texto gira hasta agotar
-la cuota.
+**`maxSteps` acota el gasto.** Sin ese tope, un modelo que nunca devuelve texto gira hasta agotar la
+cuota.
 
 El patrón es ReAct: el modelo alterna razonar y actuar, y decide el paso siguiente con lo que acaba
 de observar. No hay un plan completo por adelantado.
@@ -343,15 +355,15 @@ npm test -- client
 
 Un `TODO` en `src/mcp/client.ts`. El acceso tipado viene escrito debajo.
 
-`src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte que el agente
-consume sin saber en qué lenguaje está escrito ni dónde corre. Las dos últimas pruebas lo levantan
-como proceso hijo y verifican que el dato atraviesa el protocolo.
+`src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte que el agente consume
+sin saber en qué lenguaje está escrito ni dónde corre. Las dos últimas pruebas lo levantan como
+proceso hijo y verifican que el dato atraviesa el protocolo.
 
 **`TODO(2)` · de dónde sale el esquema de entrada.** Reescribirlo a mano mirando `get_quote`, que
 recibe un argumento, parece suficiente. El catálogo expone además `place_order`, que recibe dos, y
 una traducción a mano tiende a quedarse con el primero: el modelo pierde la capacidad de enviar el
-monto sin que nada falle de forma visible. La prueba `cada herramienta conserva los argumentos que
-el servidor declara` lo discrimina.
+monto sin que nada falle de forma visible. La prueba
+`cada herramienta conserva los argumentos que el servidor declara` lo discrimina.
 
 `description` es lo único que el modelo lee para decidir si usa una herramienta. Es documentación
 que cambia el comportamiento en ejecución.
@@ -421,8 +433,8 @@ seis. El modelo es el mismo; cambió el criterio de evaluación.
 `src/guardrails/judge.ts` viene completa. Cubre lo que no tiene respuesta mecánica: si la evidencia
 permite rastrear los números hasta el texto del proveedor, si se explican los descartes.
 
-Es una llamada aparte, sin herramientas, que recibe el resultado sin el razonamiento que lo
-produjo. Un evaluador que ve el razonamiento tiende a validarlo.
+Es una llamada aparte, sin herramientas, que recibe el resultado sin el razonamiento que lo produjo.
+Un evaluador que ve el razonamiento tiende a validarlo.
 
 ---
 
@@ -432,8 +444,8 @@ produjo. Un evaluador que ve el razonamiento tiende a validarlo.
 npm run agent
 ```
 
-**Ejecute dos o tres veces.** Los pasos no serán idénticos. Con `gemini-3.1-flash-lite` cada
-corrida tarda entre 51 y 130 segundos; con `gpt-5.4-mini`, entre 6 y 7.
+**Ejecute dos o tres veces.** Los pasos no serán idénticos. Con `gemini-3.1-flash-lite` cada corrida
+tarda entre 51 y 130 segundos; con `gpt-5.4-mini`, entre 6 y 7.
 
 **El tope de pasos.** `MAX_STEPS=2 npm run agent` interrumpe la ejecución y entrega lo ya
 averiguado: qué se consultó, con qué argumentos y cuánto devolvió cada consulta. Sin ese registro,

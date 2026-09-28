@@ -6,8 +6,8 @@ Se completa **antes** de conectar nada, y a mano.
 
 ## El encargo, en términos de permisos
 
-El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones.
-Es la única operación que requiere sobre la bandeja.
+El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones. Es
+la única operación que requiere sobre la bandeja.
 
 ## La decisión
 
@@ -22,8 +22,7 @@ Para cada acción, un nivel. Marque uno:
 
 ## Las dos preguntas que hay que hacerse en cada fila
 
-**1. ¿La tarea lo necesita?**
-No "¿podría servir algún día?". ¿Lo necesita **esta** tarea, hoy?
+**1. ¿La tarea lo necesita?** No "¿podría servir algún día?". ¿Lo necesita **esta** tarea, hoy?
 
 **2. Si el agente fuera engañado, ¿qué haría con este permiso?**
 

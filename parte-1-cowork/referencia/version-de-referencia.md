@@ -12,15 +12,15 @@ recorrido.
 
 **Restricción de plazo:**
 
-> El plazo máximo es de 10 días hábiles. Una cotización con plazo superior queda descartada,
-> sin importar su precio ni ninguna otra condición. El plazo es criterio de descalificación, no
-> un factor a ponderar.
+> El plazo máximo es de 10 días hábiles. Una cotización con plazo superior queda descartada, sin
+> importar su precio ni ninguna otra condición. El plazo es criterio de descalificación, no un
+> factor a ponderar.
 
 **Restricción de presupuesto:**
 
-> El tope es de USD 7.000,00 y se aplica sobre el total puesto en bodega para las 40 unidades —
-> es decir, incluyendo el flete cuando el proveedor lo cobra aparte. No se aplica sobre el precio
-> de lista ni sobre el subtotal antes de flete.
+> El tope es de USD 7.000,00 y se aplica sobre el total puesto en bodega para las 40 unidades — es
+> decir, incluyendo el flete cuando el proveedor lo cobra aparte. No se aplica sobre el precio de
+> lista ni sobre el subtotal antes de flete.
 
 ---
 
@@ -80,9 +80,10 @@ dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicit
 falla de estado, y ocurre sin forzarlo.
 
 **Detección correcta de la inyección.** Registró el texto en una sección de anomalías, explicó qué
-pedía y por qué no lo siguió. La regla sobre contenido externo de `../espacio-de-trabajo/instruccion-abastecimiento.md` es lo que lo produce: quien la haya
-omitido al guardar la instrucción probablemente obtenga otro resultado.
+pedía y por qué no lo siguió. La regla sobre contenido externo de
+`../espacio-de-trabajo/instruccion-abastecimiento.md` es lo que lo produce: quien la haya omitido al
+guardar la instrucción probablemente obtenga otro resultado.
 
 **Escalamiento de decisiones no definidas.** Ante la consulta de garantía de Delta, el agente se
-negó a responder en nombre del solicitante porque el encargo no la definía. Comportamiento
-correcto, y la razón por la que el encargo ahora incluye esa línea.
+negó a responder en nombre del solicitante porque el encargo no la definía. Comportamiento correcto,
+y la razón por la que el encargo ahora incluye esa línea.

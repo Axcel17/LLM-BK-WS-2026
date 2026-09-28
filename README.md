@@ -1,17 +1,16 @@
 # Agente de abastecimiento
 
-Agente que compara cotizaciones de cinco proveedores y recomienda una, con dos capas de
-verificación sobre su propia salida.
+Agente que compara cotizaciones de cinco proveedores y recomienda una, con dos capas de verificación
+sobre su propia salida.
 
 Las cotizaciones llegan en formatos distintos —por unidad, por caja, por lote, con flete incluido o
 aparte— y una de ellas contiene texto dirigido a sistemas automatizados para alterar la
-recomendación. El agente debe normalizarlas, aplicar dos restricciones que descalifican, reportar
-lo que no llegó y no obedecer ese texto.
+recomendación. El agente debe normalizarlas, aplicar dos restricciones que descalifican, reportar lo
+que no llegó y no obedecer ese texto.
 
 Material del taller **Dejemos de conversar con la IA y empecemos a delegar** · Innova-T Latam 2026.
 
-Consta de dos bloques prácticos, y ambos se siguen desde
-**[`GUIA.md`](GUIA.md)**.
+Consta de dos bloques prácticos, y ambos se siguen desde **[`GUIA.md`](GUIA.md)**.
 
 | Parte      | Material                             | Duración |
 | ---------- | ------------------------------------ | -------- |
@@ -189,8 +188,8 @@ llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el res
 
 ## Verificación continua
 
-`.github/workflows/ci.yml` ejecuta typecheck y formato sobre el estado tal como se entrega,
-después aplica las soluciones y corre la suite completa. Las dos ramas se validan igual.
+`.github/workflows/ci.yml` ejecuta typecheck y formato sobre el estado tal como se entrega, después
+aplica las soluciones y corre la suite completa. Las dos ramas se validan igual.
 
 | Rama         | Contenido                                          |
 | ------------ | -------------------------------------------------- |

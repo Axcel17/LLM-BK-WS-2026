@@ -1,8 +1,7 @@
 # Qué más se le puede dar a un entorno gestionado
 
-Hoja de referencia. En la Parte 1 se configuran seis capacidades; este es el inventario completo
-de lo que un entorno gestionado admite, más allá de lo que alcanza a verse en un bloque de 45
-minutos.
+Hoja de referencia. En la Parte 1 se configuran seis capacidades; este es el inventario completo de
+lo que un entorno gestionado admite, más allá de lo que alcanza a verse en un bloque de 45 minutos.
 
 Marcadas con **✓** las que se configuran en el recorrido.
 
@@ -13,9 +12,9 @@ Marcadas con **✓** las que se configuran en el recorrido.
 Una carpeta del disco, con lectura y escritura. El agente lee lo que hay, crea lo que falta,
 reorganiza lo que se le indique.
 
-**Capacidad no expuesta en la interfaz:** puede producir **archivos reales, no texto** — hojas de cálculo con
-fórmulas vivas, formato condicional y varias pestañas; presentaciones; documentos; PDF. La
-diferencia entre entregar un resumen y entregar un entregable.
+**Capacidad no expuesta en la interfaz:** puede producir **archivos reales, no texto** — hojas de
+cálculo con fórmulas vivas, formato condicional y varias pestañas; presentaciones; documentos; PDF.
+La diferencia entre entregar un resumen y entregar un entregable.
 
 ## 2 · Conectores a aplicaciones ✓
 
@@ -23,9 +22,9 @@ El puente autorizado a una aplicación real, sin compartir contraseñas. Disponi
 correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de equipo, firma
 electrónica, y sistemas de gestión comercial y de tickets.
 
-**El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por acción**. Leer,
-buscar, crear borradores, enviar y reenviar se configuran por separado, con tres niveles: permitir siempre,
-requiere aprobación, o bloqueado.
+**El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por
+acción**. Leer, buscar, crear borradores, enviar y reenviar se configuran por separado, con tres
+niveles: permitir siempre, requiere aprobación, o bloqueado.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
 
@@ -34,23 +33,23 @@ requiere aprobación, o bloqueado.
 Aislado del navegador personal, sin acceso a sesiones abiertas. Navega, hace clic, completa
 formularios y extrae contenido de sitios que no tienen API.
 
-**Por qué importa:** la mayoría de los sistemas con los que hay que trabajar no expone una API.
-Esto convierte cualquier sitio en una fuente de datos.
+**Por qué importa:** la mayoría de los sistemas con los que hay que trabajar no expone una API. Esto
+convierte cualquier sitio en una fuente de datos.
 
 ## 4 · Instrucciones reutilizables ✓
 
 Un conjunto de reglas, ejemplos y formato guardado con nombre propio, que se invoca cuando hace
 falta en lugar de redactarse de nuevo.
 
-**Detalle técnico:** comparten un presupuesto de contexto de
-alrededor del **2 % de la ventana**. Si el agente actúa como si hubiera olvidado que una existe,
-suele ser porque hay demasiadas compitiendo por ese espacio.
+**Detalle técnico:** comparten un presupuesto de contexto de alrededor del **2 % de la ventana**. Si
+el agente actúa como si hubiera olvidado que una existe, suele ser porque hay demasiadas compitiendo
+por ese espacio.
 
 ## 5 · Instrucciones permanentes del proyecto ✓
 
-Reglas que aplican a todo lo que ocurra en esa carpeta, antes de que el agente toque un archivo.
-Es donde viven las restricciones duras: qué nunca se automatiza, qué se trata como dato y nunca
-como instrucción.
+Reglas que aplican a todo lo que ocurra en esa carpeta, antes de que el agente toque un archivo. Es
+donde viven las restricciones duras: qué nunca se automatiza, qué se trata como dato y nunca como
+instrucción.
 
 ## 6 · Tareas programadas ✓
 
@@ -59,9 +58,9 @@ Una instrucción empaquetada que corre con cadencia —por hora, diaria, semanal
 con la computadora apagada; si toca una carpeta del disco, corre en la computadora y solo mientras
 esté despierta.
 
-**Comportamiento no documentado:** después de la primera corrida, el sistema reescribe sus propias instrucciones
-según lo que aprendió — qué conector usó, dónde encontró el dato, qué funcionó. La segunda suele
-salir mejor que la primera.
+**Comportamiento no documentado:** después de la primera corrida, el sistema reescribe sus propias
+instrucciones según lo que aprendió — qué conector usó, dónde encontró el dato, qué funcionó. La
+segunda suele salir mejor que la primera.
 
 ## 7 · Subagentes en paralelo ✓
 
@@ -70,8 +69,7 @@ Ante una tarea compleja, el entorno la parte y levanta varios subagentes que tra
 **Magnitud real documentada:** diez archivos procesados en paralelo en lugar de uno por uno bajaron
 de unos 30 minutos a unos 4.
 
-**Límite:** el abanico lo decide el entorno, no quien lo opera. Controlarlo requiere
-salir a código.
+**Límite:** el abanico lo decide el entorno, no quien lo opera. Controlarlo requiere salir a código.
 
 ---
 
@@ -85,9 +83,9 @@ portabilidad.
 
 ## 9 · Paquetes instalables
 
-Agrupan instrucciones, conectores y subagentes en **una sola unidad versionada** que se instala y
-se reparte. Es el mecanismo para que un flujo deje de vivir en la máquina de una persona y pase a
-ser algo que el equipo usa.
+Agrupan instrucciones, conectores y subagentes en **una sola unidad versionada** que se instala y se
+reparte. Es el mecanismo para que un flujo deje de vivir en la máquina de una persona y pase a ser
+algo que el equipo usa.
 
 > Para una empresa, esta es probablemente la capacidad de mayor impacto de toda la lista: convierte
 > el conocimiento de quien sabe usarlo en infraestructura compartida.

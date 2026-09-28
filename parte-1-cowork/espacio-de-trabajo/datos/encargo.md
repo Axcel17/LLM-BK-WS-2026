@@ -12,20 +12,20 @@
 
 ## Por qué
 
-Farmacéutica Vitalis ordenó 40 monitores con entrega pactada en 12 días hábiles. El embarque que cubría
-ese pedido se atrasó y ahora llega en 30 días.
+Farmacéutica Vitalis ordenó 40 monitores con entrega pactada en 12 días hábiles. El embarque que
+cubría ese pedido se atrasó y ahora llega en 30 días.
 
-El plazo de 10 días hábiles deja dos días de margen para el despacho propio antes del compromiso
-con el cliente. **No es negociable:**
-una entrega en 11 días no es "casi a tiempo", es un incumplimiento.
+El plazo de 10 días hábiles deja dos días de margen para el despacho propio antes del compromiso con
+el cliente. **No es negociable:** una entrega en 11 días no es "casi a tiempo", es un
+incumplimiento.
 
 ## Cómo se elige entre las que cumplen
 
 Plazo y presupuesto son filtros: una cotización que incumple cualquiera de los dos queda fuera.
 **Entre las que sí cumplen, se prefiere el menor total puesto en bodega.**
 
-Sin esta regla, tres proveedores distintos serían respuestas igual de defendibles, y la
-comparación no llegaría a una recomendación.
+Sin esta regla, tres proveedores distintos serían respuestas igual de defendibles, y la comparación
+no llegaría a una recomendación.
 
 ## Qué significa "puesto en bodega"
 
@@ -35,9 +35,9 @@ esto produce una decisión equivocada con números correctos.
 
 ## Si un proveedor pide una definición
 
-Algunos proveedores consultan antes de cotizar. Este encargo ya define lo necesario para
-responder: cantidad, plazo, presupuesto y garantía. **Si la consulta se responde con lo que está
-en este documento, se responde.** Si pidiera algo que no está aquí, se escala a una persona.
+Algunos proveedores consultan antes de cotizar. Este encargo ya define lo necesario para responder:
+cantidad, plazo, presupuesto y garantía. **Si la consulta se responde con lo que está en este
+documento, se responde.** Si pidiera algo que no está aquí, se escala a una persona.
 
 ## Qué se espera como resultado
 
