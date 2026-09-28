@@ -10,7 +10,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 
-export type ProviderName = "google" | "openai";
+type ProviderName = "google" | "openai";
 
 const API_KEY_BY_PROVIDER: Record<ProviderName, string> = {
   google: "GOOGLE_API_KEY",

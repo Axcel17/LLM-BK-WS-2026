@@ -9,7 +9,7 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { buildInstructions, buildTask, gatheredSoFar } from "../src/agent.js";
+import { buildInstructions, buildTask, gatheredSoFar, maxSteps } from "../src/agent.js";
 
 /** Las instrucciones vienen justificadas: una frase puede cruzar un salto. */
 function flat(text: string): string {
@@ -64,6 +64,25 @@ describe("buildTask", () => {
 
     delete process.env["DROP_PROMPT_RULE"];
     expect(buildTask()).not.toMatch(/compra cerrada/i);
+  });
+});
+
+describe("maxSteps", () => {
+  it("sin variable, usa el valor por defecto", () => {
+    expect(maxSteps(undefined)).toBe(12);
+    expect(maxSteps("")).toBe(12);
+  });
+
+  it("acepta un entero positivo", () => {
+    expect(maxSteps("2")).toBe(2);
+  });
+
+  it("rechaza lo que no es un entero positivo", () => {
+    // `Number("doce")` da NaN, y `stepCountIs(NaN)` no se cumple nunca: sin esta
+    // validación, una errata en `.env` dejaría el bucle sin tope y en silencio.
+    for (const valor of ["doce", "0", "-3", "2.5"]) {
+      expect(() => maxSteps(valor), `valor ${valor}`).toThrow(/entero positivo/);
+    }
   });
 });
 

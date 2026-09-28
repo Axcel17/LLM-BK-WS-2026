@@ -48,14 +48,25 @@ REGLAS
 8. No adjudicas. Recomiendas con evidencia; decide una persona.
 `.trim();
 
+/** Tope por defecto: seis llamadas cubren el encargo y las cinco cotizaciones. */
+const DEFAULT_MAX_STEPS = 12;
+
 /**
- * Tope de vueltas del bucle.
+ * Tope de vueltas del bucle, leído del entorno.
  *
- * Seis llamadas cubren el encargo y las cinco cotizaciones; el margen admite un
- * reintento sin permitir un bucle que no converge.
+ * Se valida en lugar de convertirse sin más. `Number("doce")` da `NaN`, y
+ * `stepCountIs(NaN)` no se cumple nunca: una errata en `.env` dejaría el bucle
+ * sin tope y sin que nada lo indicara. Es el modo de falla que el propio tope
+ * existe para evitar.
  */
-function maxSteps(): number {
-  return Number(process.env["MAX_STEPS"] ?? 12);
+export function maxSteps(valor = process.env["MAX_STEPS"]): number {
+  if (valor === undefined || valor.trim() === "") return DEFAULT_MAX_STEPS;
+
+  const pasos = Number(valor);
+  if (!Number.isInteger(pasos) || pasos < 1) {
+    throw new Error(`MAX_STEPS debe ser un entero positivo. Recibido: ${JSON.stringify(valor)}`);
+  }
+  return pasos;
 }
 
 /**

@@ -19,7 +19,22 @@ import { connectCatalog } from "../src/mcp/client.js";
 /** Respuesta correcta del caso, para distinguir validez de acierto. */
 const EXPECTED_SUPPLIER = "MayoristaZeta";
 
-const runs = Number(process.argv[2] ?? 8);
+/**
+ * Número de corridas. Cada una es una llamada real y facturable, así que la
+ * entrada se valida y se acota: un argumento no numérico daba `NaN`, el bucle
+ * no iteraba, y el informe salía como `0/NaN` con código de salida cero.
+ */
+const MAX_RUNS = 50;
+const argumento = process.argv[2];
+const runs = argumento === undefined ? 8 : Number(argumento);
+
+if (!Number.isInteger(runs) || runs < 1 || runs > MAX_RUNS) {
+  console.error(
+    `  Número de corridas inválido: ${JSON.stringify(argumento)}.\n` +
+      `  Use un entero entre 1 y ${MAX_RUNS}. Por ejemplo: npm run measure -- 6`,
+  );
+  process.exit(1);
+}
 
 let valid = 0;
 let correct = 0;
