@@ -1,5 +1,8 @@
 # Los cinco sitios de proveedores
 
+**Publicados en `https://axcel17.github.io/LLM-BK-WS-2026/`** por `.github/workflows/pages.yml`, que despliega esta carpeta en cada
+cambio. Lo que sigue describe cómo funcionan y cómo servirlos por otros medios.
+
 El entorno simulado contra el que trabaja el agente. Sitios completamente estáticos: **sin
 backend, sin base de datos, sin servicio de correo, sin dependencias externas**. Todo el estado
 viaja en la URL.

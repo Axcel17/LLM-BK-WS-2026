@@ -3,8 +3,8 @@
 Cinco proveedores alternos. Cada uno tiene su propio sitio con un formulario de solicitud de
 cotización. Ninguno usa el mismo formato que los demás.
 
-> **Las direcciones se confirman al empezar.** En la sesión las proyecta el instructor; por
-> cuenta propia se obtienen al publicar `sitios-proveedores/`. Quedan en el
+> **Dirección base:** `https://axcel17.github.io/LLM-BK-WS-2026/`
+> Los cinco sitios se publican desde el repositorio. Sus direcciones quedan en el
 > enlace corto de la sala. Las de abajo son la forma que tendrán.
 
 | Proveedor         | Sitio                   |

@@ -43,9 +43,14 @@ decisiones de permiso, no una.
 - **Cuenta personal de Google.** Una cuenta corporativa con restricciones de administrador puede no
   permitir autorizar el conector.
 - Este repositorio clonado o descargado.
-- La dirección base de los sitios de proveedores. En la sesión la proyecta el instructor; por cuenta
-  propia se obtiene publicando `parte-1-cowork/entorno/sitios-proveedores/`, como describe su
-  `README.md`.
+- La dirección base de los sitios de proveedores:
+
+  ```
+  https://axcel17.github.io/LLM-BK-WS-2026/
+  ```
+
+  Se publica automáticamente desde este repositorio. Si prefiere servirlos usted mismo, el
+  `README.md` de `parte-1-cowork/entorno/sitios-proveedores/` explica cómo.
 
 ## El material
 
@@ -251,10 +256,10 @@ convenciones de OpenTelemetry.
 
 ## Repetir la Parte 1 por cuenta propia
 
-Los cinco sitios son estáticos y no necesitan servidor de aplicaciones: basta con publicar
-`parte-1-cowork/entorno/sitios-proveedores/` en cualquier alojamiento de archivos y usar esa
-dirección como base. Cómo simulan la demora y la segunda ronda está en el `README.md` de esa
-carpeta.
+Los cinco sitios están publicados en `https://axcel17.github.io/LLM-BK-WS-2026/` y se actualizan solos en cada cambio. Son estáticos y
+no necesitan servidor de aplicaciones, de modo que también pueden servirse desde cualquier
+alojamiento de archivos. Cómo simulan la demora y la segunda ronda está en el `README.md` de
+`parte-1-cowork/entorno/sitios-proveedores/`.
 
 `parte-1-cowork/referencia/version-de-referencia.md` contiene los dos blancos de la instrucción
 resueltos, la tabla de permisos y el comparativo esperado. Destinada a consultarse después de
