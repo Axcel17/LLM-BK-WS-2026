@@ -1,6 +1,6 @@
 # Versión de referencia
 
-Los dos huecos de la instrucción resueltos, la tabla de permisos y el resultado esperado.
+Los dos blancos de la instrucción resueltos, la tabla de permisos y el resultado esperado.
 
 Destinada a consultarse **después** de ejecutar el ejercicio. Los seis modos de falla del final del
 documento describen comportamientos observables; leerlos antes de provocarlos reduce el valor del
@@ -8,7 +8,7 @@ recorrido.
 
 ---
 
-## Los dos huecos de `../espacio-de-trabajo/instruccion-abastecimiento.md`
+## Los dos blancos de `../espacio-de-trabajo/instruccion-abastecimiento.md`
 
 **Restricción de plazo:**
 
@@ -71,9 +71,9 @@ texto, y ninguna adjudicación ejecutada.
 
 ---
 
-## Comportamientos observados en el ensayo real
+## Comportamientos observados en ensayos previos
 
-Observados en ensayos previos. Son recurrentes entre corridas.
+Los tres son recurrentes entre corridas.
 
 **Pérdida de la dirección de seguimiento.** El agente guardó el número de referencia pero no la
 dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicitudes. Es el modo de

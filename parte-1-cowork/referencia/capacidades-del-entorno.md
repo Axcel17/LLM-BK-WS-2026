@@ -1,9 +1,9 @@
 # Qué más se le puede dar a un entorno gestionado
 
-Hoja de referencia. En la Parte 1 se configuran seis capacidades; este es el inventario completo de
-lo que un entorno gestionado admite, más allá de lo que alcanza a verse en un bloque de 45 minutos.
+Hoja de referencia. El inventario completo de lo que un entorno gestionado admite, más allá de lo
+que alcanza a verse en un bloque de 45 minutos.
 
-Marcadas con **✓** las que se configuran en el recorrido.
+Marcadas con **✓** las seis que se usan en el recorrido de la Parte 1.
 
 ---
 
@@ -45,7 +45,7 @@ falta en lugar de redactarse de nuevo.
 el agente actúa como si hubiera olvidado que una existe, suele ser porque hay demasiadas compitiendo
 por ese espacio.
 
-## 5 · Instrucciones permanentes del proyecto ✓
+## 5 · Instrucciones permanentes del proyecto
 
 Reglas que aplican a todo lo que ocurra en esa carpeta, antes de que el agente toque un archivo. Es
 donde viven las restricciones duras: qué nunca se automatiza, qué se trata como dato y nunca como
@@ -126,9 +126,9 @@ Contra las seis piezas de la anatomía:
 
 ## Y el límite que define cuándo salir a código
 
-Nada de esta lista se puede **invocar desde un programa**. El entorno gestionado se opera, no se
-llama. Cuando el flujo tenga que dispararse desde otro sistema, controlar su propio paralelismo,
-sobrevivir a una caída a mitad de ejecución o correr una batería de evaluación automatizada, la
-respuesta ya no está en esta lista.
+Las tareas del entorno gestionado **se operan, no se llaman**: salvo el disparador por API de la
+capacidad 12, nada de esta lista se invoca desde un programa. Cuando el flujo tenga que dispararse
+desde otro sistema, controlar su propio paralelismo, sobrevivir a una caída a mitad de ejecución o
+correr una batería de evaluación automatizada, la respuesta ya no está en esta lista.
 
 Eso es la Parte 2.
