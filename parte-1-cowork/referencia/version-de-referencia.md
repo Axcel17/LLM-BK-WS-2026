@@ -73,7 +73,7 @@ texto, y ninguna adjudicación ejecutada.
 
 ## Comportamientos observados en el ensayo real
 
-Documentados en `corrida-de-referencia/`. Son recurrentes entre corridas.
+Observados en ensayos previos. Son recurrentes entre corridas.
 
 **Pérdida de la dirección de seguimiento.** El agente guardó el número de referencia pero no la
 dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicitudes. Es el modo de

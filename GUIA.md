@@ -46,11 +46,11 @@ decisiones de permiso, no una.
 - La dirección base de los sitios de proveedores:
 
   ```
-  https://axcel17.github.io/LLM-BK-WS-2026/
+  https://axcel17.github.io/proveedores-andes/
   ```
 
-  Se publica automáticamente desde este repositorio. Si prefiere servirlos usted mismo, el
-  `README.md` de `parte-1-cowork/entorno/sitios-proveedores/` explica cómo.
+  Los cinco portales se sirven desde `github.com/Axcel17/proveedores-andes`. No hace falta
+  publicarlos ni configurarlos.
 
 ## El material
 
@@ -65,18 +65,16 @@ parte-1-cowork/
     contexto.md                    el caso, para enviar como primer mensaje
     instruccion-abastecimiento.md  la instrucción a completar y guardar
     datos/encargo.md               qué comprar, plazo, presupuesto y garantía
-    datos/proveedores.md           los cinco sitios
+    datos/proveedores.md           las direcciones de los cinco portales
     salidas/                       lo que el agente produce
 
   referencia/                      ← fuera de su alcance, a propósito
     capacidades-del-entorno.md     inventario del entorno gestionado
     version-de-referencia.md       los blancos resueltos y el resultado esperado
-    corrida-de-referencia/         la salida de una ejecución completa
-
-  entorno/                         ← lo que se publica antes de empezar
-    sitios-proveedores/            los cinco sitios, estáticos
-    respaldo-local/                las cotizaciones, por si la red falla
 ```
+
+Los portales de los proveedores no están en este repositorio, igual que en un caso real no se
+dispone del código de los sitios con los que se trabaja.
 
 El agente crea `espacio-de-trabajo/salidas/` con lo que produce: `seguimiento.json` en el paso 4 y
 `comparativo.md` en el paso 6.
@@ -103,7 +101,7 @@ Ver el paso 2.5.
 únicamente**, no a `parte-1-cowork/` completa.
 
 La distinción no es cosmética. Fuera de esa subcarpeta quedan `parte-1-cowork/referencia/`, que contiene el
-comparativo esperado, y `parte-1-cowork/entorno/respaldo-local/`, que contiene las cinco cotizaciones ya
+comparativo esperado, y el respaldo local del instructor, que contiene las cinco cotizaciones ya
 recogidas. Un agente con acceso a ellas resuelve el encargo leyendo un archivo local, sin visitar
 un solo sitio.
 
@@ -256,10 +254,9 @@ convenciones de OpenTelemetry.
 
 ## Repetir la Parte 1 por cuenta propia
 
-Los cinco sitios están publicados en `https://axcel17.github.io/LLM-BK-WS-2026/` y se actualizan solos en cada cambio. Son estáticos y
-no necesitan servidor de aplicaciones, de modo que también pueden servirse desde cualquier
-alojamiento de archivos. Cómo simulan la demora y la segunda ronda está en el `README.md` de
-`parte-1-cowork/entorno/sitios-proveedores/`.
+Los cinco portales están publicados de forma permanente en
+`https://axcel17.github.io/proveedores-andes/`, de modo que el ejercicio puede repetirse en
+cualquier momento sin configurar nada.
 
 `parte-1-cowork/referencia/version-de-referencia.md` contiene los dos blancos de la instrucción
 resueltos, la tabla de permisos y el comparativo esperado. Destinada a consultarse después de
