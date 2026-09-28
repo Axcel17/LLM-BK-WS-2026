@@ -1,10 +1,11 @@
 # Instrucción · Abastecimiento
 
-Complete los **dos huecos** con las restricciones duras de `datos/encargo.md`, y guarde el
-resultado como instrucción reutilizable con el nombre `abastecimiento`.
+Complete los **dos blancos** marcados con `<<< COMPLETAR >>>` usando las restricciones duras de
+`datos/encargo.md`, y guarde el resultado como instrucción reutilizable con el nombre
+`abastecimiento`.
 
-> Los huecos no son de redacción: son decisiones de negocio que hay que leer del encargo y
-> convertir en reglas. Es lo único que el sistema no puede deducir solo.
+Los blancos no son de redacción: son decisiones de negocio que se leen del encargo y se convierten
+en reglas. Es lo único que el sistema no puede deducir por sí mismo.
 
 ---
 
@@ -96,11 +97,3 @@ REGLAS PERMANENTES
 
 · Cada corrida deja rastro en salidas/.
 ```
-
----
-
-## Consultar la versión resuelta
-
-Los dos huecos completados están en `../referencia/version-de-referencia.md`. Consultarlos y continuar es una
-opción legítima: lo que importa es entender por qué la restricción es dura, no la redacción
-exacta.
