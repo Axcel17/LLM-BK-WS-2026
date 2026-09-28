@@ -384,8 +384,8 @@ npm test -- client
 Un `TODO` en `src/mcp/client.ts`. El acceso tipado viene escrito debajo.
 
 `src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte que el agente consume
-sin saber en qué lenguaje está escrito ni dónde corre. Las dos últimas pruebas lo levantan como
-proceso hijo y verifican que el dato atraviesa el protocolo.
+sin saber en qué lenguaje está escrito ni dónde corre. Las cuatro pruebas de este tramo lo levantan
+como proceso hijo real en lugar de simularlo, y por eso tardan unos segundos.
 
 **`TODO(2)` · de dónde sale el esquema de entrada.** Reescribirlo a mano mirando `get_quote`, que
 recibe un argumento, parece suficiente. El catálogo expone además `place_order`, que recibe dos, y

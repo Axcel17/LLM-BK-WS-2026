@@ -1,9 +1,10 @@
 /**
  * La detección de deriva del catálogo.
  *
- * Levantan el servidor de verdad para tomar la huella, y después simulan el
- * cambio que importa: una herramienta que conserva el nombre y cambia la
- * descripción. Es la forma que toma un envenenamiento de herramienta.
+ * Construyen el cambio que importa —una herramienta que conserva el nombre y
+ * cambia la descripción, que es la forma que toma un envenenamiento de
+ * herramienta— y una de ellas levanta el catálogo real para contrastarlo
+ * contra la huella registrada.
  *
  *     npm test -- integrity
  */

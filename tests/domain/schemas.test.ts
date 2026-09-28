@@ -1,8 +1,8 @@
 /**
  * TODO 1 · El contrato de datos.
  *
- * Fallan hasta que los tres campos estén declarados en src/schemas.ts. Cuando
- * pasan, el contrato está bien definido.
+ * Fallan hasta que los tres campos estén declarados en src/domain/schemas.ts:
+ * el plazo del `TODO(1a)`, y las dos listas del `TODO(1b)`.
  *
  *     npm test -- schemas
  */

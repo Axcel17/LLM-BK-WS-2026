@@ -93,5 +93,5 @@ export async function shutdownTracing(): Promise<void> {
 
 /** True si el entorno pide trazas. */
 export function tracingRequested(): boolean {
-  return ["1", "si", "true"].includes((process.env["TRACING"] ?? "").toLowerCase());
+  return ["1", "si", "sí", "true"].includes((process.env["TRACING"] ?? "").trim().toLowerCase());
 }

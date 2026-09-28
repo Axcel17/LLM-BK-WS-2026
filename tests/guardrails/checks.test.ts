@@ -15,8 +15,8 @@ import {
   checkHardLimits,
   checkMissingResponses,
   checkNormalization,
-  runAllChecks,
   checkTieBreak,
+  runAllChecks,
 } from "../../src/guardrails/checks.js";
 import type { Comparison, Quote } from "../../src/domain/schemas.js";
 
@@ -160,8 +160,8 @@ describe("checkHardLimits", () => {
   it("detecta conformidad declarada sobre un presupuesto excedido", () => {
     const expensive = correctComparison({
       quotes: [
+        ...correctComparison().quotes.filter((q) => q.supplier !== "Tecnoimport"),
         quote("Tecnoimport", 200, 100, 8100, 6, { meetsBudget: true }),
-        ...correctComparison().quotes.slice(0, 3),
       ],
     });
     expect(checkHardLimits(expensive).some((f) => f.detail.includes("tope"))).toBe(true);

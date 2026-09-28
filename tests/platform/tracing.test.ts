@@ -22,7 +22,10 @@ afterEach(async () => {
 
 describe("tracingRequested", () => {
   it("reconoce las formas afirmativas admitidas", () => {
-    for (const value of ["1", "si", "true", "TRUE", "Si"]) {
+    // `sí` con tilde y con espacios alrededor son lo que alguien escribe de
+    // verdad en un `.env`. Descartarlas apagaría las trazas en silencio, que
+    // es justo el modo de falla que este módulo sirve para ver.
+    for (const value of ["1", "si", "sí", "SÍ", " 1 ", "true", "TRUE", "Si"]) {
       process.env["TRACING"] = value;
       expect(tracingRequested(), `valor ${value}`).toBe(true);
     }

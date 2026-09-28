@@ -6,8 +6,9 @@
  * desde entonces ninguna versión futura puede reintroducirlo sin que las
  * pruebas lo señalen.
  *
- * Este archivo es el que crece con el uso. Los tres primeros casos salieron de
- * corridas reales durante la preparación del taller.
+ * Este archivo es el que crece con el uso. Los cuatro primeros casos salieron
+ * de corridas reales durante la preparación del taller; el quinto es el
+ * contrapeso, y el último espera el fallo que usted observe.
  *
  *     npm test -- regression
  */
