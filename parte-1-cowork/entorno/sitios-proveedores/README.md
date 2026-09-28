@@ -47,7 +47,7 @@ termina; para la segunda ya están listas. Ajustar en los cinco sitios a la vez 
 ## Probar en local
 
 ```
-cd parte-1-entorno-gestionado/entorno/sitios-proveedores
+cd parte-1-cowork/entorno/sitios-proveedores
 python3 -m http.server 8000
 ```
 

@@ -10,10 +10,13 @@ lo que no llegó y no obedecer ese texto.
 
 Material del taller **Dejemos de conversar con la IA y empecemos a delegar** · Innova-T Latam 2026.
 
-| Parte                  | Ubicación                                                    | Duración |
-| ---------------------- | ------------------------------------------------------------ | -------- |
-| 1 · Entorno gestionado | [`parte-1-entorno-gestionado/`](parte-1-entorno-gestionado/) | 45 min   |
-| 2 · Código             | raíz de este repositorio                                     | 90 min   |
+Consta de dos bloques prácticos, y ambos se siguen desde
+**[`LABORATORIO.md`](LABORATORIO.md)**.
+
+| Parte      | Material                             | Duración |
+| ---------- | ------------------------------------ | -------- |
+| 1 · Cowork | [`parte-1-cowork/`](parte-1-cowork/) | 45 min   |
+| 2 · Código | `src/` y `tests/`, en la raíz        | 90 min   |
 
 Cada parte funciona por separado.
 
@@ -88,8 +91,8 @@ El editor los lista en su panel de tareas pendientes. Desde la terminal:
 grep -rn "TODO(" src/
 ```
 
-**El recorrido paso a paso, con lo que cada `TODO` enseña, está en
-[`RECORRIDO.md`](RECORRIDO.md).**
+**El recorrido paso a paso, con lo que cada `TODO` enseña, está en la Parte 2 de
+[`LABORATORIO.md`](LABORATORIO.md).**
 
 ---
 
