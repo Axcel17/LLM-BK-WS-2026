@@ -1,9 +1,13 @@
 /**
  * Verificación por código del comparativo.
  *
- * Seis comprobaciones sobre lo que tiene respuesta mecánica. No llaman a
+ * Siete comprobaciones sobre lo que tiene respuesta mecánica. No llaman a
  * ningún modelo, no cuestan nada y devuelven siempre lo mismo para la misma
  * entrada.
+ *
+ * Seis miran solo el comparativo. La séptima, `checkEvidence`, es la única que
+ * contrasta contra lo que devolvieron las herramientas — sin ella, un precio
+ * inventado produce un informe impecable que las otras seis aprueban.
  *
  * Lo que exige criterio no va aquí: va en `judge.ts`.
  *
@@ -172,7 +176,7 @@ export function checkHardLimits(comparison: Comparison): Finding[] {
 /**
  * Lo que no llegó está reportado. En este encargo siempre hay al menos uno.
  *
- * Viene resuelta. Es la más corta de las seis y la que más se olvida: un
+ * Viene resuelta. Es la más corta de las siete y la que más se olvida: un
  * informe que no menciona lo que falta parece completo.
  */
 export function checkMissingResponses(comparison: Comparison): Finding[] {
@@ -231,7 +235,7 @@ export function checkTieBreak(comparison: Comparison): Finding[] {
   ];
 }
 
-export const ALL_CHECKS = [
+const CHECKS_INTERNOS = [
   checkCoverage,
   checkNormalization,
   checkArithmetic,
@@ -240,7 +244,87 @@ export const ALL_CHECKS = [
   checkTieBreak,
 ] as const;
 
-/** Corre las seis y acumula. No se detiene en la primera. */
-export function runAllChecks(comparison: Comparison): Finding[] {
-  return ALL_CHECKS.flatMap((check) => check(comparison));
+/**
+ * Normaliza texto para compararlo sin ruido de forma.
+ *
+ * El modelo cita de un texto que trae acentos, saltos de línea y separadores de
+ * millar. Comparar en crudo produciría hallazgos por diferencias que no son el
+ * punto: lo que importa es si la cita proviene del original, no si conservó el
+ * espaciado.
+ */
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[.,]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * La evidencia citada proviene del texto que devolvió la herramienta.
+ *
+ * Es la única de las siete que mira fuera del comparativo. Las otras seis
+ * comprueban coherencia interna: que el total cuadre con sus componentes, que
+ * estén los cinco proveedores, que el recomendado cumpla según sus propias
+ * cifras. Ninguna puede detectar un precio inventado — un informe construido
+ * sobre una cifra falsa es aritméticamente impecable y las seis pasan en verde.
+ *
+ * Esta compara lo declarado contra lo devuelto, y por eso necesita las fuentes.
+ * Detecta dos cosas distintas:
+ *
+ *   · Un proveedor cotizado sin haberlo consultado. La cotización se inventó
+ *     entera, y no hay texto contra el cual contrastarla.
+ *   · Una cita que no aparece en el texto original. El esquema exige «cita
+ *     textual»; una paráfrasis no permite rastrear el número hasta la fuente,
+ *     que es el único trabajo de ese campo.
+ *
+ * Lo que **no** comprueba, porque exige criterio: que las cifras normalizadas se
+ * deriven correctamente del texto. Convertir «1.590,00 por caja de 10» en 159
+ * por unidad es interpretación, y eso vive en `judge.ts`.
+ */
+export function checkEvidence(
+  comparison: Comparison,
+  sources: ReadonlyMap<string, string>,
+): Finding[] {
+  const findings: Finding[] = [];
+
+  for (const quote of comparison.quotes) {
+    const fuente = sources.get(quote.supplier);
+
+    if (fuente === undefined) {
+      findings.push({
+        check: "evidence",
+        detail: `Se declara una cotización de ${quote.supplier} sin registro de haberla consultado. No hay texto contra el cual contrastarla.`,
+      });
+      continue;
+    }
+
+    if (!normalizar(fuente).includes(normalizar(quote.evidence))) {
+      findings.push({
+        check: "evidence",
+        detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${quote.evidence.slice(0, 70)}».`,
+      });
+    }
+  }
+
+  return findings;
+}
+
+/**
+ * Corre las siete y acumula. No se detiene en la primera.
+ *
+ * `sources` es obligatorio a propósito. Con un parámetro opcional, un llamador
+ * que no lo pasara se quedaría sin la séptima verificación sin enterarse — que
+ * es precisamente el modo de falla contra el que existe.
+ */
+export function runAllChecks(
+  comparison: Comparison,
+  sources: ReadonlyMap<string, string>,
+): Finding[] {
+  return [
+    ...CHECKS_INTERNOS.flatMap((check) => check(comparison)),
+    ...checkEvidence(comparison, sources),
+  ];
 }

@@ -126,7 +126,11 @@ describe("fallos observados en corridas reales", () => {
   it("un comparativo correcto no produce hallazgos", () => {
     // El contrapeso: sin esta prueba, una verificación que siempre reporta
     // algo pasaría las tres anteriores.
-    expect(runAllChecks(comparison())).toEqual([]);
+    const fuentes = new Map(
+      comparison().quotes.map((q) => [q.supplier, `Cotización.\n${q.evidence}\nFin.`]),
+    );
+
+    expect(runAllChecks(comparison(), fuentes)).toEqual([]);
   });
 
   // Pendiente de completar. Ejecutar `npm run agent` hasta observar un

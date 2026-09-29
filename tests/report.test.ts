@@ -83,7 +83,7 @@ describe("formatComparison", () => {
 
 describe("formatChecks", () => {
   it("un comparativo limpio lo dice explícitamente", () => {
-    expect(formatChecks([])).toContain("Las seis pasan");
+    expect(formatChecks([])).toContain("Las siete pasan");
   });
 
   it("cada hallazgo aparece con su verificación y su detalle", () => {

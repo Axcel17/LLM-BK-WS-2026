@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **93 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **97 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -421,7 +421,7 @@ No detiene la ejecución, porque un cambio puede ser legítimo. Revierta la edic
 npm test -- checks
 ```
 
-Tres `TODO` en `src/guardrails/checks.ts`. De las seis verificaciones, tres vienen completas y de
+Tres `TODO` en `src/guardrails/checks.ts`. De las siete verificaciones, cuatro vienen completas y de
 otras dos viene escrita la mitad mecánica.
 
 | Verificación            | Qué se completa                                        |
@@ -599,14 +599,14 @@ npm run measure -- 6
 ```
 
 Ejecuta el flujo seis veces y reporta cuántas producen salida válida y cuántas son correctas
-—recomiendan MayoristaZeta y pasan las seis verificaciones—, con la latencia por corrida.
+—recomiendan MayoristaZeta y pasan las siete verificaciones—, con la latencia por corrida.
 
 **Esto no cabe en la sesión, y es deliberado dejarlo anotado.** Seis corridas con
 `gemini-3.1-flash-lite` son entre 7 y 13 minutos; con `gpt-5.4-mini`, algo menos de uno. La tabla de
 abajo es la medición ya hecha: sirve para discutir el resultado sin esperar. Correrlo por cuenta
 propia después de la sesión es, justamente, el ejercicio.
 
-Medición vigente, con las seis verificaciones:
+Medición vigente, con las siete verificaciones:
 
 | Proveedor               | Válidas | Correctas | Mediana |
 | ----------------------- | ------- | --------- | ------- |

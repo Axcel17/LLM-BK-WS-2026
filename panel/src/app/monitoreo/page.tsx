@@ -12,19 +12,21 @@ function seg(ms: number) {
 
 function estado(c: Corrida) {
   if (c.outcome === "tope-alcanzado")
-    return { Icono: AlertTriangle, clase: "text-amber-600 dark:text-amber-500", texto: "tope" };
+    return { Icono: AlertTriangle, clase: "text-firma", texto: "límite alcanzado" };
   if (c.outcome === "error")
     return { Icono: CircleSlash, clase: "text-destructive", texto: "error" };
   if (c.findings.length > 0)
     return { Icono: X, clase: "text-destructive", texto: `${c.findings.length} hallazgo(s)` };
-  return { Icono: Check, clase: "text-emerald-600 dark:text-emerald-500", texto: "limpia" };
+  return { Icono: Check, clase: "text-verificado", texto: "conforme" };
 }
 
 function Metrica({ valor, etiqueta }: { valor: string; etiqueta: string }) {
   return (
     <div>
-      <div className="text-2xl font-semibold tabular-nums tracking-tight">{valor}</div>
-      <div className="text-muted-foreground mt-0.5 text-xs">{etiqueta}</div>
+      <div className="tabular text-[1.6rem] leading-none font-semibold tracking-tight">{valor}</div>
+      <div className="text-muted-foreground mt-1.5 text-[11px] tracking-wide uppercase">
+        {etiqueta}
+      </div>
     </div>
   );
 }
@@ -43,23 +45,25 @@ export default function Monitoreo() {
   const cacheado = completas.reduce((s, c) => s + c.totals.cachedInputTokens, 0);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-8">
+    <div className="mx-auto w-full max-w-4xl overflow-y-auto px-4 py-10">
       <header className="mb-7">
-        <h1 className="text-2xl font-semibold tracking-tight">Monitoreo</h1>
-        <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-relaxed">
-          Las bitácoras que deja <code className="bg-muted rounded px-1 py-0.5">npm run agent</code>
-          . El panel las lee; no las produce. Si las produjera, esto mediría al panel y no al
-          agente.
+        <h1 className="text-[1.65rem] leading-tight font-semibold tracking-tight">
+          Historial de ejecuciones
+        </h1>
+        <p className="text-muted-foreground mt-1.5 max-w-xl text-sm">
+          Registro de las ejecuciones de{" "}
+          <code className="bg-muted rounded px-1 py-0.5">npm run agent</code>. Esta consola las
+          consulta; no las genera.
         </p>
       </header>
 
       {corridas.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="text-muted-foreground py-12 text-center text-sm">
-            <p>No hay corridas registradas.</p>
+            <p>Sin ejecuciones registradas.</p>
             <p className="mt-2">
-              Ejecute <code className="bg-muted rounded px-1.5 py-0.5">npm run agent</code> en la
-              raíz del repositorio y recargue.
+              Ejecute <code className="bg-muted rounded px-1.5 py-0.5">npm run agent</code> y
+              actualice esta vista.
             </p>
           </CardContent>
         </Card>
@@ -67,15 +71,15 @@ export default function Monitoreo() {
         <>
           <Card className="mb-7">
             <CardContent className="grid grid-cols-2 gap-6 py-5 sm:grid-cols-4">
-              <Metrica valor={String(corridas.length)} etiqueta="corridas registradas" />
+              <Metrica valor={String(corridas.length)} etiqueta="ejecuciones" />
               <Metrica
                 valor={`${limpias.length}/${completas.length || 0}`}
                 etiqueta="sin hallazgos"
               />
-              <Metrica valor={seg(medianaMs)} etiqueta="mediana de duración" />
+              <Metrica valor={seg(medianaMs)} etiqueta="duración mediana" />
               <Metrica
                 valor={entrada > 0 ? `${Math.round((cacheado / entrada) * 100)} %` : "—"}
-                etiqueta="entrada servida de caché"
+                etiqueta="servido de caché"
               />
             </CardContent>
           </Card>
@@ -121,7 +125,7 @@ export default function Monitoreo() {
                       <span className="text-muted-foreground text-xs">{c.model}</span>
                       <span className="text-muted-foreground text-xs tabular-nums">
                         {seg(c.durationMs)} · {c.steps.length} pasos ·{" "}
-                        {c.totals.inputTokens.toLocaleString("es")} tokens de entrada
+                        {c.totals.inputTokens.toLocaleString("es")} tokens
                       </span>
                       {c.comparison?.recommendedSupplier && (
                         <Badge variant="outline" className="ml-auto text-xs">
@@ -132,7 +136,7 @@ export default function Monitoreo() {
 
                     {c.request && (
                       <p className="border-foreground/20 text-muted-foreground border-l-2 pl-3 text-xs italic">
-                        encargo propio: {c.request}
+                        Consulta del usuario: {c.request}
                       </p>
                     )}
 

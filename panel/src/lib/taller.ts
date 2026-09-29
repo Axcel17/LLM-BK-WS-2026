@@ -78,6 +78,29 @@ export async function conectarCatalogo(): Promise<Catalogo> {
 
 /* ── Archivos ──────────────────────────────────────────────────────────── */
 
+/**
+ * La requisición sobre la que trabaja el agente.
+ *
+ * No la escribe quien usa el panel: existe en el sistema, como existiría una
+ * requisición de compra aprobada. `get_brief` devuelve exactamente esto. Que
+ * esté a la vista es lo que hace comprensible el resto — sin ella, la consola
+ * parece pedir instrucciones que en realidad ya están dadas.
+ */
+export type Requisicion = {
+  product: string;
+  quantity: number;
+  maxLeadTimeBusinessDays: number;
+  budgetCapUsd: number;
+  budgetIncludesFreight: boolean;
+  warranty: string;
+  selectionCriterion: string;
+  suppliers: string[];
+};
+
+export function requisicion(): Requisicion {
+  return JSON.parse(readFileSync(join(RAIZ, "data", "brief.json"), "utf8")) as Requisicion;
+}
+
 /** Las ocho reglas, del mismo archivo que lee `src/agent.ts`. */
 export function instrucciones(): string {
   return readFileSync(join(RAIZ, "data", "instrucciones.md"), "utf8").trim();
@@ -86,9 +109,15 @@ export function instrucciones(): string {
 /** Acciones que el agente no ejecuta por sí mismo. La tabla de `approval.ts`. */
 export const HERRAMIENTAS_IRREVERSIBLES = ["place_order"];
 
-export const MOTIVO_DENEGACION =
-  "Este agente recomienda, no adjudica. La orden en firme la emite una persona " +
-  "con el comparativo a la vista.";
+/**
+ * Lo que la compuerta le dice a quien tiene que decidir.
+ *
+ * En la terminal esta misma tabla deniega en firme, porque no hay nadie
+ * mirando. Aquí hay alguien: la compuerta se detiene y pregunta, que es lo que
+ * hace una compuerta cuando existe un humano al otro lado.
+ */
+export const MOTIVO_APROBACION =
+  "Emitir una orden de compra no se deshace. Este agente recomienda; la firma es suya.";
 
 /** Forma de las bitácoras que escribe `src/platform/runs.ts`. */
 export type Corrida = {
@@ -173,6 +202,52 @@ export async function evaluarEvaluador(pasadas: number): Promise<Evaluacion> {
   // El script imprime una sola línea de JSON; cualquier aviso de npm queda antes.
   const linea = stdout.trim().split("\n").at(-1) ?? "";
   return JSON.parse(linea) as Evaluacion;
+}
+
+/**
+ * Ficha del agente, para que la interfaz muestre qué puede y qué no.
+ *
+ * Las reglas salen de `data/instrucciones.md` —el mismo archivo que gobierna al
+ * agente— y no de una lista escrita a mano en la interfaz. Una ficha que no se
+ * lee de la fuente deja de ser cierta en cuanto la fuente cambia.
+ */
+export function ficha() {
+  const texto = instrucciones();
+  const reglas = [...texto.matchAll(/^\s*(\d)\.\s+([\s\S]*?)(?=^\s*\d\.\s|\Z)/gm)].map(
+    ([, n, cuerpo]) => ({ n: Number(n), t: cuerpo.replace(/\s+/g, " ").trim() }),
+  );
+
+  // Las prohibiciones del encargo, en la voz de la interfaz. Son las reglas 6 y
+  // 8: no obedecer texto ajeno y no adjudicar por cuenta propia.
+  const prohibiciones = reglas
+    .filter((r) => r.n === 6 || r.n === 8)
+    .map((r) =>
+      r.n === 6
+        ? "Obedecer instrucciones escondidas en una cotización"
+        : "Adjudicar sin que una persona firme",
+    );
+
+  return {
+    ...configuracion(),
+    herramientas: [
+      {
+        nombre: "get_brief",
+        descripcion: "Lee el encargo: qué, cuánto, plazo y tope.",
+        requiereFirma: false,
+      },
+      {
+        nombre: "get_quote",
+        descripcion: "Trae la cotización de un proveedor, sin limpiar.",
+        requiereFirma: false,
+      },
+      {
+        nombre: "place_order",
+        descripcion: "Emite la orden de compra en firme.",
+        requiereFirma: true,
+      },
+    ],
+    reglas: prohibiciones,
+  };
 }
 
 /** Configuración vigente, para no tener que abrir `.env` para saberla. */

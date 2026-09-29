@@ -1,5 +1,5 @@
 /**
- * TODO 3 · Las seis verificaciones por código.
+ * TODO 3 · Las siete verificaciones por código.
  *
  * Cada prueba construye un comparativo con un defecto concreto y exige que la
  * verificación lo detecte. Un comparativo correcto no produce hallazgos.
@@ -12,6 +12,7 @@ import { describe, expect, it } from "vitest";
 import {
   checkArithmetic,
   checkCoverage,
+  checkEvidence,
   checkHardLimits,
   checkMissingResponses,
   checkNormalization,
@@ -57,9 +58,66 @@ function correctComparison(overrides: Partial<Comparison> = {}): Comparison {
   };
 }
 
+/** Lo que habría devuelto `get_quote` para el comparativo correcto. */
+function fuentesCorrectas(): Map<string, string> {
+  return new Map(
+    correctComparison().quotes.map((q) => [q.supplier, `Cotización.\n${q.evidence}\nFin.`]),
+  );
+}
+
 describe("runAllChecks", () => {
   it("no produce hallazgos sobre un comparativo correcto", () => {
-    expect(runAllChecks(correctComparison())).toEqual([]);
+    expect(runAllChecks(correctComparison(), fuentesCorrectas())).toEqual([]);
+  });
+});
+
+describe("checkEvidence", () => {
+  it("detecta un proveedor cotizado sin haberlo consultado", () => {
+    // La cotización se inventó entera: no hay texto contra el cual contrastarla,
+    // y las otras seis la aprobarían porque es internamente coherente.
+    const fuentes = fuentesCorrectas();
+    fuentes.delete("Tecnoimport");
+
+    const findings = checkEvidence(correctComparison(), fuentes);
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("Tecnoimport");
+    expect(findings[0]?.detail).toContain("sin registro");
+  });
+
+  it("detecta una cita que no aparece en el texto devuelto", () => {
+    const inventada = correctComparison({
+      quotes: [
+        quote("MayoristaZeta", 159, 0, 6360, 8, {
+          evidence: "Precio especial pactado por teléfono",
+        }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+
+    const findings = checkEvidence(inventada, fuentesCorrectas());
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("no aparece");
+  });
+
+  it("tolera diferencias de acento, mayúsculas y separadores", () => {
+    // El modelo cita de un texto con tildes y puntos de millar. Un hallazgo por
+    // eso sería ruido: lo que importa es si la cita viene del original.
+    const comparison = correctComparison({
+      quotes: [
+        quote("MayoristaZeta", 159, 0, 6360, 8, { evidence: "PRECIO POR CAJA USD 1590,00" }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+    const fuentes = fuentesCorrectas();
+    fuentes.set("MayoristaZeta", "Precio por caja  USD 1.590,00 — caja cerrada");
+
+    expect(checkEvidence(comparison, fuentes)).toEqual([]);
+  });
+
+  it("sin cotizaciones declaradas no hay nada que contrastar", () => {
+    expect(checkEvidence(correctComparison({ quotes: [] }), new Map())).toEqual([]);
   });
 });
 

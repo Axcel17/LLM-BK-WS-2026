@@ -42,12 +42,12 @@ export type ToolHeaderProps = {
 
 const statusLabels: Record<ToolPart["state"], string> = {
   "approval-requested": "Awaiting Approval",
-  "approval-responded": "Responded",
-  "input-available": "Running",
-  "input-streaming": "Pending",
-  "output-available": "Completed",
-  "output-denied": "Denied",
-  "output-error": "Error",
+  "approval-responded": "Respondida",
+  "input-available": "Ejecutando",
+  "input-streaming": "En cola",
+  "output-available": "Listo",
+  "output-denied": "Denegada",
+  "output-error": "Falló",
 };
 
 const statusIcons: Record<ToolPart["state"], ReactNode> = {
@@ -109,11 +109,11 @@ export type ToolInputProps = ComponentProps<"div"> & {
 };
 
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
-  <div className={cn("space-y-2 overflow-hidden", className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-      Parameters
+  <div className={cn("space-y-1.5 overflow-hidden", className)} {...props}>
+    <h4 className="font-medium text-muted-foreground text-[11px] uppercase tracking-wide">
+      Argumentos
     </h4>
-    <div className="rounded-md bg-muted/50">
+    <div className="overflow-x-auto rounded-md bg-muted/50">
       <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
     </div>
   </div>
@@ -134,13 +134,21 @@ export const ToolOutput = ({ className, output, errorText, ...props }: ToolOutpu
   if (typeof output === "object" && !isValidElement(output)) {
     Output = <CodeBlock code={JSON.stringify(output, null, 2)} language="json" />;
   } else if (typeof output === "string") {
-    Output = <CodeBlock code={output} language="json" />;
+    // Lo que devuelve una herramienta de este catálogo es el texto crudo de una
+    // cotización, no JSON: resaltarlo como JSON lo pinta mal. Y son entre 600 y
+    // 1.500 caracteres, así que se acota y se desplaza dentro de su caja en vez
+    // de empujar la conversación hacia abajo.
+    Output = (
+      <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words p-3 font-mono text-xs leading-relaxed">
+        {output}
+      </pre>
+    );
   }
 
   return (
     <div className={cn("space-y-2", className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-        {errorText ? "Error" : "Result"}
+        {errorText ? "Falló" : "Resultado"}
       </h4>
       <div
         className={cn(

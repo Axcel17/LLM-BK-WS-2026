@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const SECCIONES = [
   { href: "/chat", nombre: "Conversación", icono: MessagesSquare },
   { href: "/evaluacion", nombre: "Evaluación", icono: ClipboardCheck },
-  { href: "/monitoreo", nombre: "Monitoreo", icono: Activity },
+  { href: "/monitoreo", nombre: "Historial", icono: Activity },
 ] as const;
 
 export function Navegacion() {

@@ -47,7 +47,19 @@ La conversación de esta consola es la otra mitad: mismo modelo, mismas reglas, 
 Por eso las verificaciones y el evaluador viven en la pestaña de evaluación, contra el agente
 estricto, y no aquí.
 
-La compuerta sí actúa en los dos: si se le pide emitir una orden, el arnés la deniega.
+## La compuerta, aquí, pregunta
+
+En la terminal `place_order` se **deniega en firme**: no hay nadie mirando, así que la única
+respuesta segura es no.
+
+Aquí hay una persona al otro lado, y por eso la compuerta hace lo que debe hacer cuando existe un
+humano: **se detiene y pregunta**. Si se le pide emitir una orden, el agente la propone, la llamada
+se congela y aparece una tarjeta con Aprobar o Denegar. Es la misma tabla y el mismo criterio —la
+reversibilidad—, y es la definición literal de poner la compuerta entre la última acción reversible
+y la primera que no lo es.
+
+El agente no propone órdenes por su cuenta: la regla 8 sigue en pie. Solo lo hace cuando la persona
+ya decidió y se lo pide.
 
 ## Construido con
 

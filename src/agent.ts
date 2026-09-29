@@ -161,11 +161,41 @@ export function gatheredSoFar(steps: ReadonlyArray<unknown>): CompletedQuery[] {
   return queries;
 }
 
-/** Resultado de una corrida: el comparativo, lo que costó y lo que se detuvo. */
+/**
+ * Lo que devolvió cada consulta de cotización, por proveedor.
+ *
+ * Quien hizo las llamadas es quien tiene que devolver lo que devolvieron:
+ * `checkEvidence` las necesita para contrastar lo declarado contra la fuente, y
+ * reconstruirlas después, fuera de aquí, sería adivinar.
+ */
+export function quotedSources(steps: ReadonlyArray<unknown>): Map<string, string> {
+  const sources = new Map<string, string>();
+
+  for (const step of steps) {
+    const { toolCalls = [], toolResults = [] } = step as {
+      toolCalls?: ReadonlyArray<{ toolName: string; input: unknown }>;
+      toolResults?: ReadonlyArray<{ output: unknown }>;
+    };
+
+    for (const [index, call] of toolCalls.entries()) {
+      if (call.toolName !== "get_quote") continue;
+      const supplier = (call.input as { supplier?: unknown } | null)?.supplier;
+      const output = toolResults[index]?.output;
+      if (typeof supplier === "string" && typeof output === "string") {
+        sources.set(supplier, output);
+      }
+    }
+  }
+
+  return sources;
+}
+
+/** Resultado de una corrida: el comparativo, lo que costó, lo que se detuvo y lo que se leyó. */
 export interface AgentRun {
   readonly comparison: Comparison;
   readonly usage: { steps?: ReadonlyArray<{ usage: unknown }>; usage: unknown };
   readonly denied: readonly DeniedCall[];
+  readonly sources: ReadonlyMap<string, string>;
 }
 
 export async function runAgent(catalog: CatalogConnection, request?: string): Promise<AgentRun> {
@@ -187,7 +217,12 @@ export async function runAgent(catalog: CatalogConnection, request?: string): Pr
   const result = await agent.generate({ prompt: buildTask(request) });
 
   try {
-    return { comparison: result.output as Comparison, usage: result, denied: gate.denied };
+    return {
+      comparison: result.output as Comparison,
+      usage: result,
+      denied: gate.denied,
+      sources: quotedSources(result.steps ?? []),
+    };
   } catch (error) {
     // `stopWhen` corta el bucle pero no produce salida estructurada: el
     // resultado queda sin `output` y leerlo lanza. El tope funcionó; lo que

@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **93 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **97 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -85,6 +85,10 @@ correspondiente falla hasta que se resuelve. El código mecánico viene escrito.
 | 3a     | `src/guardrails/checks.ts` | Detectar un informe internamente contradictorio |
 | 3b     | `src/guardrails/checks.ts` | Cómo se comparan importes monetarios            |
 | 3c     | `src/guardrails/checks.ts` | Verificar la recomendación contra sus cifras    |
+
+De las siete, seis comprueban la coherencia interna del comparativo. La séptima, `checkEvidence`, es
+la única que contrasta contra lo que devolvieron las herramientas: sin ella un precio inventado
+produce un informe aritméticamente impecable que las otras seis aprueban. Viene resuelta.
 
 El editor los lista en su panel de tareas pendientes. Desde la terminal:
 
@@ -207,7 +211,7 @@ modo estricto del compilador cubre la corrección y Prettier el formato.
 **Los importes se comparan en centavos enteros.** JavaScript no tiene tipo decimal: `6360.01 - 6360`
 da `0.010000000000218`, y comparar en dólares produce falsos positivos.
 
-**Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica —seis
+**Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica —siete
 comprobaciones, sin llamadas a modelo—. `guardrails/judge.ts` cubre lo que exige criterio, en una
 llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el resultado.
 

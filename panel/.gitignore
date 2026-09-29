@@ -4,3 +4,9 @@ out/
 .env.local
 next-env.d.ts
 .turbo/
+
+# Instrucciones para agentes que `next dev` regenera en cada arranque.
+# No son del proyecto: son de Next hablándole a una herramienta.
+AGENTS.md
+CLAUDE.md
+tsconfig.tsbuildinfo

@@ -46,12 +46,12 @@ try {
   for (let attempt = 1; attempt <= runs; attempt += 1) {
     const startedAt = Date.now();
     try {
-      const { comparison } = await runAgent(catalog);
+      const { comparison, sources } = await runAgent(catalog);
       const seconds = (Date.now() - startedAt) / 1000;
       durations.push(seconds);
       valid += 1;
 
-      const findings = runAllChecks(comparison);
+      const findings = runAllChecks(comparison, sources);
       const isCorrect =
         comparison.recommendedSupplier === EXPECTED_SUPPLIER && findings.length === 0;
       if (isCorrect) correct += 1;

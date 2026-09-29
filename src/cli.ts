@@ -80,7 +80,7 @@ async function main(): Promise<void> {
     console.log(`\n${formatIntegrity(integridad)}\n`);
     console.log("Ejecutando. El modelo decide qué herramientas pedir y en qué orden.");
 
-    const { comparison, usage, denied } = await runAgent(catalog, request);
+    const { comparison, usage, denied, sources } = await runAgent(catalog, request);
 
     const total = (usage as { usage?: Record<string, number> }).usage ?? {};
     bitácora.outcome = "completa";
@@ -94,7 +94,7 @@ async function main(): Promise<void> {
     };
     bitácora.comparison = comparison;
     bitácora.denied = denied.map((d) => ({ tool: d.tool, input: d.input, reason: d.reason }));
-    bitácora.findings = [...runAllChecks(comparison)];
+    bitácora.findings = [...runAllChecks(comparison, sources)];
 
     console.log(formatUsage(usage));
     console.log(formatComparison(comparison));
