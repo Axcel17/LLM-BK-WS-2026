@@ -593,6 +593,11 @@ npm run measure -- 6
 Ejecuta el flujo seis veces y reporta cuántas producen salida válida y cuántas son correctas
 —recomiendan MayoristaZeta y pasan las seis verificaciones—, con la latencia por corrida.
 
+**Esto no cabe en la sesión, y es deliberado dejarlo anotado.** Seis corridas con
+`gemini-3.1-flash-lite` son entre 7 y 13 minutos; con `gpt-5.4-mini`, algo menos de uno. La tabla de
+abajo es la medición ya hecha: sirve para discutir el resultado sin esperar. Correrlo por cuenta
+propia después de la sesión es, justamente, el ejercicio.
+
 Medición vigente, con las seis verificaciones:
 
 | Proveedor               | Válidas | Correctas | Mediana |
@@ -603,3 +608,8 @@ Medición vigente, con las seis verificaciones:
 Fallan de formas opuestas. Gemini falla en producir —saturación de la capa gratuita y un tope de
 pasos agotado— pero todo lo que produce es correcto. `gpt-5.4-mini` produce siempre, y la mitad de
 las veces recomienda al proveedor equivocado por no aplicar el criterio de desempate.
+
+**Seis corridas no son una medición.** El intervalo de confianza de 3 de 6 es demasiado ancho para
+afirmar una tasa. Lo que seis corridas sí establecen es **cuál** es el modo de falla: las tres
+incorrectas fallaron igual, siempre en el desempate. La consistencia es el dato aprovechable; el
+porcentaje, no. Subir `npm run measure -- 20` estrecha el intervalo a cambio de tiempo y de cuota.
