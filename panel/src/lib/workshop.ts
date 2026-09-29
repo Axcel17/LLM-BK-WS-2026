@@ -29,14 +29,14 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { jsonSchema, tool, type ToolSet } from "ai";
 
-const ejecutar = promisify(execFile);
+const run = promisify(execFile);
 
 /** La raíz del repositorio, un nivel arriba del panel. */
-export const RAIZ = join(process.cwd(), "..");
+export const REPO_ROOT = join(process.cwd(), "..");
 
 /* ── Protocolo ─────────────────────────────────────────────────────────── */
 
-export type Catalogo = { tools: ToolSet; close: () => Promise<void> };
+export type Catalog = { tools: ToolSet; close: () => Promise<void> };
 
 /**
  * Levanta el servidor MCP del taller y traduce su catálogo a herramientas.
@@ -45,27 +45,31 @@ export type Catalogo = { tools: ToolSet; close: () => Promise<void> };
  * mano, que es la decisión del `TODO(2)`: una traducción manual pierde
  * argumentos sin que nada falle de forma visible.
  */
-export async function conectarCatalogo(): Promise<Catalogo> {
-  const cliente = new Client({ name: "panel", version: "1.0.0" });
+export async function connectCatalog(): Promise<Catalog> {
+  const client = new Client({ name: "panel", version: "1.0.0" });
 
-  await cliente.connect(
-    new StdioClientTransport({ command: "npx", args: ["tsx", "src/mcp/server.ts"], cwd: RAIZ }),
+  await client.connect(
+    new StdioClientTransport({
+      command: "npx",
+      args: ["tsx", "src/mcp/server.ts"],
+      cwd: REPO_ROOT,
+    }),
   );
 
-  const { tools: declaradas } = await cliente.listTools();
+  const { tools: declaradas } = await client.listTools();
   const tools: ToolSet = {};
 
-  for (const definicion of declaradas) {
-    tools[definicion.name] = tool({
-      description: definicion.description ?? "",
-      inputSchema: jsonSchema(definicion.inputSchema as Parameters<typeof jsonSchema>[0]),
+  for (const definition of declaradas) {
+    tools[definition.name] = tool({
+      description: definition.description ?? "",
+      inputSchema: jsonSchema(definition.inputSchema as Parameters<typeof jsonSchema>[0]),
       execute: async (args) => {
-        const respuesta = await cliente.callTool({
-          name: definicion.name,
+        const response = await client.callTool({
+          name: definition.name,
           arguments: args as Record<string, unknown>,
         });
-        const partes = (respuesta as { content?: Array<{ type: string; text?: string }> }).content;
-        return (partes ?? [])
+        const pieces = (response as { content?: Array<{ type: string; text?: string }> }).content;
+        return (pieces ?? [])
           .filter((p) => p.type === "text")
           .map((p) => p.text ?? "")
           .join("\n");
@@ -73,7 +77,7 @@ export async function conectarCatalogo(): Promise<Catalogo> {
     });
   }
 
-  return { tools, close: () => cliente.close() };
+  return { tools, close: () => client.close() };
 }
 
 /* ── Archivos ──────────────────────────────────────────────────────────── */
@@ -86,7 +90,7 @@ export async function conectarCatalogo(): Promise<Catalogo> {
  * esté a la vista es lo que hace comprensible el resto — sin ella, la consola
  * parece pedir instrucciones que en realidad ya están dadas.
  */
-export type Requisicion = {
+export type Requisition = {
   product: string;
   quantity: number;
   maxLeadTimeBusinessDays: number;
@@ -97,17 +101,17 @@ export type Requisicion = {
   suppliers: string[];
 };
 
-export function requisicion(): Requisicion {
-  return JSON.parse(readFileSync(join(RAIZ, "data", "brief.json"), "utf8")) as Requisicion;
+export function requisition(): Requisition {
+  return JSON.parse(readFileSync(join(REPO_ROOT, "data", "brief.json"), "utf8")) as Requisition;
 }
 
 /** Las ocho reglas, del mismo archivo que lee `src/agent.ts`. */
-export function instrucciones(): string {
-  return readFileSync(join(RAIZ, "data", "instrucciones.md"), "utf8").trim();
+export function instructions(): string {
+  return readFileSync(join(REPO_ROOT, "data", "instrucciones.md"), "utf8").trim();
 }
 
 /** Acciones que el agente no ejecuta por sí mismo. La tabla de `approval.ts`. */
-export const HERRAMIENTAS_IRREVERSIBLES = ["place_order"];
+export const IRREVERSIBLE_TOOLS = ["place_order"];
 
 /**
  * Lo que la compuerta le dice a quien tiene que decidir.
@@ -116,11 +120,11 @@ export const HERRAMIENTAS_IRREVERSIBLES = ["place_order"];
  * mirando. Aquí hay alguien: la compuerta se detiene y pregunta, que es lo que
  * hace una compuerta cuando existe un humano al otro lado.
  */
-export const MOTIVO_APROBACION =
+export const APPROVAL_REASON =
   "Emitir una orden de compra no se deshace. Este agente recomienda; la firma es suya.";
 
 /** Forma de las bitácoras que escribe `src/platform/runs.ts`. */
-export type Corrida = {
+export type Run = {
   id: string;
   startedAt: string;
   durationMs: number;
@@ -149,28 +153,28 @@ export type Corrida = {
 };
 
 /** Lee las bitácoras. El panel las lee; no las produce. */
-export function leerCorridas(): Corrida[] {
-  const carpeta = join(RAIZ, "data", "runs");
-  if (!existsSync(carpeta)) return [];
+export function readRuns(): Run[] {
+  const folder = join(REPO_ROOT, "data", "runs");
+  if (!existsSync(folder)) return [];
 
-  return readdirSync(carpeta)
-    .filter((archivo) => archivo.endsWith(".json"))
-    .map((archivo) => {
+  return readdirSync(folder)
+    .filter((file) => file.endsWith(".json"))
+    .map((file) => {
       try {
-        return JSON.parse(readFileSync(join(carpeta, archivo), "utf8")) as Corrida;
+        return JSON.parse(readFileSync(join(folder, file), "utf8")) as Run;
       } catch {
         // Una bitácora corrupta no puede tumbar el panel entero.
         return null;
       }
     })
-    .filter((registro): registro is Corrida => registro !== null)
+    .filter((registro): registro is Run => registro !== null)
     .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
 }
 
 /* ── Procesos ──────────────────────────────────────────────────────────── */
 
-export type ResultadoCaso = {
-  nombre: string;
+export type CaseResult = {
+  name: string;
   aisla: string;
   esperado: Record<string, boolean>;
   acuerdos: number;
@@ -178,9 +182,9 @@ export type ResultadoCaso = {
   desacuerdos: string[];
 };
 
-export type Evaluacion = {
-  pasadas: number;
-  resultados: ResultadoCaso[];
+export type Evaluation = {
+  passes: number;
+  resultados: CaseResult[];
   acuerdos: number;
   total: number;
 };
@@ -192,16 +196,16 @@ export type Evaluacion = {
  * corre en la terminal, con el mismo criterio de acuerdo y los mismos casos
  * etiquetados. El panel no lo reimplementa — lo invoca y pinta el resultado.
  */
-export async function evaluarEvaluador(pasadas: number): Promise<Evaluacion> {
-  const { stdout } = await ejecutar(
+export async function evaluateJudge(passes: number): Promise<Evaluation> {
+  const { stdout } = await run(
     "npm",
-    ["run", "--silent", "measure-judge", "--", String(pasadas), "--json"],
-    { cwd: RAIZ, maxBuffer: 8 * 1024 * 1024, timeout: 10 * 60 * 1000 },
+    ["run", "--silent", "measure-judge", "--", String(passes), "--json"],
+    { cwd: REPO_ROOT, maxBuffer: 8 * 1024 * 1024, timeout: 10 * 60 * 1000 },
   );
 
   // El script imprime una sola línea de JSON; cualquier aviso de npm queda antes.
-  const linea = stdout.trim().split("\n").at(-1) ?? "";
-  return JSON.parse(linea) as Evaluacion;
+  const line = stdout.trim().split("\n").at(-1) ?? "";
+  return JSON.parse(line) as Evaluation;
 }
 
 /**
@@ -211,15 +215,15 @@ export async function evaluarEvaluador(pasadas: number): Promise<Evaluacion> {
  * agente— y no de una lista escrita a mano en la interfaz. Una ficha que no se
  * lee de la fuente deja de ser cierta en cuanto la fuente cambia.
  */
-export function ficha() {
-  const texto = instrucciones();
-  const reglas = [...texto.matchAll(/^\s*(\d)\.\s+([\s\S]*?)(?=^\s*\d\.\s|\Z)/gm)].map(
-    ([, n, cuerpo]) => ({ n: Number(n), t: cuerpo.replace(/\s+/g, " ").trim() }),
+export function agentCard() {
+  const text = instructions();
+  const rules = [...text.matchAll(/^\s*(\d)\.\s+([\s\S]*?)(?=^\s*\d\.\s|\Z)/gm)].map(
+    ([, n, body]) => ({ n: Number(n), t: body.replace(/\s+/g, " ").trim() }),
   );
 
   // Las prohibiciones del encargo, en la voz de la interfaz. Son las reglas 6 y
   // 8: no obedecer texto ajeno y no adjudicar por cuenta propia.
-  const prohibiciones = reglas
+  const prohibitions = rules
     .filter((r) => r.n === 6 || r.n === 8)
     .map((r) =>
       r.n === 6
@@ -228,35 +232,35 @@ export function ficha() {
     );
 
   return {
-    ...configuracion(),
-    herramientas: [
+    ...configuration(),
+    tools: [
       {
-        nombre: "get_brief",
-        descripcion: "Lee el encargo: qué, cuánto, plazo y tope.",
-        requiereFirma: false,
+        name: "get_brief",
+        description: "Lee el encargo: qué, cuánto, plazo y tope.",
+        needsApproval: false,
       },
       {
-        nombre: "get_quote",
-        descripcion: "Trae la cotización de un proveedor, sin limpiar.",
-        requiereFirma: false,
+        name: "get_quote",
+        description: "Trae la cotización de un proveedor, sin limpiar.",
+        needsApproval: false,
       },
       {
-        nombre: "place_order",
-        descripcion: "Emite la orden de compra en firme.",
-        requiereFirma: true,
+        name: "place_order",
+        description: "Emite la orden de compra en firme.",
+        needsApproval: true,
       },
     ],
-    reglas: prohibiciones,
+    rules: prohibitions,
   };
 }
 
 /** Configuración vigente, para no tener que abrir `.env` para saberla. */
-export function configuracion() {
+export function configuration() {
   return {
-    proveedor: process.env["PROVIDER"] ?? "google",
-    modelo: process.env["MODEL"] ?? "(por defecto del proveedor)",
-    evaluador: process.env["JUDGE_MODEL"] ?? process.env["MODEL"] ?? "(el mismo del agente)",
-    topeDePasos: Number(process.env["MAX_STEPS"] ?? 12),
-    reglaRetirada: process.env["DROP_PROMPT_RULE"] === "1",
+    provider: process.env["PROVIDER"] ?? "google",
+    model: process.env["MODEL"] ?? "(por defecto del proveedor)",
+    judgeModel: process.env["JUDGE_MODEL"] ?? process.env["MODEL"] ?? "(el mismo del agente)",
+    stepLimit: Number(process.env["MAX_STEPS"] ?? 12),
+    ruleDropped: process.env["DROP_PROMPT_RULE"] === "1",
   };
 }

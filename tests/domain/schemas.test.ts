@@ -17,11 +17,15 @@ import {
 } from "../../src/domain/schemas.js";
 
 /** Las restricciones del caso, que en producción salen de la requisición. */
-const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
+const CASE_CONSTRAINTS: Constraints = {
+  quantity: 40,
+  maxLeadTimeBusinessDays: 10,
+  budgetCapUsd: 7_000,
+};
 
-const quoteSchema = makeComparisonSchema(DEL_CASO).shape.quotes.element;
-const comparisonSchema = makeComparisonSchema(DEL_CASO);
-const outcomeSchema = makeOutcomeSchema(DEL_CASO);
+const quoteSchema = makeComparisonSchema(CASE_CONSTRAINTS).shape.quotes.element;
+const comparisonSchema = makeComparisonSchema(CASE_CONSTRAINTS);
+const outcomeSchema = makeOutcomeSchema(CASE_CONSTRAINTS);
 
 function validQuote(overrides: Record<string, unknown> = {}) {
   return {
@@ -146,7 +150,7 @@ describe("outcomeSchema", () => {
   });
 
   it("declarar que falta información exige enumerar qué falta y preguntarlo", () => {
-    const vago = {
+    const vague = {
       ...base,
       status: "missing_information" as const,
       comparison: null,
@@ -154,11 +158,11 @@ describe("outcomeSchema", () => {
       question: "¿Me das más datos?",
     };
 
-    expect(outcomeSchema.safeParse(vago).success).toBe(false);
+    expect(outcomeSchema.safeParse(vague).success).toBe(false);
   });
 
   it("acepta una escalación bien formada", () => {
-    const escala = outcomeSchema.parse({
+    const escalated = outcomeSchema.parse({
       ...base,
       status: "missing_information",
       comparison: null,
@@ -166,13 +170,13 @@ describe("outcomeSchema", () => {
       question: "¿Cuál es el presupuesto máximo puesto en bodega?",
     });
 
-    expect(escala.missing[0]?.field).toBe("budgetCapUsd");
+    expect(escalated.missing[0]?.field).toBe("budgetCapUsd");
   });
 
   it("el campo que falta es un enumerado, no texto libre", () => {
     // Con texto libre, «presupuesto» y «budgetCapUsd» son cadenas distintas que
     // ninguna verificación puede contrastar contra la requisición.
-    const inventado = {
+    const fabricated = {
       ...base,
       status: "missing_information" as const,
       comparison: null,
@@ -180,11 +184,11 @@ describe("outcomeSchema", () => {
       question: "¿De qué color los quieren?",
     };
 
-    expect(outcomeSchema.safeParse(inventado).success).toBe(false);
+    expect(outcomeSchema.safeParse(fabricated).success).toBe(false);
   });
 
   it("declarar algo fuera de alcance exige decir por qué", () => {
-    const sinMotivo = { ...base, status: "out_of_scope" as const, comparison: null };
-    expect(outcomeSchema.safeParse(sinMotivo).success).toBe(false);
+    const withoutReason = { ...base, status: "out_of_scope" as const, comparison: null };
+    expect(outcomeSchema.safeParse(withoutReason).success).toBe(false);
   });
 });

@@ -249,17 +249,12 @@ const CON_REQUISICION = [checkArithmetic, checkHardLimits, checkTieBreak] as con
 /**
  * Reduce un texto a su contenido, descartando toda la forma.
  *
- * Acentos, mayúsculas, puntuación, alineación en columnas, barras invertidas y
- * secuencias de escape desaparecen: quedan solo letras y dígitos separados por
- * un espacio. Lo que se compara es lo que el texto dice, no cómo se escribió.
- *
- * Es deliberadamente agresivo. Cada forma de citar que el modelo inventa
- * —entrecomillar fragmentos, unirlos con barras, escapar los saltos de línea al
- * copiar una tabla— produciría un hallazgo sobre evidencia legítima, y una
- * verificación que salta sobre salida correcta enseña a ignorar las
- * verificaciones. Sigue detectando lo que importa: un texto que no está.
+ * Deliberadamente agresivo. Cada forma de citar que el modelo inventa
+ * —entrecomillar fragmentos, escapar saltos de línea al copiar una tabla—
+ * produciría un hallazgo sobre evidencia legítima, y una verificación que salta
+ * sobre salida correcta enseña a ignorarla.
  */
-function normalizar(texto: string): string {
+function normalize(texto: string): string {
   return (
     texto
       .replace(/\\[nrt]/g, " ")
@@ -281,46 +276,33 @@ function normalizar(texto: string): string {
  * Un trozo de seis caracteres aparece en cualquier texto por casualidad, y una
  * verificación que se satisface con eso no verifica nada.
  */
-const FRAGMENTO_MINIMO = 14;
+const MIN_FRAGMENT_LENGTH = 14;
 
 /**
  * Parte la cita en los tramos que hay que encontrar en la fuente.
  *
- * El modelo no siempre cita un tramo continuo: lo habitual es entrecomillar dos
- * o tres trozos de líneas distintas y unirlos. Se separa antes de normalizar,
- * porque los caracteres que marcan el corte son justo los que la normalización
- * descarta.
+ * El modelo suele entrecomillar dos o tres trozos de líneas distintas y unirlos.
+ * Se separa antes de normalizar, porque los caracteres que marcan el corte son
+ * los que la normalización descarta.
  */
-function fragmentos(cita: string): string[] {
-  const partes = cita
+function fragments(quotation: string): string[] {
+  const pieces = quotation
     .split(/["'`“”‘’]|\s*[/|]\s*|\.{3,}|…|\n|\\n/)
-    .map(normalizar)
-    .filter((parte) => parte.length >= FRAGMENTO_MINIMO);
+    .map(normalize)
+    .filter((parte) => parte.length >= MIN_FRAGMENT_LENGTH);
 
-  return partes.length > 0 ? partes : [normalizar(cita)];
+  return pieces.length > 0 ? pieces : [normalize(quotation)];
 }
 
 /**
  * La evidencia citada proviene del texto que devolvió la herramienta.
  *
- * Es la única de las siete que mira fuera del comparativo. Las otras seis
- * comprueban coherencia interna: que el total cuadre con sus componentes, que
- * estén los cinco proveedores, que el recomendado cumpla según sus propias
- * cifras. Ninguna puede detectar un precio inventado — un informe construido
- * sobre una cifra falsa es aritméticamente impecable y las seis pasan en verde.
+ * Es la única que mira fuera del comparativo. Las otras seis comprueban
+ * coherencia interna, y por eso ninguna detecta un precio inventado: un informe
+ * construido sobre una cifra falsa es aritméticamente impecable.
  *
- * Esta compara lo declarado contra lo devuelto, y por eso necesita las fuentes.
- * Detecta dos cosas distintas:
- *
- *   · Un proveedor cotizado sin haberlo consultado. La cotización se inventó
- *     entera, y no hay texto contra el cual contrastarla.
- *   · Una cita que no aparece en el texto original. El esquema exige «cita
- *     textual»; una paráfrasis no permite rastrear el número hasta la fuente,
- *     que es el único trabajo de ese campo.
- *
- * Lo que **no** comprueba, porque exige criterio: que las cifras normalizadas se
- * deriven correctamente del texto. Convertir «1.590,00 por caja de 10» en 159
- * por unidad es interpretación, y eso vive en `judge.ts`.
+ * No comprueba que las cifras normalizadas se deriven bien del texto. Eso exige
+ * criterio y vive en `judge.ts`.
  */
 export function checkEvidence(
   comparison: Comparison,
@@ -329,9 +311,9 @@ export function checkEvidence(
   const findings: Finding[] = [];
 
   for (const quote of comparison.quotes) {
-    const fuente = sources.get(quote.supplier);
+    const source = sources.get(quote.supplier);
 
-    if (fuente === undefined) {
+    if (source === undefined) {
       findings.push({
         check: "evidence",
         detail: `Se declara una cotización de ${quote.supplier} sin registro de haberla consultado. No hay texto contra el cual contrastarla.`,
@@ -339,13 +321,13 @@ export function checkEvidence(
       continue;
     }
 
-    const enLaFuente = normalizar(fuente);
-    const ausentes = fragmentos(quote.evidence).filter((f) => !enLaFuente.includes(f));
+    const inSource = normalize(source);
+    const missingFragments = fragments(quote.evidence).filter((f) => !inSource.includes(f));
 
-    if (ausentes.length > 0) {
+    if (missingFragments.length > 0) {
       findings.push({
         check: "evidence",
-        detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${ausentes[0]?.slice(0, 70)}».`,
+        detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${missingFragments[0]?.slice(0, 70)}».`,
       });
     }
   }
@@ -356,18 +338,9 @@ export function checkEvidence(
 /**
  * Una escalación pide lo que de verdad falta.
  *
- * La coherencia de la forma ya la impone el esquema: un resultado que dice
- * «falta información» sin enumerar qué falta no llega hasta aquí, porque no
- * valida. Lo que sí queda por comprobar es el contenido — que el agente no
- * escale por un dato que ya tenía.
- *
- * Es el modo de falla que reemplaza al de inventar. Antes, sin una salida para
- * la carencia, el agente rellenaba; con una salida disponible, el riesgo se
- * invierte y pasa a ser pedir de más para no equivocarse. Eso detiene el
- * trabajo con una pregunta cuya respuesta estaba en la requisición.
- *
- * `checkEvidence` compara lo declarado contra lo devuelto por las herramientas;
- * esta compara lo pedido contra lo que ya se había entregado.
+ * La coherencia de la forma la impone el esquema. Lo que queda por comprobar es
+ * que el agente no escale por un dato que ya tenía: con una salida disponible
+ * para la carencia, el riesgo pasa de inventar a pedir de más.
  */
 export function checkEscalation(
   outcome: Outcome,
@@ -377,10 +350,10 @@ export function checkEscalation(
 
   return outcome.missing
     .filter(({ field }) => {
-      const valor = requisition[field];
-      if (valor === undefined || valor === null) return false;
-      if (typeof valor === "string") return valor.trim() !== "";
-      if (Array.isArray(valor)) return valor.length > 0;
+      const value = requisition[field];
+      if (value === undefined || value === null) return false;
+      if (typeof value === "string") return value.trim() !== "";
+      if (Array.isArray(value)) return value.length > 0;
       return true;
     })
     .map(({ field }) => ({

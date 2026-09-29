@@ -47,9 +47,9 @@ function record(overrides: Partial<RunRecord> = {}): RunRecord {
 describe("runId", () => {
   it("es ordenable alfabéticamente y válido como nombre de archivo", () => {
     const antes = runId(new Date("2026-09-29T10:00:00.000Z"));
-    const después = runId(new Date("2026-09-29T10:00:01.000Z"));
+    const later = runId(new Date("2026-09-29T10:00:01.000Z"));
 
-    expect(antes < después).toBe(true);
+    expect(antes < later).toBe(true);
     // Los dos puntos de una hora ISO no son válidos en todos los sistemas.
     expect(antes).not.toMatch(/[:.]/);
   });
@@ -57,38 +57,38 @@ describe("runId", () => {
 
 describe("recordSteps", () => {
   it("empareja cada llamada con su resultado y recorta lo devuelto", () => {
-    const largo = "x".repeat(500);
+    const long = "x".repeat(500);
     const steps = [
       {
         toolCalls: [{ toolName: "get_quote", input: { supplier: "MayoristaZeta" } }],
-        toolResults: [{ output: largo }],
+        toolResults: [{ output: long }],
         usage: { inputTokens: 950, outputTokens: 101 },
       },
     ];
 
-    const [paso] = recordSteps(steps);
+    const [step] = recordSteps(steps);
 
-    expect(paso?.calls[0]?.tool).toBe("get_quote");
-    expect(paso?.calls[0]?.characters).toBe(500);
+    expect(step?.calls[0]?.tool).toBe("get_quote");
+    expect(step?.calls[0]?.characters).toBe(500);
     // El texto crudo de cinco cotizaciones no cabe en un visor: se recorta.
-    expect(paso?.calls[0]?.preview.length).toBeLessThan(500);
-    expect(paso?.inputTokens).toBe(950);
+    expect(step?.calls[0]?.preview.length).toBeLessThan(500);
+    expect(step?.inputTokens).toBe(950);
   });
 
   it("una llamada sin resultado no rompe la bitácora", () => {
     // Al cortarse el bucle en el tope, el último paso puede tener la llamada
     // emitida y el resultado todavía no. Es el caso que más interesa registrar.
-    const [paso] = recordSteps([
+    const [step] = recordSteps([
       { toolCalls: [{ toolName: "get_brief", input: {} }], toolResults: [] },
     ]);
 
-    expect(paso?.calls[0]?.characters).toBe(0);
-    expect(paso?.inputTokens).toBeNull();
+    expect(step?.calls[0]?.characters).toBe(0);
+    expect(step?.inputTokens).toBeNull();
   });
 
   it("un paso sin llamadas es el que produce la salida estructurada", () => {
-    const [paso] = recordSteps([{ toolCalls: [], toolResults: [] }]);
-    expect(paso?.calls).toEqual([]);
+    const [step] = recordSteps([{ toolCalls: [], toolResults: [] }]);
+    expect(step?.calls).toEqual([]);
   });
 });
 
@@ -97,16 +97,16 @@ describe("embedRuns", () => {
     // Una cotización puede traer HTML. Sin escapar, un `</script>` dentro de
     // los datos parte la página en dos y la deja muda, sin error visible: la
     // falla silenciosa que este taller enseña a no dejar al azar.
-    const conHtml = record({
+    const withHtml = record({
       error: "el proveedor devolvió </script><script>alert(1)</script>",
     });
 
-    const serializado = embedRuns([conHtml]);
+    const serialized = embedRuns([withHtml]);
 
-    expect(serializado).not.toContain("</script>");
-    expect(serializado).toContain("\\u003c");
+    expect(serialized).not.toContain("</script>");
+    expect(serialized).toContain("\\u003c");
     // Y sigue siendo JSON válido, que es la otra mitad del contrato.
-    expect(JSON.parse(serializado.replace(/\\u003c/g, "<"))).toHaveLength(1);
+    expect(JSON.parse(serialized.replace(/\\u003c/g, "<"))).toHaveLength(1);
   });
 
   it("sin corridas produce una lista vacía, no `undefined`", () => {
@@ -115,25 +115,25 @@ describe("embedRuns", () => {
 });
 
 describe("recordRun", () => {
-  const carpetas: string[] = [];
+  const folders: string[] = [];
 
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
-    for (const c of carpetas.splice(0)) rmSync(c, { recursive: true, force: true });
+    for (const c of folders.splice(0)) rmSync(c, { recursive: true, force: true });
   });
 
   it("escribe la bitácora y devuelve su ruta", () => {
     const base = mkdtempSync(join(tmpdir(), "corridas-"));
-    carpetas.push(base);
+    folders.push(base);
     vi.spyOn(process, "cwd").mockReturnValue(base);
 
-    const archivo = recordRun(record({ id: "prueba" }));
+    const file = recordRun(record({ id: "prueba" }));
 
-    expect(archivo).not.toBeNull();
-    const leído = JSON.parse(readFileSync(archivo as string, "utf8")) as RunRecord;
-    expect(leído.model).toBe("gpt-5.4-mini");
-    expect(leído.totals.cachedInputTokens).toBe(2048);
+    expect(file).not.toBeNull();
+    const written = JSON.parse(readFileSync(file as string, "utf8")) as RunRecord;
+    expect(written.model).toBe("gpt-5.4-mini");
+    expect(written.totals.cachedInputTokens).toBe(2048);
   });
 
   it("si no puede escribir, lo informa y devuelve null en vez de lanzar", () => {

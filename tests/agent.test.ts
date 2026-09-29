@@ -80,8 +80,8 @@ describe("maxSteps", () => {
   it("rechaza lo que no es un entero positivo", () => {
     // `Number("doce")` da NaN, y `stepCountIs(NaN)` no se cumple nunca: sin esta
     // validación, una errata en `.env` dejaría el bucle sin tope y en silencio.
-    for (const valor of ["doce", "0", "-3", "2.5"]) {
-      expect(() => maxSteps(valor), `valor ${valor}`).toThrow(/entero positivo/);
+    for (const value of ["doce", "0", "-3", "2.5"]) {
+      expect(() => maxSteps(value), `valor ${value}`).toThrow(/entero positivo/);
     }
   });
 });

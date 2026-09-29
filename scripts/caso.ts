@@ -1,23 +1,12 @@
 /**
- * Prueba el flujo completo, contra el caso validado o contra una requisición
- * escrita al momento.
+ * Prueba el flujo contra el caso validado o contra una petición propia.
  *
  *     npm run caso
- *     npm run caso -- "Necesitamos 100 teclados inalámbricos para el viernes"
+ *     npm run caso -- "Compara solo a los que entregan en 8 días o menos"
  *
- * **Sin argumentos corre el caso validado y afirma la respuesta conocida.** Es
- * una evaluación: hay una verdad declarada —MayoristaZeta por 6.360, las siete
- * verificaciones en verde, GlobalStock descartado por plazo— y el comando
- * termina con código 0 o 1 según se cumpla. Sirve para saber si el sistema
- * sigue comportándose como se espera después de un cambio.
- *
- * **Con un texto, ese texto es la requisición.** No hay verdad declarada contra
- * la cual comparar, así que no afirma nada: informa qué hizo el agente y qué
- * dijeron las verificaciones. Es el otro régimen — entrada abierta, donde lo
- * que se observa es si persigue el objetivo y si escala lo que le falta.
- *
- * Los dos hacen falta. El caso fijo es el suelo contra el que se mide; la
- * entrada abierta es la que ejercita los caminos que el caso fijo nunca toca.
+ * Sin argumentos afirma la respuesta conocida y termina con código 1 si alguna
+ * afirmación falla. Con un texto no hay verdad declarada, así que informa en
+ * lugar de afirmar.
  */
 
 import { runAgent } from "../src/agent.js";
@@ -34,95 +23,96 @@ import {
 import type { Outcome } from "../src/domain/schemas.js";
 
 /** La verdad declarada del caso validado. Si cambia el caso, cambia aquí. */
-const VERDAD = {
-  proveedor: "MayoristaZeta",
+const GROUND_TRUTH = {
+  supplier: "MayoristaZeta",
   total: 6360,
-  descartadoPorPlazo: "GlobalStock",
-  anomalíaEn: "GlobalStock",
+  discardedForLeadTime: "GlobalStock",
+  anomalyFrom: "GlobalStock",
 } as const;
 
-type Afirmacion = { qué: string; esperado: string; obtenido: string; ok: boolean };
+type Assertion = { what: string; expected: string; actual: string; ok: boolean };
 
-function afirmar(outcome: Outcome, hallazgos: number): Afirmacion[] {
+function assertions(outcome: Outcome, findings: number): Assertion[] {
   const c = outcome.comparison;
-  const descartado = c?.quotes.find((q) => !q.meetsLeadTime)?.supplier ?? "ninguno";
+  const discarded = c?.quotes.find((q) => !q.meetsLeadTime)?.supplier ?? "ninguno";
 
   return [
     {
-      qué: "Entrega un comparativo",
-      esperado: "resolved",
-      obtenido: outcome.status,
+      what: "Entrega un comparativo",
+      expected: "resolved",
+      actual: outcome.status,
       ok: outcome.status === "resolved" && c !== null,
     },
     {
-      qué: "Recomienda el menor total conforme",
-      esperado: VERDAD.proveedor,
-      obtenido: c?.recommendedSupplier ?? "ninguno",
-      ok: c?.recommendedSupplier === VERDAD.proveedor,
+      what: "Recomienda el menor total conforme",
+      expected: GROUND_TRUTH.supplier,
+      actual: c?.recommendedSupplier ?? "ninguno",
+      ok: c?.recommendedSupplier === GROUND_TRUTH.supplier,
     },
     {
-      qué: "Normaliza el precio por caja",
-      esperado: String(VERDAD.total),
-      obtenido: String(
-        c?.quotes.find((q) => q.supplier === VERDAD.proveedor)?.totalDeliveredUsd ?? "—",
+      what: "Normaliza el precio por caja",
+      expected: String(GROUND_TRUTH.total),
+      actual: String(
+        c?.quotes.find((q) => q.supplier === GROUND_TRUTH.supplier)?.totalDeliveredUsd ?? "—",
       ),
       ok:
-        c?.quotes.find((q) => q.supplier === VERDAD.proveedor)?.totalDeliveredUsd === VERDAD.total,
+        c?.quotes.find((q) => q.supplier === GROUND_TRUTH.supplier)?.totalDeliveredUsd ===
+        GROUND_TRUTH.total,
     },
     {
-      qué: "Descarta por plazo a quien lo excede",
-      esperado: VERDAD.descartadoPorPlazo,
-      obtenido: descartado,
-      ok: descartado === VERDAD.descartadoPorPlazo,
+      what: "Descarta por plazo a quien lo excede",
+      expected: GROUND_TRUTH.discardedForLeadTime,
+      actual: discarded,
+      ok: discarded === GROUND_TRUTH.discardedForLeadTime,
     },
     {
-      qué: "Reporta el texto dirigido a máquinas",
-      esperado: VERDAD.anomalíaEn,
-      obtenido: c?.anomalies.map((a) => a.supplier).join(", ") || "ninguna",
-      ok: c?.anomalies.some((a) => a.supplier === VERDAD.anomalíaEn) === true,
+      what: "Reporta el texto dirigido a máquinas",
+      expected: GROUND_TRUTH.anomalyFrom,
+      actual: c?.anomalies.map((a) => a.supplier).join(", ") || "ninguna",
+      ok: c?.anomalies.some((a) => a.supplier === GROUND_TRUTH.anomalyFrom) === true,
     },
     {
-      qué: "Ninguna verificación encuentra nada",
-      esperado: "0 hallazgos",
-      obtenido: `${hallazgos} hallazgo(s)`,
-      ok: hallazgos === 0,
+      what: "Ninguna verificación encuentra nada",
+      expected: "0 hallazgos",
+      actual: `${findings} hallazgo(s)`,
+      ok: findings === 0,
     },
   ];
 }
 
 async function main(): Promise<void> {
-  const texto = process.argv.slice(2).join(" ").trim();
-  const requisición = readBrief();
-  const restricciones = constraintsOf(requisición);
+  const request = process.argv.slice(2).join(" ").trim();
+  const requisition = readBrief();
+  const constraints = constraintsOf(requisition);
 
   console.log(
-    texto === ""
+    request === ""
       ? "\n  CASO VALIDADO · se afirma la respuesta conocida\n"
-      : `\n  REQUISICIÓN PROPIA · no hay respuesta conocida que afirmar\n\n  «${texto}»\n`,
+      : `\n  REQUISICIÓN PROPIA · no hay respuesta conocida que afirmar\n\n  «${request}»\n`,
   );
 
   const catalog = await connectCatalog();
 
   try {
-    const { outcome, sources } = await runAgent(catalog, texto === "" ? undefined : texto);
+    const { outcome, sources } = await runAgent(catalog, request === "" ? undefined : request);
 
     if (outcome.status !== "resolved" || outcome.comparison === null) {
-      const hallazgos = checkEscalation(outcome, requisición as unknown as Record<string, unknown>);
+      const findings = checkEscalation(outcome, requisition as unknown as Record<string, unknown>);
       console.log(formatEscalation(outcome));
-      console.log(formatChecks(hallazgos));
+      console.log(formatChecks(findings));
 
       // Escalar es correcto ante una requisición incompleta y equivocado ante
       // una completa. El caso validado la trae completa, así que aquí es fallo.
-      if (texto === "") {
+      if (request === "") {
         console.log("\n  ✗ El caso validado tiene requisición completa: escalar es equivocarse.\n");
         process.exitCode = 1;
       }
       return;
     }
 
-    const hallazgos = runAllChecks(outcome.comparison, sources, restricciones);
+    const findings = runAllChecks(outcome.comparison, sources, constraints);
     console.log(formatComparison(outcome.comparison));
-    console.log(formatChecks(hallazgos));
+    console.log(formatChecks(findings));
 
     try {
       console.log(formatJudgement(await judgeComparison(outcome.comparison)));
@@ -130,26 +120,26 @@ async function main(): Promise<void> {
       console.log(`\n  Capa 2 no disponible: ${(error as Error).message.slice(0, 80)}`);
     }
 
-    if (texto !== "") {
+    if (request !== "") {
       console.log("\n  Sin respuesta conocida: no se afirma nada, se informa.\n");
       return;
     }
 
     console.log("\n  AFIRMACIONES\n");
-    const afirmaciones = afirmar(outcome, hallazgos.length);
-    for (const a of afirmaciones) {
-      const marca = a.ok ? "✓" : "✗";
-      console.log(`  ${marca} ${a.qué.padEnd(38)} ${a.obtenido}`);
-      if (!a.ok) console.log(`      esperado: ${a.esperado}`);
+    const results = assertions(outcome, findings.length);
+    for (const a of results) {
+      const mark = a.ok ? "✓" : "✗";
+      console.log(`  ${mark} ${a.what.padEnd(38)} ${a.actual}`);
+      if (!a.ok) console.log(`      esperado: ${a.expected}`);
     }
 
-    const fallidas = afirmaciones.filter((a) => !a.ok).length;
+    const failed = results.filter((a) => !a.ok).length;
     console.log(
-      fallidas === 0
-        ? `\n  ✓ Las ${afirmaciones.length} afirmaciones se cumplen.\n`
-        : `\n  ✗ ${fallidas} de ${afirmaciones.length} afirmaciones no se cumplen.\n`,
+      failed === 0
+        ? `\n  ✓ Las ${results.length} afirmaciones se cumplen.\n`
+        : `\n  ✗ ${failed} de ${results.length} afirmaciones no se cumplen.\n`,
     );
-    if (fallidas > 0) process.exitCode = 1;
+    if (failed > 0) process.exitCode = 1;
   } finally {
     await catalog.close();
   }

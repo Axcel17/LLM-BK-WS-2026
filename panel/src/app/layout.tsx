@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { Navegacion } from "@/components/navegacion";
+import { Navigation } from "@/components/navigation";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground flex min-h-full flex-col">
-        <Navegacion />
+        <Navigation />
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
       </body>
     </html>

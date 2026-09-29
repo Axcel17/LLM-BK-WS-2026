@@ -31,51 +31,51 @@ type Resumen = {
 };
 
 function correrSuite(): Resumen {
-  const carpeta = mkdtempSync(join(tmpdir(), "estado-"));
-  const salida = join(carpeta, "estado.json");
+  const folder = mkdtempSync(join(tmpdir(), "estado-"));
+  const outputFile = join(folder, "estado.json");
   try {
     // vitest termina con código distinto de cero porque los `TODO` sin
     // completar hacen fallar sus pruebas: aquí eso es lo esperado, no un error.
     try {
-      execFileSync("npx", ["vitest", "run", "--reporter=json", `--outputFile=${salida}`], {
+      execFileSync("npx", ["vitest", "run", "--reporter=json", `--outputFile=${outputFile}`], {
         stdio: "ignore",
       });
     } catch {
       /* se evalúa por el informe, no por el código de salida */
     }
-    return JSON.parse(readFileSync(salida, "utf8")) as Resumen;
+    return JSON.parse(readFileSync(outputFile, "utf8")) as Resumen;
   } finally {
-    rmSync(carpeta, { recursive: true, force: true });
+    rmSync(folder, { recursive: true, force: true });
   }
 }
 
-const errores: string[] = [];
+const problems: string[] = [];
 
-const resumen = correrSuite();
-const obtenido = {
-  pasan: resumen.numPassedTests,
-  fallan: resumen.numFailedTests,
-  pendientes: resumen.numTodoTests,
+const summary = correrSuite();
+const actual = {
+  pasan: summary.numPassedTests,
+  fallan: summary.numFailedTests,
+  pendientes: summary.numTodoTests,
 };
 
-for (const clave of ["pasan", "fallan", "pendientes"] as const) {
-  if (obtenido[clave] !== PROMETIDO[clave]) {
-    errores.push(
-      `La suite reporta ${obtenido[clave]} pruebas que ${clave}; el material promete ${PROMETIDO[clave]}.`,
+for (const key of ["pasan", "fallan", "pendientes"] as const) {
+  if (actual[key] !== PROMETIDO[key]) {
+    problems.push(
+      `La suite reporta ${actual[key]} pruebas que ${key}; el material promete ${PROMETIDO[key]}.`,
     );
   }
 }
 
-const cifra = `${PROMETIDO.pasan} pruebas pasan y ${PROMETIDO.fallan} fallan`;
-for (const documento of DOCUMENTOS) {
-  if (!readFileSync(documento, "utf8").includes(cifra)) {
-    errores.push(`${documento} no declara «${cifra}».`);
+const figure = `${PROMETIDO.pasan} pruebas pasan y ${PROMETIDO.fallan} fallan`;
+for (const document of DOCUMENTOS) {
+  if (!readFileSync(document, "utf8").includes(figure)) {
+    problems.push(`${document} no declara «${figure}».`);
   }
 }
 
-if (errores.length > 0) {
+if (problems.length > 0) {
   console.error("\nEl estado de entrega no coincide con lo prometido:\n");
-  for (const error of errores) console.error(`  · ${error}`);
+  for (const problem of problems) console.error(`  · ${problem}`);
   console.error(
     "\nActualice PROMETIDO en scripts/verify-delivered-state.ts y la cifra en " +
       `${DOCUMENTOS.join(" y ")}.\n`,
@@ -84,6 +84,6 @@ if (errores.length > 0) {
 }
 
 console.log(
-  `Estado de entrega verificado: ${obtenido.pasan} pasan, ${obtenido.fallan} fallan, ` +
-    `${obtenido.pendientes} pendiente(s), y los documentos lo declaran.`,
+  `Estado de entrega verificado: ${actual.pasan} pasan, ${actual.fallan} fallan, ` +
+    `${actual.pendientes} pendiente(s), y los documentos lo declaran.`,
 );

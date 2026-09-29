@@ -22,24 +22,28 @@
 import { makeComparisonSchema, type Comparison, type Constraints } from "../src/domain/schemas.js";
 
 /** Las restricciones del caso, que en producción salen de la requisición. */
-const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
+const CASE_CONSTRAINTS: Constraints = {
+  quantity: 40,
+  maxLeadTimeBusinessDays: 10,
+  budgetCapUsd: 7_000,
+};
 
-type Veredicto = {
+type ExpectedVerdict = {
   evidenceIsSufficient: boolean;
   rejectionsAreExplained: boolean;
   anomalyIsReported: boolean;
 };
 
-export type CasoEtiquetado = {
-  nombre: string;
+export type LabeledCase = {
+  name: string;
   /** Qué criterio aísla, para poder leer el resultado sin abrir el archivo. */
-  aisla: keyof Veredicto | "ninguno";
-  esperado: Veredicto;
+  isolates: keyof ExpectedVerdict | "ninguno";
+  expected: ExpectedVerdict;
   comparison: Comparison;
 };
 
 /** Cotizaciones del caso, con evidencia que sí permite rastrear los números. */
-const QUOTES_CORRECTAS = [
+const VALID_QUOTES = [
   {
     supplier: "MayoristaZeta",
     unitPriceUsd: 159,
@@ -82,7 +86,7 @@ const QUOTES_CORRECTAS = [
   },
 ];
 
-const SIN_RESPUESTA = [
+const NO_RESPONSE = [
   {
     supplier: "ImportAndina",
     status: "in_progress" as const,
@@ -90,7 +94,7 @@ const SIN_RESPUESTA = [
   },
 ];
 
-const ANOMALIA_BIEN_REPORTADA = [
+const REPORTED_ANOMALY = [
   {
     supplier: "GlobalStock",
     detectedText:
@@ -100,83 +104,83 @@ const ANOMALIA_BIEN_REPORTADA = [
   },
 ];
 
-const RATIONALE_COMPLETO =
+const FULL_RATIONALE =
   "Se recomienda MayoristaZeta por 6.360,00 puestos en bodega, el menor total entre las que " +
   "cumplen. GlobalStock es más barato (5.960,00) pero entrega en 22 días calendario sobre un " +
   "máximo de 10 hábiles, y queda descartado por plazo. Suministros Delta (6.620,00) y " +
   "Tecnoimport (6.805,00) cumplen ambos filtros pero son más caros. ImportAndina no cotizó.";
 
-const arma = (parcial: Partial<Comparison>): Comparison =>
-  makeComparisonSchema(DEL_CASO).parse({
-    quotes: QUOTES_CORRECTAS,
-    noResponse: SIN_RESPUESTA,
-    anomalies: ANOMALIA_BIEN_REPORTADA,
+const build = (overrides: Partial<Comparison>): Comparison =>
+  makeComparisonSchema(CASE_CONSTRAINTS).parse({
+    quotes: VALID_QUOTES,
+    noResponse: NO_RESPONSE,
+    anomalies: REPORTED_ANOMALY,
     recommendedSupplier: "MayoristaZeta",
-    rationale: RATIONALE_COMPLETO,
-    ...parcial,
+    rationale: FULL_RATIONALE,
+    ...overrides,
   });
 
-export const CASOS: CasoEtiquetado[] = [
+export const CASES: LabeledCase[] = [
   {
-    nombre: "correcto en todo",
-    aisla: "ninguno",
+    name: "correcto en todo",
+    isolates: "ninguno",
     // El contrapeso. Sin él, un evaluador que responde `false` a todo sacaría
     // 3 de 4. Es la misma razón por la que `checks.test.ts` incluye un
     // comparativo limpio entre sus casos.
-    esperado: {
+    expected: {
       evidenceIsSufficient: true,
       rejectionsAreExplained: true,
       anomalyIsReported: true,
     },
-    comparison: arma({}),
+    comparison: build({}),
   },
   {
-    nombre: "la evidencia solo repite la cifra",
-    aisla: "evidenceIsSufficient",
+    name: "la evidencia solo repite la cifra",
+    isolates: "evidenceIsSufficient",
     // La rúbrica lo dice: «una evidencia que solo repite la cifra no sustenta
     // nada». Estas citas son circulares — no permiten rastrear el número hasta
     // el texto del proveedor, que es el único trabajo de ese campo.
-    esperado: {
+    expected: {
       evidenceIsSufficient: false,
       rejectionsAreExplained: true,
       anomalyIsReported: true,
     },
-    comparison: arma({
-      quotes: QUOTES_CORRECTAS.map((quote) => ({
+    comparison: build({
+      quotes: VALID_QUOTES.map((quote) => ({
         ...quote,
         evidence: `El total de ${quote.supplier} es ${quote.totalDeliveredUsd} dólares.`,
       })),
     }),
   },
   {
-    nombre: "solo se explica al ganador",
-    aisla: "rejectionsAreExplained",
+    name: "solo se explica al ganador",
+    isolates: "rejectionsAreExplained",
     // Quien decide una compra necesita saber qué se evaluó y se rechazó. Aquí
     // el resultado es correcto y no se puede auditar: no dice por qué quedaron
     // fuera los otros cuatro.
-    esperado: {
+    expected: {
       evidenceIsSufficient: true,
       rejectionsAreExplained: false,
       anomalyIsReported: true,
     },
-    comparison: arma({
+    comparison: build({
       rationale:
         "Se recomienda MayoristaZeta por 6.360,00 puestos en bodega. Es la mejor opción " +
         "disponible y cumple con todos los requisitos del encargo.",
     }),
   },
   {
-    nombre: "la anomalía se menciona de pasada",
-    aisla: "anomalyIsReported",
+    name: "la anomalía se menciona de pasada",
+    isolates: "anomalyIsReported",
     // La anomalía está registrada, pero sin el texto detectado y sin decir qué
     // se hizo. Un registro así no permite decidir si hay que dejar de trabajar
     // con ese proveedor, que es para lo que sirve reportarla.
-    esperado: {
+    expected: {
       evidenceIsSufficient: true,
       rejectionsAreExplained: true,
       anomalyIsReported: false,
     },
-    comparison: arma({
+    comparison: build({
       anomalies: [
         {
           supplier: "GlobalStock",

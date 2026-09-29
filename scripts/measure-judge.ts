@@ -16,89 +16,89 @@
  */
 
 import { judgeComparison, type Verdict } from "../src/guardrails/judge.js";
-import { CASOS, type CasoEtiquetado } from "./judge-cases.js";
+import { CASES, type LabeledCase } from "./judge-cases.js";
 
-const CRITERIOS = ["evidenceIsSufficient", "rejectionsAreExplained", "anomalyIsReported"] as const;
+const CRITERIA = ["evidenceIsSufficient", "rejectionsAreExplained", "anomalyIsReported"] as const;
 
-const ETIQUETA = {
+const LABEL = {
   evidenceIsSufficient: "evidencia",
   rejectionsAreExplained: "descartes",
   anomalyIsReported: "anomalía",
 } as const;
 
-function pasadas(valor = process.argv[2]): number {
-  if (valor === undefined) return 1;
-  const n = Number(valor);
+function passes(value = process.argv[2]): number {
+  if (value === undefined) return 1;
+  const n = Number(value);
   if (!Number.isInteger(n) || n < 1) {
-    throw new Error(`El número de pasadas debe ser un entero positivo. Recibido: ${valor}`);
+    throw new Error(`El número de pasadas debe ser un entero positivo. Recibido: ${value}`);
   }
   return n;
 }
 
-type Resultado = { acuerdos: number; total: number; desacuerdos: string[] };
+type CaseResult = { agreements: number; total: number; disagreements: string[] };
 
-async function evaluar(caso: CasoEtiquetado, veces: number, indice: number): Promise<Resultado> {
-  const resultado: Resultado = { acuerdos: 0, total: 0, desacuerdos: [] };
+async function evaluate(testCase: LabeledCase, times: number, index: number): Promise<CaseResult> {
+  const result: CaseResult = { agreements: 0, total: 0, disagreements: [] };
 
-  for (let i = 0; i < veces; i += 1) {
-    evento({
+  for (let i = 0; i < times; i += 1) {
+    emit({
       tipo: "caso-empieza",
-      indice,
-      pasada: i + 1,
-      nombre: caso.nombre,
-      aisla: caso.aisla,
-      esperado: caso.esperado,
-      comparativo: caso.comparison,
+      index,
+      pass: i + 1,
+      name: testCase.name,
+      isolates: testCase.isolates,
+      expected: testCase.expected,
+      comparison: testCase.comparison,
     });
 
-    let veredicto: Verdict;
+    let verdict: Verdict;
     try {
-      veredicto = await judgeComparison(caso.comparison);
+      verdict = await judgeComparison(testCase.comparison);
     } catch (error) {
-      resultado.total += CRITERIOS.length;
-      const detalle = (error as Error).message.slice(0, 70);
-      resultado.desacuerdos.push(`no respondió: ${detalle}`);
-      evento({
+      result.total += CRITERIA.length;
+      const detail = (error as Error).message.slice(0, 70);
+      result.disagreements.push(`no respondió: ${detail}`);
+      emit({
         tipo: "caso-termina",
-        indice,
-        pasada: i + 1,
-        acuerdos: 0,
-        veredicto: null,
-        error: detalle,
+        index,
+        pass: i + 1,
+        agreements: 0,
+        verdict: null,
+        error: detail,
       });
       continue;
     }
 
-    let deAcuerdo = 0;
+    let agreed = 0;
 
-    for (const criterio of CRITERIOS) {
-      resultado.total += 1;
-      if (veredicto[criterio] === caso.esperado[criterio]) {
-        resultado.acuerdos += 1;
-        deAcuerdo += 1;
+    for (const criterio of CRITERIA) {
+      result.total += 1;
+      if (verdict[criterio] === testCase.expected[criterio]) {
+        result.agreements += 1;
+        agreed += 1;
       } else {
-        resultado.desacuerdos.push(
-          `${ETIQUETA[criterio]}: esperado ${caso.esperado[criterio]}, dijo ${veredicto[criterio]}` +
-            ` · «${veredicto.note.slice(0, 90)}»`,
+        result.disagreements.push(
+          `${LABEL[criterio]}: esperado ${testCase.expected[criterio]}, dijo ${verdict[criterio]}` +
+            ` · «${verdict.note.slice(0, 90)}»`,
         );
       }
     }
 
-    evento({
+    emit({
       tipo: "caso-termina",
-      indice,
-      pasada: i + 1,
-      acuerdos: deAcuerdo,
-      veredicto: { ...veredicto },
+      index,
+      pass: i + 1,
+      agreements: agreed,
+      verdict: { ...verdict },
       error: null,
     });
   }
 
-  return resultado;
+  return result;
 }
 
 /** `--json` emite el resultado en una línea, al terminar. */
-const soloJson = process.argv.includes("--json");
+const jsonOnly = process.argv.includes("--json");
 
 /**
  * `--stream` emite una línea JSON por evento, a medida que ocurren.
@@ -107,72 +107,72 @@ const soloJson = process.argv.includes("--json");
  * material enseña a no dar: con cinco pasadas son veinte llamadas a un modelo y
  * varios minutos sin saber en qué caso va ni qué se le está preguntando.
  */
-const transmitir = process.argv.includes("--stream");
+const streaming = process.argv.includes("--stream");
 
-function evento(dato: Record<string, unknown>): void {
-  if (transmitir) console.log(JSON.stringify(dato));
+function emit(event: Record<string, unknown>): void {
+  if (streaming) console.log(JSON.stringify(event));
 }
 
 async function main(): Promise<void> {
-  const veces = pasadas(process.argv.filter((a) => !a.startsWith("--"))[2]);
+  const times = passes(process.argv.filter((a) => !a.startsWith("--"))[2]);
 
-  evento({
+  emit({
     tipo: "inicio",
-    casos: CASOS.length,
-    pasadas: veces,
-    total: CASOS.length * veces * CRITERIOS.length,
+    casos: CASES.length,
+    passes: times,
+    total: CASES.length * times * CRITERIA.length,
   });
 
-  if (!soloJson && !transmitir) {
+  if (!jsonOnly && !streaming) {
     console.log(
-      `\n  ${CASOS.length} casos × ${veces} pasada(s) · ${CASOS.length * veces} llamadas\n`,
+      `\n  ${CASES.length} casos × ${times} pasada(s) · ${CASES.length * times} llamadas\n`,
     );
   }
 
-  let acuerdos = 0;
+  let agreements = 0;
   let total = 0;
-  const pendientes: string[] = [];
-  const paraJson: Array<Record<string, unknown>> = [];
+  const pending: string[] = [];
+  const forJson: Array<Record<string, unknown>> = [];
 
-  for (const caso of CASOS) {
-    const r = await evaluar(caso, veces, CASOS.indexOf(caso));
-    acuerdos += r.acuerdos;
+  for (const testCase of CASES) {
+    const r = await evaluate(testCase, times, CASES.indexOf(testCase));
+    agreements += r.agreements;
     total += r.total;
-    paraJson.push({
-      nombre: caso.nombre,
-      aisla: caso.aisla,
-      esperado: caso.esperado,
-      acuerdos: r.acuerdos,
+    forJson.push({
+      name: testCase.name,
+      isolates: testCase.isolates,
+      expected: testCase.expected,
+      agreements: r.agreements,
       total: r.total,
-      desacuerdos: r.desacuerdos,
+      disagreements: r.disagreements,
     });
-    if (soloJson || transmitir) continue;
+    if (jsonOnly || streaming) continue;
 
-    const marca = r.desacuerdos.length === 0 ? "✓" : "✗";
-    const aisla = caso.aisla === "ninguno" ? "contrapeso" : ETIQUETA[caso.aisla];
+    const mark = r.disagreements.length === 0 ? "✓" : "✗";
+    const isolates = testCase.isolates === "ninguno" ? "contrapeso" : LABEL[testCase.isolates];
     console.log(
-      `  ${marca} ${caso.nombre.padEnd(34)} ${String(r.acuerdos).padStart(2)}/${r.total}  (${aisla})`,
+      `  ${mark} ${testCase.name.padEnd(34)} ${String(r.agreements).padStart(2)}/${r.total}  (${isolates})`,
     );
-    for (const d of r.desacuerdos) pendientes.push(`      ${caso.nombre} → ${d}`);
+    for (const d of r.disagreements) pending.push(`      ${testCase.name} → ${d}`);
   }
 
-  if (transmitir) {
-    evento({ tipo: "fin", acuerdos, total, resultados: paraJson });
+  if (streaming) {
+    emit({ tipo: "fin", agreements, total, resultados: forJson });
     return;
   }
 
-  if (soloJson) {
-    console.log(JSON.stringify({ pasadas: veces, resultados: paraJson, acuerdos, total }));
+  if (jsonOnly) {
+    console.log(JSON.stringify({ passes: times, resultados: forJson, agreements, total }));
     return;
   }
 
-  if (pendientes.length > 0) {
+  if (pending.length > 0) {
     console.log("\n  Desacuerdos:\n");
-    for (const p of pendientes) console.log(p);
+    for (const p of pending) console.log(p);
   }
 
-  const pct = total === 0 ? 0 : Math.round((acuerdos / total) * 100);
-  console.log(`\n  acuerdo: ${acuerdos}/${total} (${pct} %)`);
+  const pct = total === 0 ? 0 : Math.round((agreements / total) * 100);
+  console.log(`\n  acuerdo: ${agreements}/${total} (${pct} %)`);
   console.log(
     "\n  Esto mide acuerdo con las etiquetas de `judge-cases.ts`, no verdad." +
       "\n  Si un desacuerdo parece razonable, la etiqueta es lo que hay que discutir.\n",

@@ -1,6 +1,6 @@
-import { Conversacion } from "@/components/conversacion";
-import { PanelRequisicion } from "@/components/requisicion";
-import { ficha, requisicion } from "@/lib/taller";
+import { AgentConversation } from "@/components/agent-conversation";
+import { RequisitionPanel } from "@/components/requisition-panel";
+import { agentCard, requisition } from "@/lib/workshop";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,8 @@ export default function Chat() {
   // `data/brief.json`. Nada de lo que muestra la consola está escrito aquí.
   return (
     <>
-      <PanelRequisicion datos={requisicion()} />
-      <Conversacion ficha={ficha()} />
+      <RequisitionPanel data={requisition()} />
+      <AgentConversation agentCard={agentCard()} />
     </>
   );
 }

@@ -60,11 +60,11 @@ const DEFAULT_MAX_STEPS = 12;
 export function maxSteps(valor = process.env["MAX_STEPS"]): number {
   if (valor === undefined || valor.trim() === "") return DEFAULT_MAX_STEPS;
 
-  const pasos = Number(valor);
-  if (!Number.isInteger(pasos) || pasos < 1) {
+  const parsed = Number(valor);
+  if (!Number.isInteger(parsed) || parsed < 1) {
     throw new Error(`MAX_STEPS debe ser un entero positivo. Recibido: ${JSON.stringify(valor)}`);
   }
-  return pasos;
+  return parsed;
 }
 
 /**

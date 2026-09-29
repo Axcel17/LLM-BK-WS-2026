@@ -6,14 +6,14 @@ import { Activity, ClipboardCheck, MessagesSquare } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const SECCIONES = [
-  { href: "/chat", nombre: "Conversación", icono: MessagesSquare },
-  { href: "/evaluacion", nombre: "Evaluación", icono: ClipboardCheck },
-  { href: "/monitoreo", nombre: "Historial", icono: Activity },
+const SECTIONS = [
+  { href: "/chat", name: "Conversación", Icon: MessagesSquare },
+  { href: "/evaluacion", name: "Evaluación", Icon: ClipboardCheck },
+  { href: "/monitoreo", name: "Historial", Icon: Activity },
 ] as const;
 
-export function Navegacion() {
-  const ruta = usePathname();
+export function Navigation() {
+  const path = usePathname();
 
   return (
     <header className="border-border/60 bg-background/80 sticky top-0 z-20 border-b backdrop-blur">
@@ -29,22 +29,22 @@ export function Navegacion() {
         </Link>
 
         <nav className="flex items-center gap-1">
-          {SECCIONES.map(({ href, nombre, icono: Icono }) => {
-            const activa = ruta === href || ruta.startsWith(`${href}/`);
+          {SECTIONS.map(({ href, name, Icon: Icono }) => {
+            const active = path === href || path.startsWith(`${href}/`);
             return (
               <Link
                 key={href}
                 href={href}
-                aria-current={activa ? "page" : undefined}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
-                  activa
+                  active
                     ? "bg-muted text-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                 )}
               >
                 <Icono className="size-4" aria-hidden />
-                {nombre}
+                {name}
               </Link>
             );
           })}

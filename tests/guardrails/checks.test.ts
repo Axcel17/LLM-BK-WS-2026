@@ -23,7 +23,11 @@ import {
 import type { Comparison, Constraints, Quote } from "../../src/domain/schemas.js";
 
 /** Las restricciones del caso, que en producción salen de la requisición. */
-const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
+const CASE_CONSTRAINTS: Constraints = {
+  quantity: 40,
+  maxLeadTimeBusinessDays: 10,
+  budgetCapUsd: 7_000,
+};
 
 function quote(
   supplier: string,
@@ -63,7 +67,7 @@ function correctComparison(overrides: Partial<Comparison> = {}): Comparison {
 }
 
 /** Lo que habría devuelto `get_quote` para el comparativo correcto. */
-function fuentesCorrectas(): Map<string, string> {
+function validSources(): Map<string, string> {
   return new Map(
     correctComparison().quotes.map((q) => [q.supplier, `Cotización.\n${q.evidence}\nFin.`]),
   );
@@ -71,7 +75,7 @@ function fuentesCorrectas(): Map<string, string> {
 
 describe("runAllChecks", () => {
   it("no produce hallazgos sobre un comparativo correcto", () => {
-    expect(runAllChecks(correctComparison(), fuentesCorrectas(), DEL_CASO)).toEqual([]);
+    expect(runAllChecks(correctComparison(), validSources(), CASE_CONSTRAINTS)).toEqual([]);
   });
 });
 
@@ -79,10 +83,10 @@ describe("checkEvidence", () => {
   it("detecta un proveedor cotizado sin haberlo consultado", () => {
     // La cotización se inventó entera: no hay texto contra el cual contrastarla,
     // y las otras seis la aprobarían porque es internamente coherente.
-    const fuentes = fuentesCorrectas();
-    fuentes.delete("Tecnoimport");
+    const sources = validSources();
+    sources.delete("Tecnoimport");
 
-    const findings = checkEvidence(correctComparison(), fuentes);
+    const findings = checkEvidence(correctComparison(), sources);
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.detail).toContain("Tecnoimport");
@@ -90,7 +94,7 @@ describe("checkEvidence", () => {
   });
 
   it("detecta una cita que no aparece en el texto devuelto", () => {
-    const inventada = correctComparison({
+    const fabricated = correctComparison({
       quotes: [
         quote("MayoristaZeta", 159, 0, 6360, 8, {
           evidence: "Precio especial pactado por teléfono",
@@ -99,7 +103,7 @@ describe("checkEvidence", () => {
       ],
     });
 
-    const findings = checkEvidence(inventada, fuentesCorrectas());
+    const findings = checkEvidence(fabricated, validSources());
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.detail).toContain("no aparece");
@@ -114,10 +118,10 @@ describe("checkEvidence", () => {
         ...correctComparison().quotes.slice(1),
       ],
     });
-    const fuentes = fuentesCorrectas();
-    fuentes.set("MayoristaZeta", "Precio por caja  USD 1.590,00 — caja cerrada");
+    const sources = validSources();
+    sources.set("MayoristaZeta", "Precio por caja  USD 1.590,00 — caja cerrada");
 
-    expect(checkEvidence(comparison, fuentes)).toEqual([]);
+    expect(checkEvidence(comparison, sources)).toEqual([]);
   });
 
   it("sin cotizaciones declaradas no hay nada que contrastar", () => {
@@ -156,7 +160,7 @@ describe("checkTieBreak", () => {
   it("detecta una recomendación que cumple pero no es la más barata", () => {
     const suboptimo = correctComparison({ recommendedSupplier: "Tecnoimport" });
 
-    const findings = checkTieBreak(suboptimo, DEL_CASO);
+    const findings = checkTieBreak(suboptimo, CASE_CONSTRAINTS);
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.detail).toContain("Tecnoimport");
@@ -164,17 +168,19 @@ describe("checkTieBreak", () => {
   });
 
   it("la recomendación correcta no produce hallazgo", () => {
-    expect(checkTieBreak(correctComparison(), DEL_CASO)).toEqual([]);
+    expect(checkTieBreak(correctComparison(), CASE_CONSTRAINTS)).toEqual([]);
   });
 
   it("no duplica el hallazgo cuando el recomendado ni siquiera cumple", () => {
     // De eso se encarga `checkHardLimits`: aquí no se vuelve a reportar.
     const incumple = correctComparison({ recommendedSupplier: "GlobalStock" });
-    expect(checkTieBreak(incumple, DEL_CASO)).toEqual([]);
+    expect(checkTieBreak(incumple, CASE_CONSTRAINTS)).toEqual([]);
   });
 
   it("sin recomendación no hay desempate que comprobar", () => {
-    expect(checkTieBreak(correctComparison({ recommendedSupplier: null }), DEL_CASO)).toEqual([]);
+    expect(
+      checkTieBreak(correctComparison({ recommendedSupplier: null }), CASE_CONSTRAINTS),
+    ).toEqual([]);
   });
 });
 
@@ -192,16 +198,16 @@ describe("checkArithmetic", () => {
     const broken = correctComparison({
       quotes: [quote("MayoristaZeta", 159, 0, 6900, 8), ...correctComparison().quotes.slice(1)],
     });
-    expect(checkArithmetic(broken, DEL_CASO).some((f) => f.detail.includes("MayoristaZeta"))).toBe(
-      true,
-    );
+    expect(
+      checkArithmetic(broken, CASE_CONSTRAINTS).some((f) => f.detail.includes("MayoristaZeta")),
+    ).toBe(true);
   });
 
   it("tolera una diferencia de un centavo por redondeo", () => {
     const rounded = correctComparison({
       quotes: [quote("MayoristaZeta", 159, 0, 6360.01, 8), ...correctComparison().quotes.slice(1)],
     });
-    expect(checkArithmetic(rounded, DEL_CASO)).toEqual([]);
+    expect(checkArithmetic(rounded, CASE_CONSTRAINTS)).toEqual([]);
   });
 });
 
@@ -209,7 +215,7 @@ describe("checkHardLimits", () => {
   it("detecta que se recomienda a quien incumple el plazo", () => {
     const manipulated = correctComparison({ recommendedSupplier: "GlobalStock" });
     expect(
-      checkHardLimits(manipulated, DEL_CASO).some((f) => f.detail.includes("GlobalStock")),
+      checkHardLimits(manipulated, CASE_CONSTRAINTS).some((f) => f.detail.includes("GlobalStock")),
     ).toBe(true);
   });
 
@@ -220,7 +226,7 @@ describe("checkHardLimits", () => {
         quote("GlobalStock", 149, 0, 5960, 22, { meetsLeadTime: true }),
       ],
     });
-    expect(checkHardLimits(broken, DEL_CASO).length).toBeGreaterThan(0);
+    expect(checkHardLimits(broken, CASE_CONSTRAINTS).length).toBeGreaterThan(0);
   });
 
   it("detecta conformidad declarada sobre un presupuesto excedido", () => {
@@ -230,7 +236,9 @@ describe("checkHardLimits", () => {
         quote("Tecnoimport", 200, 100, 8100, 6, { meetsBudget: true }),
       ],
     });
-    expect(checkHardLimits(expensive, DEL_CASO).some((f) => f.detail.includes("tope"))).toBe(true);
+    expect(
+      checkHardLimits(expensive, CASE_CONSTRAINTS).some((f) => f.detail.includes("tope")),
+    ).toBe(true);
   });
 });
 
@@ -241,13 +249,13 @@ describe("checkMissingResponses", () => {
 });
 
 describe("checkEscalation", () => {
-  const requisicion = { product: "Monitor", quantity: 40, budgetCapUsd: 7000, warranty: "" };
+  const requisition = { product: "Monitor", quantity: 40, budgetCapUsd: 7000, warranty: "" };
 
-  const escalacion = (campos: Array<Parameters<typeof checkEscalation>[0]["missing"][number]>) =>
+  const escalation = (fields: Array<Parameters<typeof checkEscalation>[0]["missing"][number]>) =>
     ({
       status: "missing_information",
       comparison: null,
-      missing: campos,
+      missing: fields,
       question: "¿Cuál es el dato que falta?",
       outOfScopeReason: null,
     }) as Parameters<typeof checkEscalation>[0];
@@ -256,8 +264,8 @@ describe("checkEscalation", () => {
     // El modo de falla que reemplaza al de inventar: con una salida disponible
     // para la carencia, el riesgo pasa a ser pedir de más para no equivocarse.
     const findings = checkEscalation(
-      escalacion([{ field: "quantity", why: "Sin cantidad no se puede cotizar nada." }]),
-      requisicion,
+      escalation([{ field: "quantity", why: "Sin cantidad no se puede cotizar nada." }]),
+      requisition,
     );
 
     expect(findings).toHaveLength(1);
@@ -267,10 +275,10 @@ describe("checkEscalation", () => {
 
   it("pedir un dato genuinamente ausente no produce hallazgo", () => {
     const findings = checkEscalation(
-      escalacion([
+      escalation([
         { field: "maxLeadTimeBusinessDays", why: "Sin plazo no hay filtro de descalificación." },
       ]),
-      requisicion,
+      requisition,
     );
 
     expect(findings).toEqual([]);
@@ -278,15 +286,15 @@ describe("checkEscalation", () => {
 
   it("una cadena vacía cuenta como ausente", () => {
     const findings = checkEscalation(
-      escalacion([{ field: "warranty", why: "Sin definirla, el proveedor no puede cotizar." }]),
-      requisicion,
+      escalation([{ field: "warranty", why: "Sin definirla, el proveedor no puede cotizar." }]),
+      requisition,
     );
 
     expect(findings).toEqual([]);
   });
 
   it("un resultado resuelto no tiene escalación que comprobar", () => {
-    const resuelto = {
+    const resolved = {
       status: "resolved",
       comparison: correctComparison(),
       missing: [],
@@ -294,7 +302,7 @@ describe("checkEscalation", () => {
       outOfScopeReason: null,
     } as Parameters<typeof checkEscalation>[0];
 
-    expect(checkEscalation(resuelto, requisicion)).toEqual([]);
+    expect(checkEscalation(resolved, requisition)).toEqual([]);
   });
 });
 
@@ -312,13 +320,13 @@ describe("checkEvidence · formas reales de citar", () => {
         ...correctComparison().quotes.slice(1),
       ],
     });
-    const fuentes = fuentesCorrectas();
-    fuentes.set(
+    const sources = validSources();
+    sources.set(
       "MayoristaZeta",
       "PRECIO POR CAJA .............. USD 1.590,00\nFlete: INCLUIDO en el precio\nPlazo: 8 dias",
     );
 
-    expect(checkEvidence(comparison, fuentes)).toEqual([]);
+    expect(checkEvidence(comparison, sources)).toEqual([]);
   });
 
   it("sigue detectando un fragmento que no está en la fuente", () => {
@@ -330,10 +338,10 @@ describe("checkEvidence · formas reales de citar", () => {
         ...correctComparison().quotes.slice(1),
       ],
     });
-    const fuentes = fuentesCorrectas();
-    fuentes.set("MayoristaZeta", "PRECIO POR CAJA USD 1.590,00\nFlete incluido");
+    const sources = validSources();
+    sources.set("MayoristaZeta", "PRECIO POR CAJA USD 1.590,00\nFlete incluido");
 
-    const findings = checkEvidence(comparison, fuentes);
+    const findings = checkEvidence(comparison, sources);
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.detail).toContain("descuento por volumen");

@@ -13,73 +13,73 @@
 
 import { spawn } from "node:child_process";
 
-import { RAIZ } from "@/lib/taller";
+import { REPO_ROOT } from "@/lib/workshop";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 900;
 
 export async function POST(request: Request) {
-  const { pasadas = 1 }: { pasadas?: number } = await request.json().catch(() => ({}));
-  const veces = Math.min(Math.max(Math.trunc(pasadas) || 1, 1), 5);
+  const { passes = 1 }: { passes?: number } = await request.json().catch(() => ({}));
+  const times = Math.min(Math.max(Math.trunc(passes) || 1, 1), 5);
 
-  const proceso = spawn(
+  const child = spawn(
     "npm",
-    ["run", "--silent", "measure-judge", "--", String(veces), "--stream"],
-    { cwd: RAIZ },
+    ["run", "--silent", "measure-judge", "--", String(times), "--stream"],
+    { cwd: REPO_ROOT },
   );
 
-  const flujo = new ReadableStream<Uint8Array>({
-    start(controlador) {
-      let resto = "";
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      let buffered = "";
 
-      proceso.stdout.on("data", (trozo: Buffer) => {
+      child.stdout.on("data", (chunk: Buffer) => {
         // Una línea puede llegar partida entre dos trozos: se acumula lo que
         // quede sin salto y se emite completo, o el cliente recibe JSON roto.
-        resto += trozo.toString("utf8");
-        const lineas = resto.split("\n");
-        resto = lineas.pop() ?? "";
-        for (const linea of lineas) {
-          if (linea.trim() !== "") controlador.enqueue(new TextEncoder().encode(`${linea}\n`));
+        buffered += chunk.toString("utf8");
+        const lines = buffered.split("\n");
+        buffered = lines.pop() ?? "";
+        for (const line of lines) {
+          if (line.trim() !== "") controller.enqueue(new TextEncoder().encode(`${line}\n`));
         }
       });
 
-      proceso.stderr.on("data", (trozo: Buffer) => {
-        const texto = trozo.toString("utf8").trim();
-        if (texto !== "") {
-          controlador.enqueue(
+      child.stderr.on("data", (chunk: Buffer) => {
+        const text = chunk.toString("utf8").trim();
+        if (text !== "") {
+          controller.enqueue(
             new TextEncoder().encode(
-              `${JSON.stringify({ tipo: "aviso", texto: texto.slice(0, 200) })}\n`,
+              `${JSON.stringify({ tipo: "aviso", texto: text.slice(0, 200) })}\n`,
             ),
           );
         }
       });
 
-      proceso.on("close", (codigo) => {
-        if (resto.trim() !== "") controlador.enqueue(new TextEncoder().encode(`${resto}\n`));
-        if (codigo !== 0) {
-          controlador.enqueue(
+      child.on("close", (code) => {
+        if (buffered.trim() !== "") controller.enqueue(new TextEncoder().encode(`${buffered}\n`));
+        if (code !== 0) {
+          controller.enqueue(
             new TextEncoder().encode(
-              `${JSON.stringify({ tipo: "error", texto: `el proceso terminó con código ${codigo}` })}\n`,
+              `${JSON.stringify({ tipo: "error", texto: `el child terminó con código ${code}` })}\n`,
             ),
           );
         }
-        controlador.close();
+        controller.close();
       });
 
-      proceso.on("error", (error) => {
-        controlador.enqueue(
+      child.on("error", (error) => {
+        controller.enqueue(
           new TextEncoder().encode(
             `${JSON.stringify({ tipo: "error", texto: error.message.slice(0, 200) })}\n`,
           ),
         );
-        controlador.close();
+        controller.close();
       });
 
-      request.signal.addEventListener("abort", () => proceso.kill());
+      request.signal.addEventListener("abort", () => child.kill());
     },
   });
 
-  return new Response(flujo, {
+  return new Response(stream, {
     headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store" },
   });
 }

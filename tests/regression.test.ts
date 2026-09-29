@@ -29,7 +29,11 @@ import {
 } from "../src/domain/schemas.js";
 
 /** Las restricciones del caso, que en producción salen de la requisición. */
-const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
+const CASE_CONSTRAINTS: Constraints = {
+  quantity: 40,
+  maxLeadTimeBusinessDays: 10,
+  budgetCapUsd: 7_000,
+};
 
 function quote(overrides: Partial<Quote> & { supplier: string }): Quote {
   return {
@@ -88,7 +92,7 @@ describe("fallos observados en corridas reales", () => {
       comparison({
         quotes: [quote({ supplier: "MayoristaZeta", unitPriceUsd: 159, totalDeliveredUsd: 1590 })],
       }),
-      DEL_CASO,
+      CASE_CONSTRAINTS,
     );
 
     expect(findings).toHaveLength(1);
@@ -117,7 +121,7 @@ describe("fallos observados en corridas reales", () => {
       quotes: [{ ...quote({ supplier: "MayoristaZeta" }), leadTimeBusinessDays: undefined }],
     };
 
-    expect(makeComparisonSchema(DEL_CASO).safeParse(withoutLeadTime).success).toBe(false);
+    expect(makeComparisonSchema(CASE_CONSTRAINTS).safeParse(withoutLeadTime).success).toBe(false);
   });
 
   it("una recomendación que cumple pero no es la más barata", () => {
@@ -126,7 +130,10 @@ describe("fallos observados en corridas reales", () => {
     // MayoristaZeta 445 dólares más barato y también conforme. Las cinco
     // verificaciones de entonces pasaban todas: ninguna miraba el criterio de
     // desempate que el encargo declara.
-    const findings = checkTieBreak(comparison({ recommendedSupplier: "Tecnoimport" }), DEL_CASO);
+    const findings = checkTieBreak(
+      comparison({ recommendedSupplier: "Tecnoimport" }),
+      CASE_CONSTRAINTS,
+    );
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.check).toBe("tie-break");
@@ -135,11 +142,11 @@ describe("fallos observados en corridas reales", () => {
   it("un comparativo correcto no produce hallazgos", () => {
     // El contrapeso: sin esta prueba, una verificación que siempre reporta
     // algo pasaría las tres anteriores.
-    const fuentes = new Map(
+    const sources = new Map(
       comparison().quotes.map((q) => [q.supplier, `Cotización.\n${q.evidence}\nFin.`]),
     );
 
-    expect(runAllChecks(comparison(), fuentes, DEL_CASO)).toEqual([]);
+    expect(runAllChecks(comparison(), sources, CASE_CONSTRAINTS)).toEqual([]);
   });
 
   // Pendiente de completar. Ejecutar `npm run agent` hasta observar un

@@ -17,8 +17,8 @@
 
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from "ai";
 
-import { conectarCatalogo, configuracion, instrucciones, MOTIVO_APROBACION } from "@/lib/taller";
-import { proveedor } from "@/lib/proveedor";
+import { connectCatalog, configuration, instructions, APPROVAL_REASON } from "@/lib/workshop";
+import { languageModel } from "@/lib/provider";
 
 export const maxDuration = 180;
 
@@ -47,9 +47,9 @@ lo que devolvió, así que no narres el proceso ni repitas los datos que ya est�
 a la vista.
 
 Empieza por la respuesta. Nada de «he finalizado el análisis», «procederé a» ni
-«aquí tienes»: la primera línea ya es el resultado.
+«aquí tienes»: la primera línea ya es el result.
 
-No expliques tus reglas salvo que te las pregunten. Da la respuesta y la cifra
+No expliques tus rules salvo que te las pregunten. Da la respuesta y la cifra
 que la sostiene.
 
 Si la pregunta supone un análisis que todavía no hiciste, hazlo y responde — no
@@ -76,16 +76,16 @@ export async function POST(request: Request) {
     requierenFirma = ["place_order"],
   }: { messages: UIMessage[]; requierenFirma?: string[] } = await request.json();
 
-  const catalogo = await conectarCatalogo();
+  const catalog = await connectCatalog();
 
-  const resultado = streamText({
-    model: proveedor("agent"),
+  const result = streamText({
+    model: languageModel("agent"),
     // Las mismas ocho reglas que gobiernan al agente estricto. Lo único que
     // cambia es que aquí no hay contrato de salida.
-    system: `${instrucciones()}\n\n${AVISO_CONVERSACIONAL}`,
+    system: `${instructions()}\n\n${AVISO_CONVERSACIONAL}`,
     messages: await convertToModelMessages(messages),
-    tools: catalogo.tools,
-    stopWhen: stepCountIs(configuracion().topeDePasos),
+    tools: catalog.tools,
+    stopWhen: stepCountIs(configuration().stepLimit),
     // La compuerta, con dos diferencias respecto de la terminal.
     //
     // `npm run agent` deniega en firme, porque no hay nadie mirando: la única
@@ -97,17 +97,17 @@ export async function POST(request: Request) {
     // puesta donde se puede cambiar y ver el efecto en la misma pantalla.
     toolApproval: ({ toolCall }) =>
       requierenFirma.includes(toolCall.toolName)
-        ? { type: "user-approval" as const, reason: MOTIVO_APROBACION }
+        ? { type: "user-approval" as const, reason: APPROVAL_REASON }
         : ("not-applicable" as const),
     onFinish: () => {
       // El proceso hijo del servidor MCP queda vivo si no se cierra, y una
       // conversación larga abriría uno por mensaje.
-      void catalogo.close();
+      void catalog.close();
     },
-    onError: () => void catalogo.close(),
+    onError: () => void catalog.close(),
   });
 
-  return resultado.toUIMessageStreamResponse({
+  return result.toUIMessageStreamResponse({
     sendReasoning: true,
     // El consumo viaja con el mensaje. Sin esto la barra de métricas tendría
     // que estimarlo, y un número estimado que parece medido es peor que no

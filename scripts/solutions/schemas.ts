@@ -162,19 +162,11 @@ export const missingFieldSchema = z.object({
 /**
  * Lo que el agente entrega, que no siempre es un comparativo.
  *
- * El contrato anterior obligaba a producir un comparativo siempre. Ante una
- * requisición incompleta, la única salida disponible era inventar los datos que
- * faltaban — no por mala disposición del modelo, sino porque el esquema no
- * admitía otra respuesta.
- *
- * Esto no se arregla pidiéndole en las instrucciones que avise cuando le falte
- * algo: una instrucción es una petición. Se arregla haciendo que el contrato
- * admita «no puedo proceder» y que la coherencia sea imposible de violar.
+ * El contrato anterior obligaba a producir uno siempre, así que ante una
+ * requisición incompleta la única salida disponible era inventar.
  *
  * La forma es discriminante más ramas anulables, y no una unión discriminada,
- * por una restricción del proveedor: la salida estructurada estricta de OpenAI
- * rechaza `oneOf` en la raíz del esquema. Es la misma familia de restricción
- * que obliga a que ninguna propiedad tenga valor por defecto.
+ * porque la salida estructurada estricta de OpenAI rechaza `oneOf` en la raíz.
  */
 const outcomeSchemaDe = (c: Constraints) =>
   z

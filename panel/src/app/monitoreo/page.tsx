@@ -2,47 +2,47 @@ import { AlertTriangle, Check, CircleSlash, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { configuracion, leerCorridas, type Corrida } from "@/lib/taller";
+import { configuration, readRuns, type Run } from "@/lib/workshop";
 
 export const dynamic = "force-dynamic";
 
-function seg(ms: number) {
+function seconds(ms: number) {
   return `${(ms / 1000).toFixed(1)} s`;
 }
 
-function estado(c: Corrida) {
+function statusOf(c: Run) {
   if (c.outcome === "tope-alcanzado")
-    return { Icono: AlertTriangle, clase: "text-firma", texto: "límite alcanzado" };
+    return { Icon: AlertTriangle, className: "text-firma", label: "límite alcanzado" };
   if (c.outcome === "error")
-    return { Icono: CircleSlash, clase: "text-destructive", texto: "error" };
+    return { Icon: CircleSlash, className: "text-destructive", label: "error" };
   if (c.findings.length > 0)
-    return { Icono: X, clase: "text-destructive", texto: `${c.findings.length} hallazgo(s)` };
-  return { Icono: Check, clase: "text-verificado", texto: "conforme" };
+    return { Icon: X, className: "text-destructive", label: `${c.findings.length} hallazgo(s)` };
+  return { Icon: Check, className: "text-verificado", label: "conforme" };
 }
 
-function Metrica({ valor, etiqueta }: { valor: string; etiqueta: string }) {
+function Metric({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <div className="tabular text-[1.6rem] leading-none font-semibold tracking-tight">{valor}</div>
+      <div className="tabular text-[1.6rem] leading-none font-semibold tracking-tight">{value}</div>
       <div className="text-muted-foreground mt-1.5 text-[11px] tracking-wide uppercase">
-        {etiqueta}
+        {label}
       </div>
     </div>
   );
 }
 
-export default function Monitoreo() {
-  const corridas = leerCorridas();
-  const config = configuracion();
+export default function History() {
+  const runs = readRuns();
+  const config = configuration();
 
-  const completas = corridas.filter((c) => c.outcome === "completa");
-  const limpias = completas.filter((c) => c.findings.length === 0);
-  const medianaMs = (() => {
-    const t = completas.map((c) => c.durationMs).sort((a, b) => a - b);
+  const completed = runs.filter((c) => c.outcome === "completa");
+  const clean = completed.filter((c) => c.findings.length === 0);
+  const medianMs = (() => {
+    const t = completed.map((c) => c.durationMs).sort((a, b) => a - b);
     return t.length === 0 ? 0 : (t[Math.floor(t.length / 2)] ?? 0);
   })();
-  const entrada = completas.reduce((s, c) => s + c.totals.inputTokens, 0);
-  const cacheado = completas.reduce((s, c) => s + c.totals.cachedInputTokens, 0);
+  const inputTotal = completed.reduce((s, c) => s + c.totals.inputTokens, 0);
+  const cachedTotal = completed.reduce((s, c) => s + c.totals.cachedInputTokens, 0);
 
   return (
     <div className="mx-auto w-full max-w-4xl overflow-y-auto px-4 py-10">
@@ -57,7 +57,7 @@ export default function Monitoreo() {
         </p>
       </header>
 
-      {corridas.length === 0 ? (
+      {runs.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="text-muted-foreground py-12 text-center text-sm">
             <p>Sin ejecuciones registradas.</p>
@@ -71,37 +71,34 @@ export default function Monitoreo() {
         <>
           <Card className="mb-7">
             <CardContent className="grid grid-cols-2 gap-6 py-5 sm:grid-cols-4">
-              <Metrica valor={String(corridas.length)} etiqueta="ejecuciones" />
-              <Metrica
-                valor={`${limpias.length}/${completas.length || 0}`}
-                etiqueta="sin hallazgos"
-              />
-              <Metrica valor={seg(medianaMs)} etiqueta="duración mediana" />
-              <Metrica
-                valor={entrada > 0 ? `${Math.round((cacheado / entrada) * 100)} %` : "—"}
-                etiqueta="servido de caché"
+              <Metric value={String(runs.length)} label="ejecuciones" />
+              <Metric value={`${clean.length}/${completed.length || 0}`} label="sin hallazgos" />
+              <Metric value={seconds(medianMs)} label="duración mediana" />
+              <Metric
+                value={inputTotal > 0 ? `${Math.round((cachedTotal / inputTotal) * 100)} %` : "—"}
+                label="servido de caché"
               />
             </CardContent>
           </Card>
 
           <div className="mb-7 flex flex-wrap gap-2 text-xs">
             {[
-              ["proveedor", config.proveedor],
-              ["modelo", config.modelo],
-              ["evaluador", config.evaluador],
-              ["tope de pasos", String(config.topeDePasos)],
+              ["proveedor", config.provider],
+              ["modelo", config.model],
+              ["evaluador", config.judgeModel],
+              ["tope de pasos", String(config.stepLimit)],
             ].map(([k, v]) => (
               <Badge key={k} variant="secondary" className="font-normal">
                 <span className="text-muted-foreground mr-1.5">{k}</span>
                 {v}
               </Badge>
             ))}
-            {config.reglaRetirada && <Badge variant="destructive">DROP_PROMPT_RULE activa</Badge>}
+            {config.ruleDropped && <Badge variant="destructive">DROP_PROMPT_RULE activa</Badge>}
           </div>
 
           <div className="grid gap-3">
-            {corridas.map((c) => {
-              const { Icono, clase, texto } = estado(c);
+            {runs.map((c) => {
+              const { Icon, className, label } = statusOf(c);
               const plan = c.steps.flatMap((p) =>
                 p.calls.map(
                   (l) => l.tool + (l.input ? `(${Object.values(l.input).join(", ")})` : ""),
@@ -112,9 +109,11 @@ export default function Monitoreo() {
                 <Card key={c.id}>
                   <CardContent className="space-y-3 py-4">
                     <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                      <span className={`flex items-center gap-1.5 text-sm font-medium ${clase}`}>
-                        <Icono className="size-4 shrink-0" aria-hidden />
-                        {texto}
+                      <span
+                        className={`flex items-center gap-1.5 text-sm font-medium ${className}`}
+                      >
+                        <Icon className="size-4 shrink-0" aria-hidden />
+                        {label}
                       </span>
                       <span className="text-sm tabular-nums">
                         {new Date(c.startedAt).toLocaleString("es", {
@@ -124,7 +123,7 @@ export default function Monitoreo() {
                       </span>
                       <span className="text-muted-foreground text-xs">{c.model}</span>
                       <span className="text-muted-foreground text-xs tabular-nums">
-                        {seg(c.durationMs)} · {c.steps.length} pasos ·{" "}
+                        {seconds(c.durationMs)} · {c.steps.length} pasos ·{" "}
                         {c.totals.inputTokens.toLocaleString("es")} tokens
                       </span>
                       {c.comparison?.recommendedSupplier && (

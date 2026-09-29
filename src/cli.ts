@@ -46,12 +46,12 @@ async function main(): Promise<void> {
   const request = process.argv.slice(2).join(" ");
 
   const catalog = await connectCatalog();
-  const comenzó = Date.now();
+  const startedAt = Date.now();
 
   // La bitácora se arma a lo largo de la corrida y se escribe al final, pase lo
   // que pase: una corrida que se cortó en el tope es justamente la que conviene
   // poder mirar después.
-  const bitácora: RunRecord = {
+  const record: RunRecord = {
     id: runId(),
     startedAt: new Date().toISOString(),
     durationMs: 0,
@@ -72,30 +72,30 @@ async function main(): Promise<void> {
   };
 
   try {
-    const integridad = await checkToolIntegrity(catalog.tools);
-    bitácora.integrity = {
-      hasBaseline: integridad.hasBaseline,
-      added: [...integridad.added],
-      removed: [...integridad.removed],
-      changed: [...integridad.changed],
+    const integrity = await checkToolIntegrity(catalog.tools);
+    record.integrity = {
+      hasBaseline: integrity.hasBaseline,
+      added: [...integrity.added],
+      removed: [...integrity.removed],
+      changed: [...integrity.changed],
     };
-    console.log(`\n${formatIntegrity(integridad)}\n`);
+    console.log(`\n${formatIntegrity(integrity)}\n`);
     console.log("Ejecutando. El modelo decide qué herramientas pedir y en qué orden.");
 
     const { outcome, usage, denied, sources } = await runAgent(catalog, request);
 
     const total = (usage as { usage?: Record<string, number> }).usage ?? {};
-    bitácora.outcome = "completa";
-    bitácora.steps = recordSteps((usage as { steps?: ReadonlyArray<unknown> }).steps ?? []);
-    bitácora.totals = {
+    record.outcome = "completa";
+    record.steps = recordSteps((usage as { steps?: ReadonlyArray<unknown> }).steps ?? []);
+    record.totals = {
       inputTokens: total["inputTokens"] ?? 0,
       outputTokens: total["outputTokens"] ?? 0,
       cachedInputTokens:
         (total as { inputTokenDetails?: { cacheReadTokens?: number } }).inputTokenDetails
           ?.cacheReadTokens ?? 0,
     };
-    bitácora.comparison = outcome.comparison;
-    bitácora.denied = denied.map((d) => ({ tool: d.tool, input: d.input, reason: d.reason }));
+    record.comparison = outcome.comparison;
+    record.denied = denied.map((d) => ({ tool: d.tool, input: d.input, reason: d.reason }));
 
     console.log(formatUsage(usage));
     if (denied.length > 0) console.log(formatDenied(denied));
@@ -104,36 +104,36 @@ async function main(): Promise<void> {
     // las siete comprueban un comparativo y aquí no hay ninguno. Lo que sí se
     // comprueba es que la escalación pida lo que de verdad falta.
     if (outcome.status !== "resolved" || outcome.comparison === null) {
-      bitácora.findings = [
+      record.findings = [
         ...checkEscalation(outcome, readBrief() as unknown as Record<string, unknown>),
       ];
       console.log(formatEscalation(outcome));
-      console.log(formatChecks(bitácora.findings));
+      console.log(formatChecks(record.findings));
       console.log();
       return;
     }
 
     const comparison = outcome.comparison;
-    bitácora.findings = [...runAllChecks(comparison, sources, constraintsOf(readBrief()))];
+    record.findings = [...runAllChecks(comparison, sources, constraintsOf(readBrief()))];
     console.log(formatComparison(comparison));
-    console.log(formatChecks(bitácora.findings));
+    console.log(formatChecks(record.findings));
 
     try {
-      const veredicto = await judgeComparison(comparison);
-      bitácora.verdict = veredicto;
-      console.log(formatJudgement(veredicto));
+      const verdict = await judgeComparison(comparison);
+      record.verdict = verdict;
+      console.log(formatJudgement(verdict));
     } catch (error) {
-      bitácora.verdictError = (error as Error).message.slice(0, 200);
+      record.verdictError = (error as Error).message.slice(0, 200);
       console.log(
-        `\nCAPA 2 · EVALUADOR POR MODELO\n  no disponible: ${bitácora.verdictError.slice(0, 90)}`,
+        `\nCAPA 2 · EVALUADOR POR MODELO\n  no disponible: ${record.verdictError.slice(0, 90)}`,
       );
     }
     console.log();
   } catch (error) {
     if (error instanceof StepLimitReached) {
-      bitácora.outcome = "tope-alcanzado";
-      bitácora.error = error.message;
-      bitácora.steps = error.gathered.map((q, i) => ({
+      record.outcome = "tope-alcanzado";
+      record.error = error.message;
+      record.steps = error.gathered.map((q, i) => ({
         step: i + 1,
         calls: [{ tool: q.tool, input: q.input, preview: "", characters: q.characters }],
         inputTokens: null,
@@ -144,12 +144,12 @@ async function main(): Promise<void> {
       process.exitCode = 2;
       return;
     }
-    bitácora.error = (error as Error).message.slice(0, 300);
+    record.error = (error as Error).message.slice(0, 300);
     throw error;
   } finally {
-    bitácora.durationMs = Date.now() - comenzó;
-    const archivo = recordRun(bitácora);
-    if (archivo !== null) {
+    record.durationMs = Date.now() - startedAt;
+    const file = recordRun(record);
+    if (file !== null) {
       console.log(`  Corrida registrada en data/runs/.\n`);
     }
     await catalog.close();

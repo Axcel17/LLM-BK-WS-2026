@@ -11,30 +11,30 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 
-type Papel = "agent" | "judge";
+type Role = "agent" | "judge";
 
-function leer(papel: Papel) {
-  const prefijo = papel === "judge" ? "JUDGE_" : "";
+function settingsFor(papel: Role) {
+  const prefix = papel === "judge" ? "JUDGE_" : "";
   return {
-    proveedor: process.env[`${prefijo}PROVIDER`] ?? process.env["PROVIDER"] ?? "google",
-    modelo: process.env[`${prefijo}MODEL`] ?? process.env["MODEL"] ?? "",
+    languageModel: process.env[`${prefix}PROVIDER`] ?? process.env["PROVIDER"] ?? "google",
+    model: process.env[`${prefix}MODEL`] ?? process.env["MODEL"] ?? "",
   };
 }
 
-export function proveedor(papel: Papel): LanguageModel {
-  const { proveedor: nombre, modelo } = leer(papel);
+export function languageModel(papel: Role): LanguageModel {
+  const { languageModel: name, model } = settingsFor(papel);
 
-  if (nombre === "openai") {
+  if (name === "openai") {
     const apiKey = process.env["OPENAI_API_KEY"];
     if (!apiKey) throw new Error("Falta OPENAI_API_KEY en el .env de la raíz del repositorio.");
-    return createOpenAI({ apiKey })(modelo || "gpt-5.4-mini");
+    return createOpenAI({ apiKey })(model || "gpt-5.4-mini");
   }
 
-  if (nombre === "google") {
+  if (name === "google") {
     const apiKey = process.env["GOOGLE_API_KEY"];
     if (!apiKey) throw new Error("Falta GOOGLE_API_KEY en el .env de la raíz del repositorio.");
-    return createGoogleGenerativeAI({ apiKey })(modelo || "gemini-3.1-flash-lite");
+    return createGoogleGenerativeAI({ apiKey })(model || "gemini-3.1-flash-lite");
   }
 
-  throw new Error(`Proveedor no reconocido: ${nombre}. Use "google" u "openai".`);
+  throw new Error(`Proveedor no reconocido: ${name}. Use "google" u "openai".`);
 }

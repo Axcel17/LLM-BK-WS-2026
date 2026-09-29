@@ -1,4 +1,4 @@
-import type { Requisicion } from "@/lib/taller";
+import type { Requisition } from "@/lib/workshop";
 
 /**
  * La requisición vigente, siempre visible sobre la conversación.
@@ -8,15 +8,15 @@ import type { Requisicion } from "@/lib/taller";
  * —la lee del sistema con `get_brief`—, y mostrarla evita que la conversación
  * parezca pedir datos que ya existen.
  */
-export function PanelRequisicion({ datos }: { datos: Requisicion }) {
-  const campos = [
-    { etiqueta: "Cantidad", valor: `${datos.quantity} unidades` },
-    { etiqueta: "Plazo máximo", valor: `${datos.maxLeadTimeBusinessDays} días hábiles` },
+export function RequisitionPanel({ data }: { data: Requisition }) {
+  const fields = [
+    { label: "Cantidad", value: `${data.quantity} unidades` },
+    { label: "Plazo máximo", value: `${data.maxLeadTimeBusinessDays} días hábiles` },
     {
-      etiqueta: "Presupuesto",
-      valor: `USD ${datos.budgetCapUsd.toLocaleString("es")}${datos.budgetIncludesFreight ? " con flete" : ""}`,
+      label: "Presupuesto",
+      value: `USD ${data.budgetCapUsd.toLocaleString("es")}${data.budgetIncludesFreight ? " con flete" : ""}`,
     },
-    { etiqueta: "Proveedores", valor: `${datos.suppliers.length} consultados` },
+    { label: "Proveedores", value: `${data.suppliers.length} consultados` },
   ];
 
   return (
@@ -26,21 +26,21 @@ export function PanelRequisicion({ datos }: { datos: Requisicion }) {
           <h2 className="text-muted-foreground text-[11px] font-semibold tracking-[0.08em] uppercase">
             Requisición vigente
           </h2>
-          <p className="text-sm font-medium">{datos.product}</p>
+          <p className="text-sm font-medium">{data.product}</p>
         </div>
 
         <dl className="mt-2.5 grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-4">
-          {campos.map((c) => (
-            <div key={c.etiqueta}>
-              <dt className="text-muted-foreground text-[11px]">{c.etiqueta}</dt>
-              <dd className="tabular text-sm">{c.valor}</dd>
+          {fields.map((c) => (
+            <div key={c.label}>
+              <dt className="text-muted-foreground text-[11px]">{c.label}</dt>
+              <dd className="tabular text-sm">{c.value}</dd>
             </div>
           ))}
         </dl>
 
         <p className="text-muted-foreground border-border/60 mt-3 border-t pt-2.5 text-xs leading-relaxed">
           <span className="text-foreground/70 font-medium">Criterio de adjudicación.</span>{" "}
-          {datos.selectionCriterion}
+          {data.selectionCriterion}
         </p>
       </div>
     </section>

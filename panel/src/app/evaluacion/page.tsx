@@ -6,103 +6,103 @@ import { Check, ChevronRight, Loader2, Play, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type Esperado = Record<string, boolean>;
+type Expected = Record<string, boolean>;
 
-type Ejecucion = {
+type CaseRun = {
   indice: number;
   pasada: number;
-  nombre: string;
+  name: string;
   aisla: string;
-  esperado: Esperado;
+  expected: Expected;
   comparativo: unknown;
   estado: "corriendo" | "listo";
-  acuerdos: number;
+  agreements: number;
   veredicto: Record<string, boolean | string> | null;
   error: string | null;
 };
 
-const CRITERIOS = ["evidenceIsSufficient", "rejectionsAreExplained", "anomalyIsReported"] as const;
+const CRITERIA = ["evidenceIsSufficient", "rejectionsAreExplained", "anomalyIsReported"] as const;
 
-const ETIQUETA: Record<string, string> = {
+const LABEL: Record<string, string> = {
   evidenceIsSufficient: "Evidencia suficiente",
   rejectionsAreExplained: "Descartes justificados",
   anomalyIsReported: "Anomalía reportada",
   ninguno: "Control negativo",
 };
 
-function Criterio({
-  nombre,
-  esperado,
-  obtenido,
+function CriterionRow({
+  name,
+  expected,
+  actual,
 }: {
-  nombre: string;
-  esperado: boolean;
-  obtenido: boolean | undefined;
+  name: string;
+  expected: boolean;
+  actual: boolean | undefined;
 }) {
-  const coincide = obtenido === esperado;
+  const matches = actual === expected;
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className={cn("shrink-0", coincide ? "text-verificado" : "text-destructive")}>
-        {coincide ? "✓" : "✕"}
+      <span className={cn("shrink-0", matches ? "text-verificado" : "text-destructive")}>
+        {matches ? "✓" : "✕"}
       </span>
-      <span className="text-muted-foreground min-w-0 flex-1 truncate">{ETIQUETA[nombre]}</span>
+      <span className="text-muted-foreground min-w-0 flex-1 truncate">{LABEL[name]}</span>
       <span className="tabular text-muted-foreground font-mono">
-        esperado {String(esperado)} · obtenido {obtenido === undefined ? "—" : String(obtenido)}
+        expected {String(expected)} · actual {actual === undefined ? "—" : String(actual)}
       </span>
     </div>
   );
 }
 
-export default function Evaluacion() {
-  const [pasadas, setPasadas] = useState(1);
-  const [ejecuciones, setEjecuciones] = useState<Ejecucion[]>([]);
+export default function Evaluation() {
+  const [passes, setPasses] = useState(1);
+  const [runs, setRuns] = useState<CaseRun[]>([]);
   const [total, setTotal] = useState(0);
-  const [esperado, setEsperado] = useState(0);
-  const [corriendo, setCorriendo] = useState(false);
+  const [expected, setEsperado] = useState(0);
+  const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [abierto, setAbierto] = useState<string | null>(null);
-  const cancelar = useRef<AbortController | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const acuerdos = ejecuciones.reduce((s, e) => s + e.acuerdos, 0);
-  const juzgados = ejecuciones.filter((e) => e.estado === "listo").length * CRITERIOS.length;
-  const pct = juzgados > 0 ? Math.round((acuerdos / juzgados) * 100) : null;
-  const avance = esperado > 0 ? Math.round((juzgados / esperado) * 100) : 0;
+  const agreements = runs.reduce((s, e) => s + e.agreements, 0);
+  const judged = runs.filter((e) => e.estado === "listo").length * CRITERIA.length;
+  const pct = judged > 0 ? Math.round((agreements / judged) * 100) : null;
+  const progress = expected > 0 ? Math.round((judged / expected) * 100) : 0;
 
-  async function correr() {
-    setCorriendo(true);
+  async function run() {
+    setRunning(true);
     setError(null);
-    setEjecuciones([]);
+    setRuns([]);
     setTotal(0);
     setEsperado(0);
 
-    const control = new AbortController();
-    cancelar.current = control;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
       const r = await fetch("/api/evaluacion", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ pasadas }),
-        signal: control.signal,
+        body: JSON.stringify({ passes }),
+        signal: controller.signal,
       });
       if (!r.body) throw new Error("El servidor no devolvió un flujo");
 
-      const lector = r.body.getReader();
-      const decodificador = new TextDecoder();
-      let resto = "";
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffered = "";
 
       for (;;) {
-        const { done, value } = await lector.read();
+        const { done, value } = await reader.read();
         if (done) break;
-        resto += decodificador.decode(value, { stream: true });
-        const lineas = resto.split("\n");
-        resto = lineas.pop() ?? "";
+        buffered += decoder.decode(value, { stream: true });
+        const lines = buffered.split("\n");
+        buffered = lines.pop() ?? "";
 
-        for (const linea of lineas) {
-          if (linea.trim() === "") continue;
+        for (const line of lines) {
+          if (line.trim() === "") continue;
           let e: Record<string, unknown>;
           try {
-            e = JSON.parse(linea) as Record<string, unknown>;
+            e = JSON.parse(line) as Record<string, unknown>;
           } catch {
             continue;
           }
@@ -111,17 +111,17 @@ export default function Evaluacion() {
           if (e["tipo"] === "error") setError(String(e["texto"]));
 
           if (e["tipo"] === "caso-empieza") {
-            setEjecuciones((prev) => [
+            setRuns((prev) => [
               ...prev,
               {
                 indice: Number(e["indice"]),
                 pasada: Number(e["pasada"]),
-                nombre: String(e["nombre"]),
+                name: String(e["nombre"]),
                 aisla: String(e["aisla"]),
-                esperado: e["esperado"] as Esperado,
+                expected: e["esperado"] as Expected,
                 comparativo: e["comparativo"],
                 estado: "corriendo",
-                acuerdos: 0,
+                agreements: 0,
                 veredicto: null,
                 error: null,
               },
@@ -129,14 +129,14 @@ export default function Evaluacion() {
           }
 
           if (e["tipo"] === "caso-termina") {
-            setEjecuciones((prev) =>
+            setRuns((prev) =>
               prev.map((x) =>
                 x.indice === Number(e["indice"]) && x.pasada === Number(e["pasada"])
                   ? {
                       ...x,
                       estado: "listo",
-                      acuerdos: Number(e["acuerdos"]),
-                      veredicto: e["veredicto"] as Ejecucion["veredicto"],
+                      agreements: Number(e["acuerdos"]),
+                      veredicto: e["veredicto"] as CaseRun["veredicto"],
                       error: (e["error"] as string | null) ?? null,
                     }
                   : x,
@@ -150,8 +150,8 @@ export default function Evaluacion() {
     } catch (e) {
       if ((e as Error).name !== "AbortError") setError((e as Error).message);
     } finally {
-      setCorriendo(false);
-      cancelar.current = null;
+      setRunning(false);
+      abortRef.current = null;
     }
   }
 
@@ -163,8 +163,8 @@ export default function Evaluacion() {
         </h1>
         <p className="text-muted-foreground mt-2.5 max-w-xl text-[0.94rem] leading-relaxed">
           El evaluador por modelo dictamina sobre las salidas del agente. Este procedimiento lo
-          somete a su vez a control: se le presentan cuatro comparativos de veredicto conocido —tres
-          con un defecto introducido de forma deliberada y uno correcto— y se contabiliza la
+          somete a su vez a controller: se le presentan cuatro comparativos de veredicto conocido
+          —tres con un defecto introducido de forma deliberada y uno correcto— y se contabiliza la
           coincidencia por criterio. El agente no interviene en la ejecución, de modo que toda
           discrepancia es atribuible al evaluador.
         </p>
@@ -176,12 +176,12 @@ export default function Evaluacion() {
             <button
               key={n}
               type="button"
-              onClick={() => setPasadas(n)}
-              disabled={corriendo}
-              aria-pressed={pasadas === n}
+              onClick={() => setPasses(n)}
+              disabled={running}
+              aria-pressed={passes === n}
               className={cn(
                 "rounded-[0.6rem] px-3 py-1.5 text-sm transition-colors disabled:opacity-50",
-                pasadas === n
+                passes === n
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground",
               )}
@@ -191,22 +191,22 @@ export default function Evaluacion() {
           ))}
         </div>
 
-        {corriendo ? (
+        {running ? (
           <Button
             variant="outline"
             className="rounded-xl"
-            onClick={() => cancelar.current?.abort()}
+            onClick={() => abortRef.current?.abort()}
           >
             <Square className="size-3.5" /> Interrumpir
           </Button>
         ) : (
-          <Button onClick={() => void correr()} className="rounded-xl">
+          <Button onClick={() => void run()} className="rounded-xl">
             <Play className="size-4" /> Ejecutar
           </Button>
         )}
 
         <span className="text-muted-foreground tabular text-xs">
-          {4 * pasadas} invocaciones · {4 * pasadas * 3} dictámenes
+          {4 * passes} invocaciones · {4 * passes * 3} dictámenes
         </span>
 
         {pct !== null && (
@@ -220,17 +220,17 @@ export default function Evaluacion() {
               {pct} %
             </span>
             <span className="text-muted-foreground tabular text-xs">
-              {acuerdos}/{total || juzgados}
+              {agreements}/{total || judged}
             </span>
           </div>
         )}
       </div>
 
-      {esperado > 0 && (
+      {expected > 0 && (
         <div className="bg-muted mt-3 h-1 overflow-hidden rounded-full">
           <div
             className="bg-primary h-full rounded-full transition-[width] duration-300"
-            style={{ width: `${avance}%` }}
+            style={{ width: `${progress}%` }}
           />
         </div>
       )}
@@ -242,67 +242,67 @@ export default function Evaluacion() {
       )}
 
       <div className="mt-4 space-y-2">
-        {ejecuciones.map((e) => {
-          const clave = `${e.indice}-${e.pasada}`;
-          const bien = e.estado === "listo" && e.acuerdos === CRITERIOS.length;
-          const desplegado = abierto === clave;
+        {runs.map((e) => {
+          const key = `${e.indice}-${e.pasada}`;
+          const ok = e.estado === "listo" && e.agreements === CRITERIA.length;
+          const open = expanded === key;
 
           return (
             <div
-              key={clave}
+              key={key}
               className={cn(
                 "rounded-xl border transition-colors",
                 e.estado === "corriendo"
                   ? "border-primary/40 bg-accent/25"
-                  : bien
+                  : ok
                     ? "border-border/70"
                     : "border-destructive/45 bg-destructive/[0.03]",
               )}
             >
               <button
                 type="button"
-                onClick={() => setAbierto(desplegado ? null : clave)}
+                onClick={() => setExpanded(open ? null : key)}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left"
               >
                 {e.estado === "corriendo" ? (
                   <Loader2 className="text-primary size-4 shrink-0 animate-spin" aria-hidden />
-                ) : bien ? (
+                ) : ok ? (
                   <Check className="text-verificado size-4 shrink-0" aria-hidden />
                 ) : (
                   <X className="text-destructive size-4 shrink-0" aria-hidden />
                 )}
 
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{e.nombre}</span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{e.name}</span>
 
-                {pasadas > 1 && (
+                {passes > 1 && (
                   <span className="text-muted-foreground tabular font-mono text-[11px]">
                     #{e.pasada}
                   </span>
                 )}
                 <span className="bg-muted text-muted-foreground rounded-md px-2 py-0.5 font-mono text-[11px]">
-                  {ETIQUETA[e.aisla] ?? e.aisla}
+                  {LABEL[e.aisla] ?? e.aisla}
                 </span>
                 <span className="text-muted-foreground tabular w-9 text-right text-sm">
-                  {e.estado === "corriendo" ? "…" : `${e.acuerdos}/3`}
+                  {e.estado === "corriendo" ? "…" : `${e.agreements}/3`}
                 </span>
                 <ChevronRight
                   className={cn(
                     "text-muted-foreground size-4 shrink-0 transition-transform",
-                    desplegado && "rotate-90",
+                    open && "rotate-90",
                   )}
                   aria-hidden
                 />
               </button>
 
-              {desplegado && (
+              {open && (
                 <div className="space-y-3 border-t px-4 py-3">
                   <div className="space-y-1">
-                    {CRITERIOS.map((c) => (
-                      <Criterio
+                    {CRITERIA.map((c) => (
+                      <CriterionRow
                         key={c}
-                        nombre={c}
-                        esperado={e.esperado[c] ?? false}
-                        obtenido={e.veredicto?.[c] as boolean | undefined}
+                        name={c}
+                        expected={e.expected[c] ?? false}
+                        actual={e.veredicto?.[c] as boolean | undefined}
                       />
                     ))}
                   </div>
@@ -329,9 +329,9 @@ export default function Evaluacion() {
           );
         })}
 
-        {ejecuciones.length === 0 && !corriendo && (
+        {runs.length === 0 && !running && (
           <div className="border-border/60 text-muted-foreground rounded-xl border border-dashed px-4 py-12 text-center text-sm">
-            Sin ejecuciones registradas
+            Sin runs registradas
           </div>
         )}
       </div>
