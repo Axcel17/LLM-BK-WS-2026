@@ -16,10 +16,30 @@
 
 import { z } from "zod";
 
-/** Constantes del encargo. Se usan en validaciones y verificaciones. */
-export const QUANTITY = 40;
-export const MAX_LEAD_TIME_BUSINESS_DAYS = 10;
-export const BUDGET_CAP_USD = 7_000;
+/**
+ * Las restricciones contra las que se verifica un comparativo.
+ *
+ * No son constantes del código: salen de la requisición. Tenerlas fijas aquí
+ * significaba que una requisición con otro tope se verificaba igual contra
+ * 7.000 —y sin fallar—, de modo que la capa que existe para detectar errores
+ * validaba un encargo que ya no existía.
+ */
+export type Constraints = {
+  readonly quantity: number;
+  readonly maxLeadTimeBusinessDays: number;
+  readonly budgetCapUsd: number;
+};
+
+/**
+ * Cotas absolutas de plausibilidad, independientes de la requisición.
+ *
+ * No son restricciones de negocio: son el piso y el techo de lo que puede ser
+ * un importe real. Un esquema estricto obliga al modelo a poner algo en un
+ * campo obligatorio, y sin estas cotas rellena con valores inventados que
+ * parecen válidos.
+ */
+const TOTAL_MINIMO_PLAUSIBLE = 1;
+const TOTAL_MAXIMO_PLAUSIBLE = 10_000_000;
 
 /** Contenido externo que intentó dar instrucciones al sistema. */
 export const anomalySchema = z.object({
@@ -33,49 +53,57 @@ export const anomalySchema = z.object({
 });
 
 /** Una cotización, ya normalizada a base comparable. */
-export const quoteSchema = z.object({
-  supplier: z.string(),
+const quoteSchemaDe = (c: Constraints) =>
+  z.object({
+    supplier: z.string(),
 
-  // Positivo obligatorio: un precio de cero o negativo no es una cotización.
-  unitPriceUsd: z
-    .number()
-    .positive()
-    .describe("Precio por unidad, normalizado desde la forma en que cotizó el proveedor"),
+    // Positivo obligatorio: un precio de cero o negativo no es una cotización.
+    unitPriceUsd: z
+      .number()
+      .positive()
+      .describe("Precio por unidad, normalizado desde la forma en que cotizó el proveedor"),
 
-  freightUsd: z.number().min(0).describe("0 si el proveedor lo incluye en el precio"),
+    freightUsd: z.number().min(0).describe("0 si el proveedor lo incluye en el precio"),
 
-  totalDeliveredUsd: z
-    .number()
-    .positive()
-    // Piso y techo de plausibilidad. Un esquema estricto obliga al modelo a
-    // poner algo en un campo obligatorio; sin estos límites rellena con
-    // valores inventados y el resultado parece válido.
-    .min(QUANTITY, `Un total menor que ${QUANTITY} implica menos de un dólar por unidad`)
-    .max(BUDGET_CAP_USD * 3, "Total implausible: revise si el precio venía por lote"),
+    totalDeliveredUsd: z
+      .number()
+      .positive()
+      // Piso y techo de plausibilidad. Un esquema estricto obliga al modelo a
+      // poner algo en un campo obligatorio; sin estos límites rellena con valores
+      // inventados y el resultado parece válido. Son cotas absolutas y no
+      // restricciones de negocio: el tope del encargo lo comprueba
+      // `checkHardLimits`, que lo recibe de la requisición.
+      // Piso y techo derivados de la requisición. Un esquema estricto obliga al
+      // modelo a poner algo en un campo obligatorio; sin estas cotas rellena con
+      // un valor inventado que parece válido. Y a diferencia de una
+      // verificación, esto **impide** la salida en lugar de reportarla: el arnés
+      // devuelve el error y el modelo corrige.
+      .min(c.quantity, `Un total menor que ${c.quantity} implica menos de un dólar por unidad`)
+      .max(c.budgetCapUsd * 3, "Total implausible: revise si el precio venía por lote"),
 
-  // TODO(1a): el plazo
-  // Tal como está, el modelo puede omitir el campo y el esquema lo acepta.
-  // Sin este dato, la verificación de plazo del tramo 4 no tiene nada que
-  // comprobar y pasa en verde sobre una salida incompleta.
-  //
-  // Un proveedor puede no declarar plazo, así que hay que poder representarlo.
-  // Pero omitir un campo no es lo mismo que declararlo desconocido.
-  leadTimeBusinessDays: z
-    .number()
-    .int()
-    .min(0)
-    .nullable()
-    .default(null)
-    .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
+    // TODO(1a): el plazo
+    // Tal como está, el modelo puede omitir el campo y el esquema lo acepta.
+    // Sin este dato, la verificación de plazo del tramo 4 no tiene nada que
+    // comprobar y pasa en verde sobre una salida incompleta.
+    //
+    // Un proveedor puede no declarar plazo, así que hay que poder representarlo.
+    // Pero omitir un campo no es lo mismo que declararlo desconocido.
+    leadTimeBusinessDays: z
+      .number()
+      .int()
+      .min(0)
+      .nullable()
+      .default(null)
+      .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
 
-  meetsLeadTime: z.boolean(),
-  meetsBudget: z.boolean(),
+    meetsLeadTime: z.boolean(),
+    meetsBudget: z.boolean(),
 
-  evidence: z
-    .string()
-    .min(10)
-    .describe("Cita textual de la cotización que sustenta los números anteriores"),
-});
+    evidence: z
+      .string()
+      .min(10)
+      .describe("Cita textual de la cotización que sustenta los números anteriores"),
+  });
 
 /** Un proveedor consultado que no entregó cotización. */
 export const noResponseSchema = z.object({
@@ -85,9 +113,9 @@ export const noResponseSchema = z.object({
 });
 
 /** La salida completa del agente. */
-export const comparisonSchema = z
-  .object({
-    quotes: z.array(quoteSchema),
+const comparisonSchemaDe = (c: Constraints) =>
+  z.object({
+    quotes: z.array(quoteSchemaDe(c)),
 
     // TODO(1b): lo que no llegó y lo que se detectó
     // Ambas listas tienen valor por defecto, así que el modelo puede omitirlas
@@ -99,22 +127,116 @@ export const comparisonSchema = z
     anomalies: z.array(anomalySchema).default([]),
     recommendedSupplier: z.string().nullable(),
     rationale: z.string().min(20),
-  })
-  .refine(
-    (comparison) =>
-      comparison.quotes.every(
-        (quote) =>
-          !quote.meetsLeadTime ||
-          quote.leadTimeBusinessDays === null ||
-          quote.leadTimeBusinessDays <= MAX_LEAD_TIME_BUSINESS_DAYS,
-      ),
-    {
-      message: `Una cotización no puede declararse conforme con un plazo superior a ${MAX_LEAD_TIME_BUSINESS_DAYS} días hábiles`,
-      path: ["quotes"],
-    },
-  );
+  });
+
+/**
+ * El contrato de salida, construido con las restricciones de la requisición.
+ *
+ * Es una fábrica y no una constante porque las cotas de plausibilidad dependen
+ * de lo que se pidió. Y siguen en el esquema, no en una verificación, por una
+ * diferencia que importa: un esquema **impide** la salida —el arnés devuelve el
+ * error y el modelo corrige— mientras que una verificación solo la reporta.
+ */
+export function makeComparisonSchema(c: Constraints) {
+  return comparisonSchemaDe(c);
+}
+
+/**
+ * Campos de la requisición que el agente puede declarar faltantes.
+ *
+ * Es un enumerado y no texto libre a propósito. Con texto libre, «falta el
+ * presupuesto» y «no sé cuánto puedo gastar» son cadenas distintas que ninguna
+ * verificación puede contrastar contra la requisición. Con un enumerado, la
+ * comprobación es exacta: o el dato estaba, o no estaba.
+ */
+export const requisitionFieldSchema = z.enum([
+  "product",
+  "quantity",
+  "maxLeadTimeBusinessDays",
+  "budgetCapUsd",
+  "warranty",
+  "suppliers",
+]);
+
+export type RequisitionField = z.infer<typeof requisitionFieldSchema>;
+
+/** Un dato que falta para poder proceder, con el motivo. */
+export const missingFieldSchema = z.object({
+  field: requisitionFieldSchema,
+  why: z.string().min(15).describe("Por qué sin ese dato no se puede continuar"),
+});
+
+/**
+ * Lo que el agente entrega, que no siempre es un comparativo.
+ *
+ * El contrato anterior obligaba a producir un comparativo siempre. Ante una
+ * requisición incompleta, la única salida disponible era inventar los datos que
+ * faltaban — no por mala disposición del modelo, sino porque el esquema no
+ * admitía otra respuesta.
+ *
+ * Esto no se arregla pidiéndole en las instrucciones que avise cuando le falte
+ * algo: una instrucción es una petición. Se arregla haciendo que el contrato
+ * admita «no puedo proceder» y que la coherencia sea imposible de violar.
+ *
+ * La forma es discriminante más ramas anulables, y no una unión discriminada,
+ * por una restricción del proveedor: la salida estructurada estricta de OpenAI
+ * rechaza `oneOf` en la raíz del esquema. Es la misma familia de restricción
+ * que obliga a que ninguna propiedad tenga valor por defecto.
+ */
+const outcomeSchemaDe = (c: Constraints) =>
+  z
+    .object({
+      status: z.enum(["resolved", "missing_information", "out_of_scope"]),
+
+      /** El comparativo, o null si no se pudo construir. */
+      comparison: comparisonSchemaDe(c).nullable(),
+
+      /** Qué falta para poder proceder. Vacío cuando se resolvió. */
+      missing: z.array(missingFieldSchema),
+
+      /** Una pregunta concreta para quien pidió el trabajo, o null. */
+      question: z.string().min(15).nullable(),
+
+      /** Por qué queda fuera de alcance, o null. */
+      outOfScopeReason: z.string().min(15).nullable(),
+    })
+    .refine(
+      (outcome) =>
+        outcome.status !== "resolved" ||
+        (outcome.comparison !== null && outcome.missing.length === 0),
+      {
+        message: "Un resultado resuelto exige comparativo y ninguna carencia",
+        path: ["comparison"],
+      },
+    )
+    .refine(
+      (outcome) =>
+        outcome.status !== "missing_information" ||
+        (outcome.missing.length > 0 && outcome.question !== null),
+      {
+        message: "Declarar que falta información exige enumerar qué falta y preguntarlo",
+        path: ["missing"],
+      },
+    )
+    .refine((outcome) => outcome.status !== "out_of_scope" || outcome.outOfScopeReason !== null, {
+      message: "Declarar algo fuera de alcance exige decir por qué",
+      path: ["outOfScopeReason"],
+    });
+
+/**
+ * Lo que el agente entrega, construido con las restricciones de la requisición.
+ *
+ * Es lo que recibe `Output.object`: el contrato completo, con la rama de
+ * comparativo y la de «no puedo proceder».
+ */
+export function makeOutcomeSchema(c: Constraints) {
+  return outcomeSchemaDe(c);
+}
+
+export type MissingField = z.infer<typeof missingFieldSchema>;
+export type Outcome = z.infer<ReturnType<typeof outcomeSchemaDe>>;
 
 export type Anomaly = z.infer<typeof anomalySchema>;
-export type Quote = z.infer<typeof quoteSchema>;
+export type Quote = z.infer<ReturnType<typeof quoteSchemaDe>>;
 export type NoResponse = z.infer<typeof noResponseSchema>;
-export type Comparison = z.infer<typeof comparisonSchema>;
+export type Comparison = z.infer<ReturnType<typeof comparisonSchemaDe>>;

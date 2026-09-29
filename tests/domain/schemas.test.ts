@@ -10,12 +10,18 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  BUDGET_CAP_USD,
-  QUANTITY,
   anomalySchema,
-  comparisonSchema,
-  quoteSchema,
+  makeComparisonSchema,
+  makeOutcomeSchema,
+  type Constraints,
 } from "../../src/domain/schemas.js";
+
+/** Las restricciones del caso, que en producción salen de la requisición. */
+const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
+
+const quoteSchema = makeComparisonSchema(DEL_CASO).shape.quotes.element;
+const comparisonSchema = makeComparisonSchema(DEL_CASO);
+const outcomeSchema = makeOutcomeSchema(DEL_CASO);
 
 function validQuote(overrides: Record<string, unknown> = {}) {
   return {
@@ -79,13 +85,13 @@ describe("quoteSchema · plausibilidad del total", () => {
 
   it("rechaza un total de otro orden de magnitud", () => {
     const result = quoteSchema.safeParse(
-      validQuote({ unitPriceUsd: 1590, totalDeliveredUsd: BUDGET_CAP_USD * 10 }),
+      validQuote({ unitPriceUsd: 1590, totalDeliveredUsd: 7_000 * 10 }),
     );
     expect(result.success).toBe(false);
   });
 
   it("acepta el total correcto del caso", () => {
-    expect(quoteSchema.parse(validQuote()).totalDeliveredUsd).toBe(159 * QUANTITY);
+    expect(quoteSchema.parse(validQuote()).totalDeliveredUsd).toBe(159 * 40);
   });
 });
 
@@ -100,14 +106,11 @@ describe("comparisonSchema", () => {
     expect(comparisonSchema.safeParse(withoutAnomalies).success).toBe(false);
   });
 
-  it("rechaza declarar conforme un plazo que descalifica", () => {
-    const result = comparisonSchema.safeParse(
-      validComparison({
-        quotes: [validQuote({ leadTimeBusinessDays: 22, meetsLeadTime: true })],
-      }),
-    );
-    expect(result.success).toBe(false);
-  });
+  // La regla «una cotización no puede declararse conforme con un plazo que
+  // descalifica» vivía aquí y en `checkHardLimits`: dos copias de la misma
+  // comprobación, una de las cuales fijaba el plazo del caso dentro del
+  // esquema. Quedó solo en la verificación, que recibe el plazo de la
+  // requisición — ver «detecta conformidad declarada sobre un plazo excedido».
 
   it("acepta un comparativo completo", () => {
     const comparison = comparisonSchema.parse(validComparison());
@@ -124,5 +127,64 @@ describe("anomalySchema", () => {
       actionTaken: "No se siguió",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("outcomeSchema", () => {
+  const base = {
+    status: "resolved" as const,
+    comparison: validComparison(),
+    missing: [],
+    question: null,
+    outOfScopeReason: null,
+  };
+
+  it("un resultado resuelto exige comparativo", () => {
+    // Sin esta regla, «resuelto» sin comparativo sería una salida válida que no
+    // resuelve nada, y las siete verificaciones no tendrían qué comprobar.
+    expect(outcomeSchema.safeParse({ ...base, comparison: null }).success).toBe(false);
+  });
+
+  it("declarar que falta información exige enumerar qué falta y preguntarlo", () => {
+    const vago = {
+      ...base,
+      status: "missing_information" as const,
+      comparison: null,
+      missing: [],
+      question: "¿Me das más datos?",
+    };
+
+    expect(outcomeSchema.safeParse(vago).success).toBe(false);
+  });
+
+  it("acepta una escalación bien formada", () => {
+    const escala = outcomeSchema.parse({
+      ...base,
+      status: "missing_information",
+      comparison: null,
+      missing: [{ field: "budgetCapUsd", why: "Sin tope no se puede descartar por presupuesto." }],
+      question: "¿Cuál es el presupuesto máximo puesto en bodega?",
+    });
+
+    expect(escala.missing[0]?.field).toBe("budgetCapUsd");
+  });
+
+  it("el campo que falta es un enumerado, no texto libre", () => {
+    // Con texto libre, «presupuesto» y «budgetCapUsd» son cadenas distintas que
+    // ninguna verificación puede contrastar contra la requisición.
+    const inventado = {
+      ...base,
+      status: "missing_information" as const,
+      comparison: null,
+      missing: [{ field: "color_preferido", why: "Hace falta saber el color que quieren." }],
+      question: "¿De qué color los quieren?",
+    };
+
+    expect(outcomeSchema.safeParse(inventado).success).toBe(false);
+  });
+
+  it("declarar algo fuera de alcance exige decir por qué", () => {
+    const sinMotivo = { ...base, status: "out_of_scope" as const, comparison: null };
+    expect(outcomeSchema.safeParse(sinMotivo).success).toBe(false);
   });
 });

@@ -66,6 +66,28 @@ export function formatUsage(result: UsageReport): string {
 }
 
 /** El comparativo, ordenado por total y con las ausencias al final. */
+/**
+ * Una requisición que no alcanza para trabajar.
+ *
+ * Se imprime distinto de un error porque no lo es: el agente hizo lo correcto
+ * al detenerse. Lo que hay que ver es qué falta y qué preguntar.
+ */
+export function formatEscalation(outcome: {
+  status: string;
+  missing: ReadonlyArray<{ field: string; why: string }>;
+  question: string | null;
+  outOfScopeReason: string | null;
+}): string {
+  if (outcome.status === "out_of_scope") {
+    return `\nFUERA DE ALCANCE\n  ${outcome.outOfScopeReason ?? "sin motivo declarado"}\n`;
+  }
+
+  const lines = ["", "NO SE PUEDE PROCEDER"];
+  for (const { field, why } of outcome.missing) lines.push(`  falta ${field}: ${why}`);
+  if (outcome.question !== null) lines.push("", `  ${outcome.question}`);
+  return `${lines.join("\n")}\n`;
+}
+
 export function formatComparison(comparison: Comparison): string {
   const lines = ["", "COMPARATIVO"];
 

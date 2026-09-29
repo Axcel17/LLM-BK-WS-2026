@@ -13,12 +13,7 @@
  */
 
 import { listSuppliers } from "../domain/catalog.js";
-import {
-  BUDGET_CAP_USD,
-  MAX_LEAD_TIME_BUSINESS_DAYS,
-  QUANTITY,
-  type Comparison,
-} from "../domain/schemas.js";
+import type { Comparison, Constraints, Outcome } from "../domain/schemas.js";
 
 /**
  * Margen de redondeo, en centavos.
@@ -100,11 +95,11 @@ export function checkNormalization(comparison: Comparison): Finding[] {
  *
  * No se le pregunta a un modelo si una suma está bien.
  */
-export function checkArithmetic(comparison: Comparison): Finding[] {
+export function checkArithmetic(comparison: Comparison, c: Constraints): Finding[] {
   const findings: Finding[] = [];
 
   for (const quote of comparison.quotes) {
-    const expectedCents = toCents(quote.unitPriceUsd) * QUANTITY + toCents(quote.freightUsd);
+    const expectedCents = toCents(quote.unitPriceUsd) * c.quantity + toCents(quote.freightUsd);
     const declaredCents = toCents(quote.totalDeliveredUsd);
     const differenceCents = Math.abs(declaredCents - expectedCents);
 
@@ -113,7 +108,7 @@ export function checkArithmetic(comparison: Comparison): Finding[] {
         check: "arithmetic",
         detail:
           `${quote.supplier}: declara ${quote.totalDeliveredUsd} pero ` +
-          `${quote.unitPriceUsd} × ${QUANTITY} + ${quote.freightUsd} = ` +
+          `${quote.unitPriceUsd} × ${c.quantity} + ${quote.freightUsd} = ` +
           `${(expectedCents / 100).toFixed(2)} ` +
           `(diferencia ${(differenceCents / 100).toFixed(2)}).`,
       });
@@ -131,29 +126,28 @@ export function checkArithmetic(comparison: Comparison): Finding[] {
  * inyección: un texto puede convencer a un modelo de omitir una verificación,
  * no a una comparación numérica.
  */
-export function checkHardLimits(comparison: Comparison): Finding[] {
+export function checkHardLimits(comparison: Comparison, c: Constraints): Finding[] {
   const findings: Finding[] = [];
 
   for (const quote of comparison.quotes) {
     const exceedsLeadTime =
-      quote.leadTimeBusinessDays !== null &&
-      quote.leadTimeBusinessDays > MAX_LEAD_TIME_BUSINESS_DAYS;
+      quote.leadTimeBusinessDays !== null && quote.leadTimeBusinessDays > c.maxLeadTimeBusinessDays;
 
     if (exceedsLeadTime && quote.meetsLeadTime) {
       findings.push({
         check: "hard-limits",
         detail:
           `${quote.supplier}: declarado conforme con ${quote.leadTimeBusinessDays} días ` +
-          `hábiles, sobre un máximo de ${MAX_LEAD_TIME_BUSINESS_DAYS}.`,
+          `hábiles, sobre un máximo de ${c.maxLeadTimeBusinessDays}.`,
       });
     }
 
-    if (quote.totalDeliveredUsd > BUDGET_CAP_USD && quote.meetsBudget) {
+    if (quote.totalDeliveredUsd > c.budgetCapUsd && quote.meetsBudget) {
       findings.push({
         check: "hard-limits",
         detail:
           `${quote.supplier}: declarado conforme con un total de ` +
-          `${quote.totalDeliveredUsd}, sobre un tope de ${BUDGET_CAP_USD}.`,
+          `${quote.totalDeliveredUsd}, sobre un tope de ${c.budgetCapUsd}.`,
       });
     }
   }
@@ -165,23 +159,23 @@ export function checkHardLimits(comparison: Comparison): Finding[] {
   if (recommended) {
     if (
       recommended.leadTimeBusinessDays !== null &&
-      recommended.leadTimeBusinessDays > MAX_LEAD_TIME_BUSINESS_DAYS
+      recommended.leadTimeBusinessDays > c.maxLeadTimeBusinessDays
     ) {
       findings.push({
         check: "hard-limits",
         detail:
           `Se recomienda a ${recommended.supplier}, que entrega en ` +
           `${recommended.leadTimeBusinessDays} días hábiles sobre un máximo de ` +
-          `${MAX_LEAD_TIME_BUSINESS_DAYS}.`,
+          `${c.maxLeadTimeBusinessDays}.`,
       });
     }
 
-    if (recommended.totalDeliveredUsd > BUDGET_CAP_USD) {
+    if (recommended.totalDeliveredUsd > c.budgetCapUsd) {
       findings.push({
         check: "hard-limits",
         detail:
           `Se recomienda a ${recommended.supplier}, cuyo total de ` +
-          `${recommended.totalDeliveredUsd} supera el tope de ${BUDGET_CAP_USD}.`,
+          `${recommended.totalDeliveredUsd} supera el tope de ${c.budgetCapUsd}.`,
       });
     }
   }
@@ -216,14 +210,14 @@ export function checkMissingResponses(comparison: Comparison): Finding[] {
  * La elegibilidad se calcula sobre las cifras, no sobre lo que la cotización
  * declara de sí misma: por la misma razón que `checkHardLimits`.
  */
-export function checkTieBreak(comparison: Comparison): Finding[] {
+export function checkTieBreak(comparison: Comparison, c: Constraints): Finding[] {
   if (comparison.recommendedSupplier === null) return [];
 
   const eligible = comparison.quotes.filter(
     (quote) =>
       quote.leadTimeBusinessDays !== null &&
-      quote.leadTimeBusinessDays <= MAX_LEAD_TIME_BUSINESS_DAYS &&
-      toCents(quote.totalDeliveredUsd) <= toCents(BUDGET_CAP_USD),
+      quote.leadTimeBusinessDays <= c.maxLeadTimeBusinessDays &&
+      toCents(quote.totalDeliveredUsd) <= toCents(c.budgetCapUsd),
   );
 
   const recommended = eligible.find((quote) => quote.supplier === comparison.recommendedSupplier);
@@ -246,31 +240,64 @@ export function checkTieBreak(comparison: Comparison): Finding[] {
   ];
 }
 
-const CHECKS_INTERNOS = [
-  checkCoverage,
-  checkNormalization,
-  checkArithmetic,
-  checkHardLimits,
-  checkMissingResponses,
-  checkTieBreak,
-] as const;
+/** Las que solo miran el comparativo. */
+const SIN_REQUISICION = [checkCoverage, checkNormalization, checkMissingResponses] as const;
+
+/** Las que comprueban contra las restricciones de la requisición. */
+const CON_REQUISICION = [checkArithmetic, checkHardLimits, checkTieBreak] as const;
 
 /**
- * Normaliza texto para compararlo sin ruido de forma.
+ * Reduce un texto a su contenido, descartando toda la forma.
  *
- * El modelo cita de un texto que trae acentos, saltos de línea y separadores de
- * millar. Comparar en crudo produciría hallazgos por diferencias que no son el
- * punto: lo que importa es si la cita proviene del original, no si conservó el
- * espaciado.
+ * Acentos, mayúsculas, puntuación, alineación en columnas, barras invertidas y
+ * secuencias de escape desaparecen: quedan solo letras y dígitos separados por
+ * un espacio. Lo que se compara es lo que el texto dice, no cómo se escribió.
+ *
+ * Es deliberadamente agresivo. Cada forma de citar que el modelo inventa
+ * —entrecomillar fragmentos, unirlos con barras, escapar los saltos de línea al
+ * copiar una tabla— produciría un hallazgo sobre evidencia legítima, y una
+ * verificación que salta sobre salida correcta enseña a ignorar las
+ * verificaciones. Sigue detectando lo que importa: un texto que no está.
  */
 function normalizar(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[.,]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return (
+    texto
+      .replace(/\\[nrt]/g, " ")
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      // Los separadores entre dígitos son formato, no contenido: unen la cifra en
+      // vez de partirla. Sin esto, «1.590,00» daría «1 590 00» y «1590,00» daría
+      // «1590 00», que es la misma cifra escrita de dos maneras.
+      .replace(/(\d)[.,\u202f\u00a0'](?=\d)/g, "$1")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+  );
+}
+
+/**
+ * Longitud mínima para que un fragmento sea evidencia y no coincidencia.
+ *
+ * Un trozo de seis caracteres aparece en cualquier texto por casualidad, y una
+ * verificación que se satisface con eso no verifica nada.
+ */
+const FRAGMENTO_MINIMO = 14;
+
+/**
+ * Parte la cita en los tramos que hay que encontrar en la fuente.
+ *
+ * El modelo no siempre cita un tramo continuo: lo habitual es entrecomillar dos
+ * o tres trozos de líneas distintas y unirlos. Se separa antes de normalizar,
+ * porque los caracteres que marcan el corte son justo los que la normalización
+ * descarta.
+ */
+function fragmentos(cita: string): string[] {
+  const partes = cita
+    .split(/["'`“”‘’]|\s*[/|]\s*|\.{3,}|…|\n|\\n/)
+    .map(normalizar)
+    .filter((parte) => parte.length >= FRAGMENTO_MINIMO);
+
+  return partes.length > 0 ? partes : [normalizar(cita)];
 }
 
 /**
@@ -312,15 +339,54 @@ export function checkEvidence(
       continue;
     }
 
-    if (!normalizar(fuente).includes(normalizar(quote.evidence))) {
+    const enLaFuente = normalizar(fuente);
+    const ausentes = fragmentos(quote.evidence).filter((f) => !enLaFuente.includes(f));
+
+    if (ausentes.length > 0) {
       findings.push({
         check: "evidence",
-        detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${quote.evidence.slice(0, 70)}».`,
+        detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${ausentes[0]?.slice(0, 70)}».`,
       });
     }
   }
 
   return findings;
+}
+
+/**
+ * Una escalación pide lo que de verdad falta.
+ *
+ * La coherencia de la forma ya la impone el esquema: un resultado que dice
+ * «falta información» sin enumerar qué falta no llega hasta aquí, porque no
+ * valida. Lo que sí queda por comprobar es el contenido — que el agente no
+ * escale por un dato que ya tenía.
+ *
+ * Es el modo de falla que reemplaza al de inventar. Antes, sin una salida para
+ * la carencia, el agente rellenaba; con una salida disponible, el riesgo se
+ * invierte y pasa a ser pedir de más para no equivocarse. Eso detiene el
+ * trabajo con una pregunta cuya respuesta estaba en la requisición.
+ *
+ * `checkEvidence` compara lo declarado contra lo devuelto por las herramientas;
+ * esta compara lo pedido contra lo que ya se había entregado.
+ */
+export function checkEscalation(
+  outcome: Outcome,
+  requisition: Readonly<Record<string, unknown>>,
+): Finding[] {
+  if (outcome.status !== "missing_information") return [];
+
+  return outcome.missing
+    .filter(({ field }) => {
+      const valor = requisition[field];
+      if (valor === undefined || valor === null) return false;
+      if (typeof valor === "string") return valor.trim() !== "";
+      if (Array.isArray(valor)) return valor.length > 0;
+      return true;
+    })
+    .map(({ field }) => ({
+      check: "escalation",
+      detail: `Se pide «${field}» para poder continuar, y la requisición ya lo declara: ${JSON.stringify(requisition[field])}.`,
+    }));
 }
 
 /**
@@ -333,9 +399,11 @@ export function checkEvidence(
 export function runAllChecks(
   comparison: Comparison,
   sources: ReadonlyMap<string, string>,
+  constraints: Constraints,
 ): Finding[] {
   return [
-    ...CHECKS_INTERNOS.flatMap((check) => check(comparison)),
+    ...SIN_REQUISICION.flatMap((check) => check(comparison)),
+    ...CON_REQUISICION.flatMap((check) => check(comparison, constraints)),
     ...checkEvidence(comparison, sources),
   ];
 }

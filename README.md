@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **97 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **107 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -47,6 +47,8 @@ npm run agent                      # una corrida completa
 npm run agent -- "otro encargo"    # el mismo agente, otra petición
 npm run measure -- 6               # seis corridas, con tasa de acierto
 npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
+npm run caso                       # el caso validado, con sus afirmaciones
+npm run caso -- "otra petición"    # entrada abierta, sin verdad que afirmar
 npm run mcp-server                 # el servidor de herramientas, aislado
 ```
 
@@ -69,6 +71,7 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 | `npm run solutions`    | Copia las versiones completas sobre `src/`                            |
 | `npm run gaps`         | Restituye los `TODO`                                                  |
 | `npm run baseline`     | Registra la huella del catálogo de herramientas                       |
+| `npm run caso`         | Prueba el flujo: el caso validado, o una requisición propia           |
 
 ---
 

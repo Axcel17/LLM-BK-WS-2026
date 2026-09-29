@@ -19,7 +19,8 @@ import { readFileSync } from "node:fs";
 
 import { Experimental_Agent as Agent, NoOutputGeneratedError, Output, stepCountIs } from "ai";
 
-import { comparisonSchema, type Comparison } from "./domain/schemas.js";
+import { makeOutcomeSchema, type Outcome } from "./domain/schemas.js";
+import { constraintsOf, readBrief } from "./domain/catalog.js";
 import { createApprovalGate, type DeniedCall } from "./guardrails/approval.js";
 import type { CatalogConnection } from "./mcp/client.js";
 import { resolveModel } from "./platform/providers.js";
@@ -192,7 +193,7 @@ export function quotedSources(steps: ReadonlyArray<unknown>): Map<string, string
 
 /** Resultado de una corrida: el comparativo, lo que costó, lo que se detuvo y lo que se leyó. */
 export interface AgentRun {
-  readonly comparison: Comparison;
+  readonly outcome: Outcome;
   readonly usage: { steps?: ReadonlyArray<{ usage: unknown }>; usage: unknown };
   readonly denied: readonly DeniedCall[];
   readonly sources: ReadonlyMap<string, string>;
@@ -207,7 +208,7 @@ export async function runAgent(catalog: CatalogConnection, request?: string): Pr
     instructions: buildInstructions(),
     tools: catalog.tools,
     stopWhen: stepCountIs(steps),
-    output: Output.object({ schema: comparisonSchema }),
+    output: Output.object({ schema: makeOutcomeSchema(constraintsOf(readBrief())) }),
     telemetry: { isEnabled: tracingRequested() },
     // El arnés consulta la compuerta antes de ejecutar cualquier herramienta.
     // Lo que aquí se deniegue no se ejecuta, decida lo que decida el modelo.
@@ -218,7 +219,7 @@ export async function runAgent(catalog: CatalogConnection, request?: string): Pr
 
   try {
     return {
-      comparison: result.output as Comparison,
+      outcome: result.output as Outcome,
       usage: result,
       denied: gate.denied,
       sources: quotedSources(result.steps ?? []),

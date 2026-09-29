@@ -21,8 +21,9 @@
  */
 
 import { maxSteps, runAgent, StepLimitReached } from "./agent.js";
-import { runAllChecks } from "./guardrails/checks.js";
+import { checkEscalation, runAllChecks } from "./guardrails/checks.js";
 import { judgeComparison } from "./guardrails/judge.js";
+import { constraintsOf, readBrief } from "./domain/catalog.js";
 import { connectCatalog } from "./mcp/client.js";
 import { checkToolIntegrity } from "./mcp/integrity.js";
 import { recordRun, recordSteps, runId, type RunRecord } from "./platform/runs.js";
@@ -31,6 +32,7 @@ import {
   formatChecks,
   formatComparison,
   formatDenied,
+  formatEscalation,
   formatHandoff,
   formatIntegrity,
   formatJudgement,
@@ -80,7 +82,7 @@ async function main(): Promise<void> {
     console.log(`\n${formatIntegrity(integridad)}\n`);
     console.log("Ejecutando. El modelo decide qué herramientas pedir y en qué orden.");
 
-    const { comparison, usage, denied, sources } = await runAgent(catalog, request);
+    const { outcome, usage, denied, sources } = await runAgent(catalog, request);
 
     const total = (usage as { usage?: Record<string, number> }).usage ?? {};
     bitácora.outcome = "completa";
@@ -92,13 +94,28 @@ async function main(): Promise<void> {
         (total as { inputTokenDetails?: { cacheReadTokens?: number } }).inputTokenDetails
           ?.cacheReadTokens ?? 0,
     };
-    bitácora.comparison = comparison;
+    bitácora.comparison = outcome.comparison;
     bitácora.denied = denied.map((d) => ({ tool: d.tool, input: d.input, reason: d.reason }));
-    bitácora.findings = [...runAllChecks(comparison, sources)];
 
     console.log(formatUsage(usage));
-    console.log(formatComparison(comparison));
     if (denied.length > 0) console.log(formatDenied(denied));
+
+    // Un resultado que no es un comparativo no se verifica como si lo fuera:
+    // las siete comprueban un comparativo y aquí no hay ninguno. Lo que sí se
+    // comprueba es que la escalación pida lo que de verdad falta.
+    if (outcome.status !== "resolved" || outcome.comparison === null) {
+      bitácora.findings = [
+        ...checkEscalation(outcome, readBrief() as unknown as Record<string, unknown>),
+      ];
+      console.log(formatEscalation(outcome));
+      console.log(formatChecks(bitácora.findings));
+      console.log();
+      return;
+    }
+
+    const comparison = outcome.comparison;
+    bitácora.findings = [...runAllChecks(comparison, sources, constraintsOf(readBrief()))];
+    console.log(formatComparison(comparison));
     console.log(formatChecks(bitácora.findings));
 
     try {

@@ -13,6 +13,7 @@
  */
 
 import { runAgent } from "../src/agent.js";
+import { constraintsOf, readBrief } from "../src/domain/catalog.js";
 import { runAllChecks } from "../src/guardrails/checks.js";
 import { connectCatalog } from "../src/mcp/client.js";
 
@@ -46,12 +47,24 @@ try {
   for (let attempt = 1; attempt <= runs; attempt += 1) {
     const startedAt = Date.now();
     try {
-      const { comparison, sources } = await runAgent(catalog);
+      const { outcome, sources } = await runAgent(catalog);
       const seconds = (Date.now() - startedAt) / 1000;
       durations.push(seconds);
       valid += 1;
 
-      const findings = runAllChecks(comparison, sources);
+      // Escalar es una salida válida del contrato, pero no una respuesta
+      // correcta a este encargo: la requisición está completa, así que pedir
+      // datos es equivocarse. Cuenta como incorrecta, y se dice cuál fue.
+      if (outcome.status !== "resolved" || outcome.comparison === null) {
+        console.log(
+          `  ${String(attempt).padStart(2)}. válida  ${seconds.toFixed(1).padStart(5)}s  ` +
+            `no resolvió: ${outcome.status}`,
+        );
+        continue;
+      }
+
+      const comparison = outcome.comparison;
+      const findings = runAllChecks(comparison, sources, constraintsOf(readBrief()));
       const isCorrect =
         comparison.recommendedSupplier === EXPECTED_SUPPLIER && findings.length === 0;
       if (isCorrect) correct += 1;

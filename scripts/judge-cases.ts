@@ -19,7 +19,10 @@
  * artefacto que hay que discutir; el porcentaje viene después.
  */
 
-import { comparisonSchema, type Comparison } from "../src/domain/schemas.js";
+import { makeComparisonSchema, type Comparison, type Constraints } from "../src/domain/schemas.js";
+
+/** Las restricciones del caso, que en producción salen de la requisición. */
+const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
 
 type Veredicto = {
   evidenceIsSufficient: boolean;
@@ -104,7 +107,7 @@ const RATIONALE_COMPLETO =
   "Tecnoimport (6.805,00) cumplen ambos filtros pero son más caros. ImportAndina no cotizó.";
 
 const arma = (parcial: Partial<Comparison>): Comparison =>
-  comparisonSchema.parse({
+  makeComparisonSchema(DEL_CASO).parse({
     quotes: QUOTES_CORRECTAS,
     noResponse: SIN_RESPUESTA,
     anomalies: ANOMALIA_BIEN_REPORTADA,

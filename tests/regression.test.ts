@@ -21,7 +21,15 @@ import {
   checkTieBreak,
   runAllChecks,
 } from "../src/guardrails/checks.js";
-import { comparisonSchema, type Comparison, type Quote } from "../src/domain/schemas.js";
+import {
+  makeComparisonSchema,
+  type Comparison,
+  type Constraints,
+  type Quote,
+} from "../src/domain/schemas.js";
+
+/** Las restricciones del caso, que en producción salen de la requisición. */
+const DEL_CASO: Constraints = { quantity: 40, maxLeadTimeBusinessDays: 10, budgetCapUsd: 7_000 };
 
 function quote(overrides: Partial<Quote> & { supplier: string }): Quote {
   return {
@@ -80,6 +88,7 @@ describe("fallos observados en corridas reales", () => {
       comparison({
         quotes: [quote({ supplier: "MayoristaZeta", unitPriceUsd: 159, totalDeliveredUsd: 1590 })],
       }),
+      DEL_CASO,
     );
 
     expect(findings).toHaveLength(1);
@@ -108,7 +117,7 @@ describe("fallos observados en corridas reales", () => {
       quotes: [{ ...quote({ supplier: "MayoristaZeta" }), leadTimeBusinessDays: undefined }],
     };
 
-    expect(comparisonSchema.safeParse(withoutLeadTime).success).toBe(false);
+    expect(makeComparisonSchema(DEL_CASO).safeParse(withoutLeadTime).success).toBe(false);
   });
 
   it("una recomendación que cumple pero no es la más barata", () => {
@@ -117,7 +126,7 @@ describe("fallos observados en corridas reales", () => {
     // MayoristaZeta 445 dólares más barato y también conforme. Las cinco
     // verificaciones de entonces pasaban todas: ninguna miraba el criterio de
     // desempate que el encargo declara.
-    const findings = checkTieBreak(comparison({ recommendedSupplier: "Tecnoimport" }));
+    const findings = checkTieBreak(comparison({ recommendedSupplier: "Tecnoimport" }), DEL_CASO);
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.check).toBe("tie-break");
@@ -130,7 +139,7 @@ describe("fallos observados en corridas reales", () => {
       comparison().quotes.map((q) => [q.supplier, `Cotización.\n${q.evidence}\nFin.`]),
     );
 
-    expect(runAllChecks(comparison(), fuentes)).toEqual([]);
+    expect(runAllChecks(comparison(), fuentes, DEL_CASO)).toEqual([]);
   });
 
   // Pendiente de completar. Ejecutar `npm run agent` hasta observar un

@@ -10,6 +10,8 @@ import { appendFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { Constraints } from "./schemas.js";
+
 export const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data");
 const QUOTES_DIR = join(DATA_DIR, "quotes");
 const ORDER_LOG = join(DATA_DIR, "orders.log");
@@ -28,6 +30,21 @@ export interface Brief {
 
 export function readBrief(): Brief {
   return JSON.parse(readFileSync(join(DATA_DIR, "brief.json"), "utf8")) as Brief;
+}
+
+/**
+ * Las restricciones contra las que se verifica, derivadas de la requisición.
+ *
+ * Es el único lugar donde se traduce la requisición a lo que las verificaciones
+ * comprueban. Con las cifras repetidas en el código, cambiar la requisición
+ * dejaba a las verificaciones validando un encargo que ya no existía.
+ */
+export function constraintsOf(brief: Brief): Constraints {
+  return {
+    quantity: brief.quantity,
+    maxLeadTimeBusinessDays: brief.maxLeadTimeBusinessDays,
+    budgetCapUsd: brief.budgetCapUsd,
+  };
 }
 
 export function listSuppliers(): readonly string[] {
