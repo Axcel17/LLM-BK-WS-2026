@@ -6,3 +6,11 @@ dist/
 # Bitácoras de corridas: son de cada máquina, no del material.
 data/runs/
 data/visor.html
+
+# El panel es un proyecto aparte: su instalación no es del material.
+panel/node_modules/
+panel/.next/
+panel/out/
+panel/.env.local
+panel/next-env.d.ts
+panel/.turbo/

@@ -48,7 +48,6 @@ npm run agent -- "otro encargo"    # el mismo agente, otra petición
 npm run measure -- 6               # seis corridas, con tasa de acierto
 npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
 npm run mcp-server                 # el servidor de herramientas, aislado
-npm run visor                      # genera data/visor.html con las corridas
 ```
 
 | Variable                       | Efecto                                                        |
@@ -70,7 +69,6 @@ npm run visor                      # genera data/visor.html con las corridas
 | `npm run solutions`    | Copia las versiones completas sobre `src/`                            |
 | `npm run gaps`         | Restituye los `TODO`                                                  |
 | `npm run baseline`     | Registra la huella del catálogo de herramientas                       |
-| `npm run visor`        | Genera el visor de corridas desde `data/runs/`                        |
 
 ---
 
@@ -138,26 +136,30 @@ scripts/              maquinaria del ejercicio y utilidades
 `agent.ts` devuelve datos y `report.ts` les da formato. Esa separación permite verificar el
 contenido del informe en `tests/report.test.ts` sin capturar salida de consola.
 
+**Las ocho reglas del agente viven en `data/instrucciones.md`**, no dentro de un módulo. Es la misma
+idea que la Parte 1 —una instrucción guardada se versiona y se comparte— y lo concreto es que la
+consola de `panel/` lee el mismo archivo. Con las reglas dentro del código habría dos copias, y una
+empezaría a mentir.
+
 ---
 
-## El visor de corridas
+## La consola
 
-Cada `npm run agent` deja una bitácora en `data/runs/`. `npm run visor` las reúne en
-`data/visor.html`, que se abre con doble clic: los datos viajan dentro del archivo, así que **no
-hace falta servidor ni dependencias**.
+`panel/` es una interfaz para este agente: conversación, evaluación y monitoreo. **Es un proyecto
+aparte** — no añade una sola dependencia a este repositorio y `npm install` aquí no lo toca.
 
-Muestra, por corrida: el plan paso a paso con los argumentos de cada herramienta y lo que devolvió,
-el consumo, las denegaciones de la compuerta, los hallazgos de la capa 1 y el veredicto de la
-capa 2. Y tiene un modo de comparación: **dos o tres corridas del mismo encargo, lado a lado.** Es
-la forma más directa de ver que el plan lo decide el modelo en cada vuelta y que nadie lo programó.
+No importa el TypeScript del taller: habla MCP con `src/mcp/server.ts`, lee `data/instrucciones.md`
+y `data/runs/`, y ejecuta `npm run measure-judge` para la evaluación. Esa frontera es deliberada:
+obliga a que no haya dos copias de ninguna decisión.
 
-Nada de lo que muestra lo produce él. Son los mismos datos que `npm run agent` imprime en la
-terminal y pierde en el desplazamiento.
+Construida con [AI Elements](https://github.com/vercel/ai-elements) sobre shadcn/ui, que es la
+biblioteca de componentes de Vercel para el mismo SDK que usa este agente.
 
-**Una bitácora no es un almacén de estado.** El agente nunca la lee de vuelta: cada corrida sigue
-arrancando en blanco. Esa distinción es deliberada — lo primero sirve para que alguien entienda qué
-pasó; lo segundo, para que la siguiente corrida sepa lo que hizo la anterior, y eso este proyecto no
-lo construye.
+```bash
+cd panel && npm install && cp ../.env .env.local && npm run dev
+```
+
+Instrucciones completas en [`panel/README.md`](panel/README.md).
 
 ---
 

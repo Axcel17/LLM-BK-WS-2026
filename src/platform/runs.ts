@@ -11,7 +11,7 @@
  * Lo que sí resuelve es observabilidad: `npm run agent` imprime el detalle de
  * una corrida y lo pierde en el desplazamiento de la terminal. Guardarlo
  * permite comparar corridas entre sí, que es la única forma de ver el
- * no-determinismo en lugar de creerlo.
+ * no-determinismo en lugar de creerlo. Es lo que consume el panel de `panel/`.
  *
  * Registrar nunca puede romper una corrida: todo fallo de escritura se informa
  * y se sigue.

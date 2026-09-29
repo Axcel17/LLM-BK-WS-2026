@@ -133,7 +133,7 @@ async function main(): Promise<void> {
     bitácora.durationMs = Date.now() - comenzó;
     const archivo = recordRun(bitácora);
     if (archivo !== null) {
-      console.log(`  Corrida registrada. \`npm run visor\` la abre junto a las anteriores.\n`);
+      console.log(`  Corrida registrada en data/runs/.\n`);
     }
     await catalog.close();
     await shutdownTracing();

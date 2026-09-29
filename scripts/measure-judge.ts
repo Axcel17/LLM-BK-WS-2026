@@ -66,8 +66,11 @@ async function evaluar(caso: CasoEtiquetado, veces: number): Promise<Resultado> 
   return resultado;
 }
 
+/** `--json` emite el resultado en una línea, para que lo consuma el panel. */
+const soloJson = process.argv.includes("--json");
+
 async function main(): Promise<void> {
-  const veces = pasadas();
+  const veces = pasadas(process.argv.filter((a) => a !== "--json")[2]);
   console.log(
     `\n  ${CASOS.length} casos × ${veces} pasada(s) · ${CASOS.length * veces} llamadas\n`,
   );
@@ -75,11 +78,21 @@ async function main(): Promise<void> {
   let acuerdos = 0;
   let total = 0;
   const pendientes: string[] = [];
+  const paraJson: Array<Record<string, unknown>> = [];
 
   for (const caso of CASOS) {
     const r = await evaluar(caso, veces);
     acuerdos += r.acuerdos;
     total += r.total;
+    paraJson.push({
+      nombre: caso.nombre,
+      aisla: caso.aisla,
+      esperado: caso.esperado,
+      acuerdos: r.acuerdos,
+      total: r.total,
+      desacuerdos: r.desacuerdos,
+    });
+    if (soloJson) continue;
 
     const marca = r.desacuerdos.length === 0 ? "✓" : "✗";
     const aisla = caso.aisla === "ninguno" ? "contrapeso" : ETIQUETA[caso.aisla];
@@ -87,6 +100,11 @@ async function main(): Promise<void> {
       `  ${marca} ${caso.nombre.padEnd(34)} ${String(r.acuerdos).padStart(2)}/${r.total}  (${aisla})`,
     );
     for (const d of r.desacuerdos) pendientes.push(`      ${caso.nombre} → ${d}`);
+  }
+
+  if (soloJson) {
+    console.log(JSON.stringify({ pasadas: veces, resultados: paraJson, acuerdos, total }));
+    return;
   }
 
   if (pendientes.length > 0) {

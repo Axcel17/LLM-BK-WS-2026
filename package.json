@@ -15,7 +15,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "agent": "tsx --env-file=.env src/cli.ts",
-    "visor": "tsx scripts/build-visor.ts",
     "mcp-server": "tsx src/mcp/server.ts",
     "measure": "tsx --env-file=.env scripts/measure-reliability.ts",
     "measure-judge": "tsx --env-file=.env scripts/measure-judge.ts",
