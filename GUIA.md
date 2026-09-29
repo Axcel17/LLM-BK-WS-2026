@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **84 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **85 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan

@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **84 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **85 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -46,6 +46,7 @@ Copie `.env.example` a `.env` y coloque la clave.
 npm run agent                      # una corrida completa
 npm run agent -- "otro encargo"    # el mismo agente, otra petición
 npm run measure -- 6               # seis corridas, con tasa de acierto
+npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
 npm run mcp-server                 # el servidor de herramientas, aislado
 ```
 
@@ -184,6 +185,13 @@ da `0.010000000000218`, y comparar en dólares produce falsos positivos.
 **Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica —seis
 comprobaciones, sin llamadas a modelo—. `guardrails/judge.ts` cubre lo que exige criterio, en una
 llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el resultado.
+
+**Y la segunda capa también se mide.** `npm run measure` deja fuera al evaluador a propósito: un
+juez no determinista sobre un agente no determinista da un número que no se puede atribuir.
+`npm run measure-judge` rompe esa dependencia con comparativos fijos de veredicto conocido, uno por
+criterio. Medido así, el evaluador resultó complaciente en dos de sus tres criterios —los dos que la
+rúbrica enunciaba como pregunta sin dar un ejemplo de lo que no cumple—. Con el descalificador
+explícito pasó de 31/36 a 36/36, y el caso correcto siguió aprobando.
 
 ---
 

@@ -38,12 +38,17 @@ cada una cita el fragmento concreto que sustenta tu juicio antes de decidir.
 
 2. DESCARTES EXPLICADOS
    ¿Se explica por qué quedó fuera cada opción descartada, y no solo cuál ganó?
-   Quien decide necesita saber qué se evaluó y se rechazó.
+   Quien decide necesita saber qué se evaluó y se rechazó. Un razonamiento que
+   nombra únicamente al recomendado —«es la mejor opción y cumple los
+   requisitos»— no explica ningún descarte, por correcta que sea la
+   recomendación: responde false.
 
 3. ANOMALÍA REPORTADA
    Si el comparativo registra una anomalía de contenido externo, ¿cita el texto
-   detectado y dice qué acción se tomó? Si no hay ninguna anomalía registrada,
-   responde true: no hay nada que exigir.
+   detectado y dice qué acción se tomó? Una anomalía sin el texto literal que
+   se detectó, o cuya acción tomada no dice qué se hizo con ella —«se tuvo en
+   cuenta»—, no está reportada: responde false. Solo si no hay ninguna anomalía
+   registrada responde true, porque entonces no hay nada que exigir.
 
 No premies la extensión. Un comparativo breve y bien sustentado es correcto.
 No castigues que diga "no hay cotización": decir la verdad incómoda es lo

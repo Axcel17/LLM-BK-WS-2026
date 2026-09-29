@@ -12,7 +12,7 @@ import type { LanguageModelV4GenerateResult } from "@ai-sdk/provider";
 import { MockLanguageModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";
 
-import { judgeComparison, verdictSchema } from "../../src/guardrails/judge.js";
+import { judgeComparison, RUBRIC, verdictSchema } from "../../src/guardrails/judge.js";
 import type { Comparison } from "../../src/domain/schemas.js";
 
 const VERDICT = {
@@ -113,5 +113,27 @@ describe("judgeComparison", () => {
 
     await judgeComparison(comparison(), model);
     expect(tools).toHaveLength(0);
+  });
+});
+
+describe("la rúbrica", () => {
+  it("cada criterio trae un descalificador concreto, no solo una pregunta", () => {
+    // Medido: con los criterios 2 y 3 enunciados solo como pregunta, el
+    // evaluador concedía «Sin observaciones» a un comparativo que no explicaba
+    // ningún descarte — 31 de 36 acuerdos. Con un ejemplo explícito de lo que
+    // NO cumple, 36 de 36, y el caso correcto siguió aprobando.
+    //
+    // La prueba fija esa propiedad: un criterio sin descalificador vuelve
+    // complaciente al evaluador, que es su modo de falla característico.
+    // La rúbrica es prosa con saltos de línea: se compara el texto plano.
+    const plana = RUBRIC.replace(/\s+/g, " ");
+
+    for (const descalificador of [
+      "no sustenta nada",
+      "no explica ningún descarte",
+      "no está reportada",
+    ]) {
+      expect(plana, `falta el descalificador: ${descalificador}`).toContain(descalificador);
+    }
   });
 });
