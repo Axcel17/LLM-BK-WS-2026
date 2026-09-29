@@ -48,6 +48,10 @@ export async function connectCatalog(): Promise<CatalogConnection> {
     new StdioClientTransport({
       command: "npx",
       args: ["tsx", "src/mcp/server.ts"],
+      // El servidor corre en otro proceso y no hereda el entorno por omisión.
+      // Pasarlo es lo que permite que `BRIEF_JSON` alcance a `get_brief`, y que
+      // sirva la misma requisición contra la que se verifica.
+      env: process.env as Record<string, string>,
     }),
   );
 

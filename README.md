@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **107 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **112 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -48,7 +48,7 @@ npm run agent -- "otro encargo"    # el mismo agente, otra petición
 npm run measure -- 6               # seis corridas, con tasa de acierto
 npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
 npm run caso                       # el caso validado, con sus afirmaciones
-npm run caso -- "otra petición"    # entrada abierta, sin verdad que afirmar
+npm run caso -- "100 teclados, 5 días"  # requisición propia, tras admisión
 npm run mcp-server                 # el servidor de herramientas, aislado
 ```
 
@@ -142,6 +142,15 @@ scripts/              maquinaria del ejercicio y utilidades
 
 `agent.ts` devuelve datos y `report.ts` les da formato. Esa separación permite verificar el
 contenido del informe en `tests/report.test.ts` sin capturar salida de consola.
+
+**La petición pasa por admisión antes de llegar al agente.** `src/domain/intake.ts` convierte la
+prosa en una requisición estructurada, o enumera qué falta y se detiene. Es una llamada aparte y
+anterior: si el agente interpretara la petición y después se verificara contra las restricciones que
+él mismo declaró, bastaría con declarar un tope alto para que nada lo excediera. Escalar ahí cuesta
+además una llamada, no seis.
+
+`BRIEF_JSON` lleva la requisición admitida al servidor MCP, que corre en otro proceso, de modo que
+`get_brief` sirva la misma contra la que se verifica.
 
 **Las ocho reglas del agente viven en `data/instrucciones.md`**, no dentro de un módulo. Es la misma
 idea que la Parte 1 —una instrucción guardada se versiona y se comparte— y lo concreto es que la

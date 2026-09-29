@@ -28,7 +28,16 @@ export interface Brief {
   readonly suppliers: readonly string[];
 }
 
+/**
+ * La requisición del caso, o la que traiga el entorno.
+ *
+ * `BRIEF_JSON` permite correr contra una requisición distinta sin tocar el
+ * archivo. El servidor MCP corre en otro proceso, así que es la forma de que
+ * `get_brief` sirva lo mismo que verifican las comprobaciones.
+ */
 export function readBrief(): Brief {
+  const fromEnv = process.env["BRIEF_JSON"];
+  if (fromEnv !== undefined && fromEnv.trim() !== "") return JSON.parse(fromEnv) as Brief;
   return JSON.parse(readFileSync(join(DATA_DIR, "brief.json"), "utf8")) as Brief;
 }
 

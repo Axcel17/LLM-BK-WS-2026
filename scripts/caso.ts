@@ -10,6 +10,7 @@
  */
 
 import { runAgent } from "../src/agent.js";
+import { briefFrom, intake } from "../src/domain/intake.js";
 import { constraintsOf, readBrief } from "../src/domain/catalog.js";
 import { checkEscalation, runAllChecks } from "../src/guardrails/checks.js";
 import { judgeComparison } from "../src/guardrails/judge.js";
@@ -80,21 +81,52 @@ function assertions(outcome: Outcome, findings: number): Assertion[] {
   ];
 }
 
+/**
+ * Convierte la petición en una requisición y la fija para el resto de la corrida.
+ *
+ * Devuelve `false` si no alcanza para trabajar. Escalar aquí cuesta una llamada;
+ * escalar después de consultar a cinco proveedores cuesta seis.
+ */
+async function admit(request: string): Promise<boolean> {
+  console.log(`\n  REQUISICIÓN PROPIA · no hay respuesta conocida que afirmar\n\n  «${request}»\n`);
+
+  const admitted = await intake(request);
+
+  if (admitted.status !== "complete") {
+    console.log("  ADMISIÓN · la petición no alcanza para trabajar\n");
+    for (const { field, why } of admitted.missing) console.log(`    falta ${field}: ${why}`);
+    console.log(`\n    ${admitted.question}\n`);
+    console.log("  No se consultó a ningún proveedor.\n");
+    return false;
+  }
+
+  process.env["BRIEF_JSON"] = JSON.stringify(briefFrom(admitted, readBrief().suppliers));
+  console.log(
+    `  ADMISIÓN · ${admitted.product} · ${admitted.quantity} u · ` +
+      `${admitted.maxLeadTimeBusinessDays} d hábiles · USD ${admitted.budgetCapUsd}\n` +
+      (admitted.notes === null ? "" : `    ${admitted.notes}\n`),
+  );
+  return true;
+}
+
 async function main(): Promise<void> {
   const request = process.argv.slice(2).join(" ").trim();
+
+  if (request === "") {
+    console.log("\n  CASO VALIDADO · se afirma la respuesta conocida\n");
+  } else if (!(await admit(request))) {
+    return;
+  }
+
+  // Después de la admisión: `BRIEF_JSON` ya gobierna qué devuelve `get_brief`,
+  // qué esquema debe cumplir el agente y contra qué se verifica.
   const requisition = readBrief();
   const constraints = constraintsOf(requisition);
-
-  console.log(
-    request === ""
-      ? "\n  CASO VALIDADO · se afirma la respuesta conocida\n"
-      : `\n  REQUISICIÓN PROPIA · no hay respuesta conocida que afirmar\n\n  «${request}»\n`,
-  );
 
   const catalog = await connectCatalog();
 
   try {
-    const { outcome, sources } = await runAgent(catalog, request === "" ? undefined : request);
+    const { outcome, sources } = await runAgent(catalog);
 
     if (outcome.status !== "resolved" || outcome.comparison === null) {
       const findings = checkEscalation(outcome, requisition as unknown as Record<string, unknown>);
