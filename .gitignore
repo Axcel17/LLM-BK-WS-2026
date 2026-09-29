@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 *.log
+
+# Bitácoras de corridas: son de cada máquina, no del material.
+data/runs/
+data/visor.html

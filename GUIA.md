@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **85 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **93 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -510,9 +510,17 @@ La salida incluye el desglose por paso:
 La entrada crece en cada vuelta porque el bucle reenvía la conversación completa más las
 definiciones de herramientas. En un flujo largo ese crecimiento domina el costo.
 
-El contador de caché marca 0 %: los proveedores cachean el prefijo repetido a partir de un mínimo
-del orden de mil tokens, y este agente arranca por debajo. En un sistema con instrucciones largas o
-muchas herramientas, la cuenta cambia.
+**El caché depende del proveedor, y conviene mirarlo en su propia corrida.** Medido sobre este mismo
+agente:
+
+| Proveedor               | Entrada | De caché         |
+| ----------------------- | ------- | ---------------- |
+| `gpt-5.4-mini`          | 3.929   | 2.048 · **52 %** |
+| `gemini-3.1-flash-lite` | 10.909  | 0 · **0 %**      |
+
+Los proveedores cachean el prefijo repetido a partir de un mínimo propio, y no todos lo aplican
+igual ni lo informan igual. El mismo código, la misma tarea, y la mitad del costo de entrada cambia
+de lugar según a quién se le pida. Es una variable de costo que no está en el código.
 
 Lo que sí se controla es cuánto devuelve cada herramienta. `get_quote` entrega el texto crudo de la
 cotización, que es la mayor parte del contexto. Resumirlo reduciría el costo y perdería la fidelidad
