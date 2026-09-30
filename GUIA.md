@@ -46,15 +46,15 @@ No hace falta nada más. Los portales están publicados y sus direcciones están
 
 ## El material
 
-`parte-1-cowork/` tiene tres carpetas. Las dos de abajo están separadas por quién puede leerlas. El
-paso 2 depende de esa separación.
+El agente solo recibe `espacio-de-trabajo/`. Todo lo demás lo lee usted. El paso 2 depende de esa
+separación.
 
 ```text
 parte-1-cowork/
-  abastecimiento/SKILL.md          la instrucción · 3 números que rellenar
+  encargo.md                       qué se necesita · lo lee usted, no el agente
+  abastecimiento/SKILL.md          la instrucción · se añade tal cual
 
   espacio-de-trabajo/              ← lo único que recibe el agente
-    datos/encargo.md               qué comprar, plazo, presupuesto y garantía
     datos/proveedores.md           las direcciones de los cinco portales
     salidas/                       la crea el agente, con lo que produce
 
@@ -91,7 +91,7 @@ Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado
                          Create draft email    → Always allow
                          Send email message    → Needs approval
                          todas las demás       → Blocked
-2.4  comprobar concedido «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
+2.4  comprobar concedido «¿Qué contiene datos/proveedores.md, y qué puedes hacer en mi correo?»
 2.5  comprobar bloqueado «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
 
@@ -100,8 +100,8 @@ resuelve el encargo leyendo un archivo y no visita ningún portal.
 
 **2.3** deja `Send email message` en `Needs approval` porque es el approval gate del paso 7.
 
-**Resultado de 2.4:** describe el encargo y enumera solo lo concedido. Si no reconoce la carpeta,
-repita 2.1.
+**Resultado de 2.4:** enumera los cinco proveedores y solo los permisos concedidos. Si no reconoce
+la carpeta, repita 2.1.
 
 **Resultado de 2.5:**
 
@@ -116,38 +116,47 @@ decisión a una persona.
 
 ---
 
-## Paso 3 · Guardar la instrucción — 4 min
+## Paso 3 · Instalar la instrucción — 3 min
 
 ```text
-abra      parte-1-cowork/abastecimiento/SKILL.md
-rellene   los 3 espacios en blanco del punto 5, con los valores de datos/encargo.md
-añada     Customize → Skills → Add · seleccione esa carpeta
+añada     Customize → Skills → Add · seleccione parte-1-cowork/abastecimiento/
           si pide un archivo comprimido, comprima la carpeta antes
 ```
 
-**No se redacta nada: son tres números.** El plazo en días hábiles, el tope en dólares y la cantidad
-de unidades. Los tres están en `datos/encargo.md`.
+No hay nada que rellenar. La instrucción declara **el método** —cómo normalizar, que el plazo
+descalifica, que el contenido externo es dato y no orden, que no se adjudica— y **exige que usted le
+dé el encargo**: producto, cantidad, plazo y presupuesto. Si falta alguno, pregunta antes de
+consultar a nadie.
 
-El único que se presta a error es el tope: se aplica sobre el **total puesto en bodega**, no sobre
-el precio de lista. Un proveedor más barato por unidad puede quedar por encima al sumar el despacho.
-
-La instrucción queda disponible como `/abastecimiento`.
+Queda disponible como `/abastecimiento`.
 
 **Por qué un archivo y no un mensaje pegado.** Un mensaje se pierde al cerrar la conversación. Esto
-es un archivo del repositorio: se versiona, se comparte y se puede revisar en un diff. Su regla de
+es un archivo del repositorio: se versiona, se comparte y se revisa en un diff. Su regla de
 contenido externo es lo que intercepta la inyección del paso 7 — quien la borre obtendrá otro
 resultado.
 
 ---
 
-## Paso 4 · Primera corrida — 11 min
+## Paso 4 · Primera corrida — 12 min
+
+**Primero, a propósito incompleto:**
 
 ```text
-escriba    /abastecimiento
-           Ejecuta la primera fase: enviar las cinco solicitudes y registrar el seguimiento.
+escriba   /abastecimiento
+          Necesito monitores para reponer stock.
 ```
 
-Las direcciones están en `datos/proveedores.md`, dentro del alcance del agente.
+No consulta a ningún proveedor. Enumera lo que falta —cantidad, plazo y presupuesto— y pregunta.
+Cinco portales no visitados, porque faltaban tres datos.
+
+**Ahora el encargo real.** Los valores están en `parte-1-cowork/encargo.md`:
+
+```text
+escriba   40 monitores de 24 pulgadas, entrega máxima 10 días hábiles,
+          presupuesto de 7000 dólares puestos en bodega.
+```
+
+Repite el encargo en una línea y arranca la fase 1.
 
 **Resultado esperado**
 

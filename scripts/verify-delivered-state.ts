@@ -126,17 +126,17 @@ for (const key of ["pasan", "fallan", "pendientes"] as const) {
 /**
  * La Parte 1 se entrega sin resolver.
  *
- * Los dos blancos de la instrucción y las doce casillas de permisos son el
- * ejercicio, y un ensayo que los complete y se comprometa entregaría el material
- * resuelto sin que nada avise. Es la misma deriva silenciosa que este taller
- * enseña a vigilar, aplicada a su propio material.
+ * La instrucción declara el método y exige el encargo por el chat: si alguien le
+ * escribe dentro los valores del caso, el paso 4 deja de pedir nada y la
+ * demostración del intake desaparece sin que nada avise. Es la misma deriva
+ * silenciosa que este taller enseña a vigilar, aplicada a su propio material.
  */
 const PARTE_1 = [
   {
     archivo: "parte-1-cowork/abastecimiento/SKILL.md",
-    patron: /_{4,}/g,
-    esperado: 3,
-    que: "espacios en blanco por rellenar",
+    patron: /\b(7\.?000|10 días hábiles|40 unidades)\b/g,
+    esperado: 0,
+    que: "valores del caso, que no deben estar dentro",
   },
 ] as const;
 

@@ -9,17 +9,21 @@ recorrido.
 
 ---
 
-## Los tres números de `../abastecimiento/SKILL.md`
+## El encargo que se dicta por el chat
 
 ```text
-plazo máximo          10 días hábiles
-tope de presupuesto   USD 7.000,00
-cantidad              40 unidades
+producto       monitores de 24 pulgadas
+cantidad       40 unidades
+plazo          10 días hábiles
+presupuesto    USD 7.000,00 puestos en bodega
+garantía       no se menciona · la estándar del proveedor
 ```
 
-Los tres están en `datos/encargo.md`. El único que se presta a error es el tope: se aplica sobre el
-**total puesto en bodega**, no sobre el precio de lista ni sobre el subtotal antes de flete. Un
-proveedor más barato por unidad puede quedar por encima del tope al sumar el despacho.
+Están en `../encargo.md`, que el asistente lee y el agente no. La instrucción no los trae dentro:
+los pide, y si falta alguno se detiene antes de consultar a un solo proveedor.
+
+El único que se presta a error es el tope: se aplica sobre el **total puesto en bodega**, no sobre
+el precio de lista. Un proveedor más barato por unidad puede quedar por encima al sumar el despacho.
 
 ## Los permisos resueltos
 
