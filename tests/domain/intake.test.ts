@@ -28,6 +28,7 @@ function admitted(overrides: Partial<IntakeOutcome> = {}): IntakeOutcome {
     budgetIncludesFreight: true,
     warranty: null,
     citations: [],
+    severalProducts: false,
     missing: [],
     question: null,
     notes: null,
@@ -134,6 +135,7 @@ describe("el esquema de extracción", () => {
       budgetIncludesFreight: true,
       warranty: null,
       citations,
+      severalProducts: false,
       missing: [],
       question: null,
       notes: null,
@@ -153,5 +155,27 @@ describe("el esquema de extracción", () => {
     const parsed = extractionSchema.safeParse(extraction([{ field: "quantity", quotation: "" }]));
 
     expect(parsed.success).toBe(false);
+  });
+});
+
+describe("settle · varios productos", () => {
+  it("no avanza con más de un producto, aunque los cuatro datos estén", () => {
+    // El modo de falla medido: el modelo sumaba «40 monitores y 20 teclados» en
+    // 60 unidades de un renglón inventado, y las siete verificaciones lo daban
+    // por bueno porque el comparativo resultante era coherente consigo mismo.
+    const result = settle(admitted({ severalProducts: true }));
+
+    expect(result.status).toBe("missing_information");
+    expect(result.product).toBeNull();
+    expect(result.missing.map((m) => m.field)).toEqual(["product"]);
+    expect(result.question).toContain("un solo producto");
+  });
+
+  it("un producto con varias características sí avanza", () => {
+    const result = settle(
+      admitted({ product: "monitores de 24 pulgadas con soporte VESA", severalProducts: false }),
+    );
+
+    expect(result.status).toBe("complete");
   });
 });

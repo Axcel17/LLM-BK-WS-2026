@@ -46,6 +46,15 @@ explícita.
 Quien pide no elige a quién se consulta. Si la petición nombra proveedores, no
 los tomes como restricción y dilo en 'notes', para que quien la escribió sepa
 que se consultará a todo el catálogo.
+
+En 'product' va el artículo, sin la cantidad delante: de «40 monitores de 24
+pulgadas» el producto es «monitores de 24 pulgadas». La cantidad tiene su propio
+campo, y el proveedor imprime las dos en columnas distintas.
+
+Una requisición cotiza un solo producto. Si la petición pide varios distintos
+—«40 monitores y 20 teclados»—, pon 'severalProducts' en true y NO sumes las
+cantidades ni juntes los nombres. Un producto con varias características
+—«monitor de 24 pulgadas con soporte VESA»— es uno solo, no varios.
 `.trim();
 
 export const extractionSchema = z.object({
@@ -64,6 +73,18 @@ export const extractionSchema = z.object({
    * `get_brief`, y por eso importa que sea el valor correcto.
    */
   budgetIncludesFreight: z.boolean(),
+
+  /**
+   * Si la petición pide más de un producto distinto.
+   *
+   * Lo juzga el modelo porque no se puede calcular: «40 teclados y mouse
+   * inalámbricos» puede ser un kit o dos renglones, y eso lo dice la prosa. Lo
+   * que sí hace el código es no dejar que una petición así avance: medido, el
+   * modelo sumaba 40 monitores y 20 teclados en «60 unidades de monitores y
+   * teclados» y ninguna de las siete verificaciones lo veía, porque el
+   * comparativo resultante era internamente coherente.
+   */
+  severalProducts: z.boolean(),
 
   warranty: z.string().nullable(),
 
@@ -116,6 +137,24 @@ export type IntakeOutcome = Extraction & { status: "complete" | "missing_informa
  * nombre del campo, que es peor explicación que la del modelo pero es una.
  */
 export function settle(result: Extraction): IntakeOutcome {
+  // Varios productos no es un dato que falte: es un producto que no se puede
+  // representar. Se trata como tal, y el resto de la máquina hace lo suyo.
+  if (result.severalProducts) {
+    return {
+      ...result,
+      product: null,
+      status: "missing_information",
+      missing: [
+        {
+          field: "product",
+          why: "La petición pide varios productos distintos y una requisición cotiza uno solo.",
+        },
+      ],
+      question:
+        "Esta ronda cotiza un solo producto. ¿Con cuál procedo? Los demás van en peticiones aparte.",
+    };
+  }
+
   const absent = ESSENTIAL.filter((field) => result[field] === null);
   if (absent.length === 0) return { ...result, status: "complete", missing: [], question: null };
 

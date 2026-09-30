@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **143 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **145 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -511,6 +511,17 @@ El segundo no consulta a nadie. `src/domain/intake.ts` lee la prosa, extrae lo q
 enumera lo que falta: «para el viernes» no es un plazo en días hábiles y «presupuesto ajustado» no
 es un tope. Devuelve una pregunta y se detiene. Cinco proveedores no consultados y una ronda que no
 se pagó.
+
+**Una ronda cotiza un producto.** Pruebe a pedir dos:
+
+```bash
+npm run caso -- "40 monitores y 20 teclados, 10 dias habiles, tope 9000 dolares"
+```
+
+Se detiene y pregunta con cuál seguir. Antes de esa comprobación el modelo sumaba las cantidades
+—«60 unidades de monitores y teclados»— y **ninguna de las siete verificaciones lo detectaba**: el
+comparativo era coherente consigo mismo, solo que no significaba nada. Un producto con varias
+características sigue siendo uno.
 
 **Lo que hace verificable a la extracción es que cita.** Un tope leído y uno supuesto salen iguales:
 `budgetCapUsd: 20000` no dice de dónde vino. La admisión devuelve, junto a cada dato, el fragmento

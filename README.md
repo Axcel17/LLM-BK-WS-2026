@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **143 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **145 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -148,6 +148,13 @@ prosa en una requisición estructurada, o enumera qué falta y se detiene. Es un
 anterior: si el agente interpretara la petición y después se verificara contra las restricciones que
 él mismo declaró, bastaría con declarar un tope alto para que nada lo excediera. Escalar ahí cuesta
 además una llamada, no seis.
+
+**Una requisición cotiza un producto, y la admisión lo impone.** Medido: ante «40 monitores y 20
+teclados» el modelo sumaba las cantidades en «60 unidades de monitores y teclados», y **ninguna de
+las siete verificaciones lo veía**, porque el comparativo resultante era coherente consigo mismo. El
+límite no es una comodidad: los portales del caso tienen un precio unitario fijo por proveedor, de
+modo que varios renglones en el código no tendrían con qué corresponderse del otro lado. Un producto
+con varias características —«monitor de 24 pulgadas con soporte VESA»— sigue siendo uno.
 
 **Y la extracción se verifica.** Un tope leído y uno supuesto tienen la misma forma en la salida:
 `budgetCapUsd: 20000` no dice de dónde salió. Por eso la admisión cita, para cada dato, el fragmento
