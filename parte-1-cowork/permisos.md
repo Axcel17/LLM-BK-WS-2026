@@ -39,7 +39,21 @@ alcanza?
 ## Capa 2 · Los permisos de herramienta
 
 En **ajustes → conectores → Gmail**, sección «Tool permissions». Treinta herramientas, en dos grupos
-plegables, y **cada una se ajusta por separado**. Cada herramienta admite dos estados.
+plegables, y **cada una se ajusta por separado**.
+
+Los estados son dos:
+
+```text
+Always allow     la ejecuta sin preguntar
+Needs approval   se detiene y pide su aprobación cada vez
+```
+
+**No hay «bloquear».** Un tercer estado, `Blocked`, existe solo en planes Team y Enterprise. En un
+plan personal, lo más restrictivo que puede hacer con una herramienta es que le pregunte.
+
+De ahí una consecuencia que conviene anotar ahora y comprobar en el paso 2.5: **el único bloqueo
+real disponible es el scope de la capa 1.** Lo que no entra por el scope, el agente no puede
+hacerlo, pregunte o no.
 
 ```text
 Read-only tools · 6
@@ -60,8 +74,8 @@ Write/delete tools · 24
   Modify message labels
 ```
 
-**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas y deje el resto en el
-estado más restrictivo:
+**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas y deje el resto en
+`Needs approval`:
 
 ```
 _______________________________________________________________________
@@ -116,5 +130,7 @@ Compare esta hoja con lo que el sistema usó en realidad:
 
 > **Fuentes.** Los tres scopes son los de Google:
 > [`gmail.readonly`, `gmail.compose` y `gmail.modify`](https://developers.google.com/workspace/gmail/api/auth/scopes).
-> El listado de herramientas es el del panel de conectores de la aplicación de escritorio, tomado en
-> septiembre de 2026; conviene contrastarlo contra la pantalla antes del evento.
+> Los estados y el listado de herramientas son los del panel de conectores de la aplicación de
+> escritorio, tomados en septiembre de 2026. `Blocked` como tercer estado está documentado para
+> [planes Team y Enterprise](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities).
+> Conviene contrastarlo contra la pantalla antes del evento.

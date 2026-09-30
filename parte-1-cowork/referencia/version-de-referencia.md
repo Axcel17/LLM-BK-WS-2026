@@ -46,9 +46,10 @@ Send email message      es todo
 Create draft email      opcional, si se quiere revisar el borrador antes del envío
 ```
 
-Las veintiocho restantes quedan en el estado más restrictivo. **El número que hace la clase:** el
-conector ofrece treinta herramientas y la tarea necesita una. No es un principio abstracto, es una
-cuenta que cada asistente hace en su pantalla.
+Las veintiocho restantes quedan en `Needs approval`, que en un plan personal es lo más restrictivo
+disponible: `Blocked` solo existe en Team y Enterprise. **El número que hace la clase:** el conector
+ofrece treinta herramientas y la tarea necesita una. No es un principio abstracto, es una cuenta que
+cada asistente hace en su pantalla.
 
 **Las que más sorprenden al quedar fuera:**
 
@@ -58,6 +59,11 @@ Forward email           con lectura concedida, saca correo a un tercero
 Move message to Trash   un agente engañado hace perder correo que él no envió
 Mark message as Spam    entrena el filtro para perder correo futuro
 ```
+
+**Lo que esto implica, y conviene decirlo en el paso 1:** en un plan personal no se puede bloquear
+una herramienta, solo obligarla a preguntar. El único bloqueo real es el scope de la capa 1 — y por
+eso conceder «Manage drafts and send emails» en vez del scope amplio no es una preferencia, es la
+única barrera dura del bloque.
 
 **El criterio que ordena la decisión:** la compuerta va entre la última acción reversible —el
 borrador— y la primera irreversible —el envío—.

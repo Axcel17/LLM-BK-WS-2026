@@ -76,6 +76,7 @@ No conecte nada todavía.
 abra        parte-1-cowork/permisos.md
 decida      capa 1 · cuál de los 3 scopes de Google concede
             capa 2 · cuáles de las 30 herramientas de Gmail permite
+                     2 estados por herramienta: Always allow · Needs approval
 responda    el sistema debe enviar un correo al terminar.
             ¿Qué necesita poder hacer en su bandeja, exactamente?
 ```
@@ -96,6 +97,7 @@ responda    el sistema debe enviar un correo al terminar.
 2.1  acceso a archivos     solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
 2.2  conector de correo    Gmail, con la cuenta personal
 2.3  permisos              el scope al autorizar · las herramientas en ajustes → conectores
+                           lo no necesario queda en Needs approval · no hay «bloquear»
 2.4  comprobar concedido   «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
 2.5  comprobar bloqueado   «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
@@ -106,9 +108,9 @@ reconoce la carpeta, repita 2.1.
 Resultado de **2.5**, según lo que decidió en el paso 1:
 
 ```text
-se niega                bloqueó la lectura · la barrera se aplica
-pide aprobación         la barrera existe · cuesta una interrupción por corrida
-lo hace sin preguntar   la lectura quedó permitida · corríjalo ahora
+se niega                no concedió el scope de lectura · barrera dura, capa 1
+pide aprobación         concedió el scope y dejó la herramienta en Needs approval
+lo hace sin preguntar   concedió el scope y la herramienta en Always allow · corríjalo
 ```
 
 **Por qué importa**
@@ -117,8 +119,9 @@ lo hace sin preguntar   la lectura quedó permitida · corríjalo ahora
   esa carpeta, el agente resuelve el encargo leyéndolo y no visita ningún portal.
 - Los portales viven en otro repositorio por lo mismo. En un caso real no se dispone del código de
   los sitios con los que se trabaja.
-- Esta tarea no lee correo, solo envía. Cualquier nivel distinto de «bloquear» en la lectura concede
-  alcance sin contrapartida.
+- Esta tarea no lee correo, solo envía. Si el agente pudo buscar, el scope de lectura sobra.
+- Las dos respuestas se distinguen en quién las produjo: negarse viene del scope, preguntar viene de
+  la herramienta. Solo la primera es una barrera que no depende de que alguien apruebe bien.
 - Configurar un permiso y comprobar que se aplica son dos operaciones distintas. En la Parte 2 esa
   comprobación se escribe como prueba automatizada.
 
