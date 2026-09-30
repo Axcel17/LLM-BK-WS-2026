@@ -138,12 +138,6 @@ const PARTE_1 = [
     esperado: 3,
     que: "marcadores de completar",
   },
-  {
-    archivo: "parte-1-cowork/permisos.md",
-    patron: /_{10,}/g,
-    esperado: 2,
-    que: "renglones de respuesta en blanco",
-  },
 ] as const;
 
 for (const { archivo, patron, esperado, que } of PARTE_1) {

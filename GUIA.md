@@ -46,13 +46,11 @@ No hace falta nada más. Los portales están publicados y sus direcciones están
 
 ## El material
 
-`parte-1-cowork/` tiene tres subcarpetas, separadas por quién puede leerlas. El paso 2 depende de
-esa separación.
+`parte-1-cowork/` tiene dos subcarpetas, separadas por quién puede leerlas. El paso 2 depende de esa
+separación.
 
 ```text
 parte-1-cowork/
-  permisos.md                      la decisión del paso 1, a mano
-
   espacio-de-trabajo/              ← lo único que recibe el agente
     instruccion-abastecimiento.md  la instrucción a completar y guardar
     datos/encargo.md               qué comprar, plazo, presupuesto y garantía
@@ -70,22 +68,17 @@ Salidas del agente: `salidas/seguimiento.json` en el paso 4, `salidas/comparativ
 
 ## Paso 1 · La decisión, antes de conectar — 1 min
 
-No conecte nada todavía.
+No conecte nada todavía. Escriba una línea, donde quiera:
 
-```text
-abra        parte-1-cowork/permisos.md
-responda    el sistema debe enviar un correo al terminar.
-            ¿Qué necesita poder hacer en su bandeja, exactamente?
-```
-
-Una línea, escrita antes de ver la pantalla. La decisión se toma en el paso 2; ésta es la que no
-está contaminada por lo que la interfaz trae marcado.
+> El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones.
+> ¿Qué necesita poder hacer en su bandeja, exactamente?
 
 **Por qué importa**
 
 - Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado, ¿qué haría con
   eso?
-- El paso 7 compara esta respuesta con los permisos que el agente usó en realidad.
+- Escrita antes de ver la pantalla, su respuesta no está contaminada por lo que la interfaz trae
+  marcado. Es lo único que este paso produce.
 
 ---
 
@@ -106,15 +99,13 @@ está contaminada por lo que la interfaz trae marcado.
 2.5  comprobar bloqueado «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
 
-**Compare 2.2 y 2.3 con lo que escribió en el paso 1.** Si concedió de más, ahí está el hábito que
-esta sesión intenta romper. Si concedió de menos, el paso 7 se lo dirá.
+**Compare esto con lo que escribió recién.** Si concedió de más, ahí está el hábito que esta sesión
+intenta romper.
 
-Las seis herramientas de solo lectura pueden quedarse como estén: sin el scope de lectura no
-funcionan de todos modos. **El grupo que hay que recorrer es «Write/delete tools».**
+Las seis de solo lectura pueden quedarse como estén: sin el scope de lectura no funcionan. El grupo
+a recorrer es **«Write/delete tools»**.
 
-`Needs approval` sobre `Send email message` es la compuerta que detiene la corrida en el paso 7. Si
-la deja en `Blocked`, el paso 7 no ocurre; si la deja en `Always allow`, el correo sale sin que
-nadie lo vea.
+`Send email message` queda en `Needs approval` y no en otro estado: es la compuerta del paso 7.
 
 Resultado esperado en **2.4**: describe el encargo y enumera solo los permisos concedidos. Si no
 reconoce la carpeta, repita 2.1.
@@ -321,7 +312,7 @@ recomendó a GlobalStock sin la nota    el agente obedeció una instrucción esc
 
 ```text
 revise      el historial de la corrida: qué hizo, cuántos pasos, qué herramientas
-compare     parte-1-cowork/permisos.md contra los permisos que usó en realidad
+compare     lo que escribió en el paso 1 contra los permisos que usó en realidad
 responda    ¿usó todos los concedidos? ¿faltó alguno? ¿alguno quedó sin usar?
 ```
 
