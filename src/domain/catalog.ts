@@ -6,10 +6,11 @@
  * se corrige en un solo lugar.
  */
 
-import { appendFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
+import { appendFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { renderQuote } from "./quotes.js";
 import type { Constraints } from "./schemas.js";
 
 export const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data");
@@ -61,22 +62,20 @@ export function listSuppliers(): readonly string[] {
 }
 
 /**
- * Texto de la cotización de un proveedor, tal como llegó.
+ * Texto de la cotización de un proveedor, para lo que pide la requisición.
+ *
+ * El producto y la cantidad salen de la requisición, no de quien llama. Si el
+ * agente pudiera elegir qué cantidad cotizar, pediría 40 donde la requisición
+ * dice 100 y la verificación aritmética daría por bueno el resultado: sería
+ * calificar su propio examen, que es justo lo que la admisión separada evita.
  *
  * No se limpia ni se interpreta: si el proveedor incluyó contenido dirigido a
  * sistemas automatizados, ese contenido llega íntegro. Filtrarlo aquí
  * trasladaría el problema en lugar de resolverlo.
  */
 export function readQuote(supplier: string): string {
-  const file = join(QUOTES_DIR, `${supplier}.txt`);
-  if (!existsSync(file)) {
-    const available = readdirSync(QUOTES_DIR)
-      .filter((name) => name.endsWith(".txt"))
-      .map((name) => name.replace(/\.txt$/, ""))
-      .sort();
-    throw new Error(`Proveedor '${supplier}' no encontrado. Disponibles: ${available.join(", ")}`);
-  }
-  return readFileSync(file, "utf8");
+  const brief = readBrief();
+  return renderQuote(QUOTES_DIR, supplier, brief.product, brief.quantity);
 }
 
 /**

@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **123 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **139 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -525,6 +525,20 @@ inventara, la cita no aparecería en el texto y `checkExtraction` lo reportaría
 consulta. Es comparación de texto, no una segunda opinión: `src/guardrails/traceability.ts`
 normaliza —sin tildes, sin puntuación, uniendo separadores de miles— y el mismo módulo le sirve a
 `checkEvidence` para rastrear los precios del informe hasta el texto del proveedor.
+
+**Y con la requisición completa, la cotización responde a lo que se pidió:**
+
+```bash
+npm run caso -- "Necesitamos 100 monitores de 24 pulgadas, plazo maximo 10 dias habiles, tope 20000 dolares"
+```
+
+Los totales ya no son los de 40 unidades. Cada proveedor cotiza sobre 100 y las verificaciones
+comprueban contra 100, porque `get_quote` deriva producto y cantidad de la misma requisición contra
+la que se verifica —y no de lo que el agente le pase, que sería dejarlo elegir el examen—.
+
+Un detalle que conviene mirar: MayoristaZeta despacha cajas de diez. Pida 95 y facturará 100. Eso no
+es un defecto de la simulación, es lo que hace un mayorista, y es la clase de discrepancia que un
+comparativo tiene que poder declarar.
 
 ### El costo
 

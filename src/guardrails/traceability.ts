@@ -57,8 +57,36 @@ export function fragments(quotation: string): string[] {
   return pieces.length > 0 ? pieces : [normalize(quotation)];
 }
 
-/** Los tramos de la cita que no aparecen en la fuente. Vacío si todo se rastrea. */
+/**
+ * Longitud desde la que una palabra distingue.
+ *
+ * «de», «por», «el» aparecen en cualquier texto: exigirlas no comprueba nada, y
+ * son justo las que el modelo intercala al redactar.
+ */
+const MIN_TOKEN_LENGTH = 4;
+
+/**
+ * Los tramos de la cita que no aparecen en la fuente. Vacío si todo se rastrea.
+ *
+ * Se comprueba palabra por palabra, no la cadena contigua. Medido con
+ * gpt-5.4-mini: el modelo cita «unitario 164,00 16.400,00» sobre una tabla cuyo
+ * encabezado y cuya fila están en líneas distintas —copió las dos cifras y les
+ * puso la etiqueta de su columna—. Exigir adyacencia daba un hallazgo sobre
+ * evidencia legítima, y una verificación que salta sobre salida correcta enseña
+ * a ignorarla.
+ *
+ * Lo que sí sigue cayendo es la justificación inventada: «descuento por volumen
+ * aplicado» o «pactado por teléfono» traen palabras que no están en ninguna
+ * parte del texto del proveedor.
+ */
 export function untraceable(quotation: string, source: string): string[] {
   const normalized = normalize(source);
-  return fragments(quotation).filter((fragment) => !normalized.includes(fragment));
+
+  return fragments(quotation).filter((fragment) => {
+    if (normalized.includes(fragment)) return false;
+
+    return fragment
+      .split(" ")
+      .some((token) => token.length >= MIN_TOKEN_LENGTH && !normalized.includes(token));
+  });
 }

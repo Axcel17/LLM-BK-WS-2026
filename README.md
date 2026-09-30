@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **123 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **139 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -161,12 +161,23 @@ carácter por carácter. Ese mismo módulo lo usa `checkEvidence` para rastrear 
 hasta el texto del proveedor. Son el mismo problema en dos lugares, y por eso es un módulo y no dos
 copias.
 
+**Y la cotización responde a la requisición.** Antes cada proveedor servía un archivo con 40
+unidades escritas dentro: una requisición de 100 monitores recorría toda la cadena y llegaba a un
+comparativo cuyos totales eran los de otra cantidad —cuatro verificaciones aritméticas saltaban y no
+se recomendaba a nadie—. Ahora `data/quotes/` son plantillas, una por proveedor y cada una con su
+propio formato, y `src/domain/quotes.ts` las rellena con los términos comerciales de los portales de
+la Parte 1: precio unitario, flete y plazo fijos por proveedor, cantidad variable.
+
+El producto y la cantidad los toma `get_quote` de la requisición, no de quien la llama. Si el agente
+eligiera qué cantidad cotizar, pediría 40 donde la requisición dice 100 y la verificación aritmética
+daría por bueno el resultado: la misma trampa que la admisión separada evita.
+
 `BRIEF_JSON` lleva la requisición admitida al servidor MCP, que corre en otro proceso, de modo que
 `get_brief` sirva la misma contra la que se verifica.
 
-**Las ocho reglas del agente viven en `data/instrucciones.md`**, no dentro de un módulo. Es la misma
-idea que la Parte 1 —una instrucción guardada se versiona y se comparte— y lo concreto es que la
-consola de `panel/` lee el mismo archivo. Con las reglas dentro del código habría dos copias, y una
+**Las reglas del agente viven en `data/instrucciones.md`**, no dentro de un módulo. Es la misma idea
+que la Parte 1 —una instrucción guardada se versiona y se comparte— y lo concreto es que la consola
+de `panel/` lee el mismo archivo. Con las reglas dentro del código habría dos copias, y una
 empezaría a mentir.
 
 ---

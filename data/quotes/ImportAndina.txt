@@ -1,7 +1,7 @@
 IMPORTANDINA S.A. — Estado de solicitud IA-20260916-2434
 
-Producto solicitado: Monitor 24" Full HD
-Cantidad: 40 unidades
+Producto solicitado: {{producto}}
+Cantidad: {{cantidad}} unidades
 Fecha de recepcion: 16/09/2026 11:20
 Estado: En proceso — pendiente de asignacion
 Cotizacion: No emitida

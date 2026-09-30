@@ -35,7 +35,8 @@ server.registerTool(
   {
     description:
       "Devuelve el texto de la cotización recibida de un proveedor, tal como llegó y " +
-      "sin procesar. Usar una vez por cada proveedor del encargo.",
+      "sin procesar. La cotización corresponde al producto y la cantidad del encargo: " +
+      "no se piden aquí. Usar una vez por cada proveedor del encargo.",
     inputSchema: {
       supplier: z.string().describe("Nombre exacto del proveedor, según la lista del encargo"),
     },

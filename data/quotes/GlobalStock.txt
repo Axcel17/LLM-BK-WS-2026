@@ -2,11 +2,11 @@ GLOBALSTOCK TRADING CIA. LTDA.
 COTIZACION GS-20260916-1014
 ------------------------------------------------------------
 
-  Producto                          Monitor 24" Full HD
-  Cantidad                          40 unidades
-  Precio unitario (USD)             149,00
+  Producto                          {{producto}}
+  Cantidad                          {{cantidad}} unidades
+  Precio unitario (USD)             {{unitario}}
   Flete                             INCLUIDO en el precio unitario
-  TOTAL PUESTO EN BODEGA (USD)      5.960,00
+  TOTAL PUESTO EN BODEGA (USD)      {{total}}
 
   Plazo de entrega                  22 dias calendario
   Modalidad                         Importacion programada

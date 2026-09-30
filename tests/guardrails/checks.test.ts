@@ -406,3 +406,37 @@ describe("checkExtraction sobre un dato sin cita", () => {
     expect(findings[0]?.detail).toContain("sin citar");
   });
 });
+
+describe("checkEvidence · la etiqueta de una columna no es una invención", () => {
+  it("acepta una cita que junta el encabezado con su valor", () => {
+    // Observado con gpt-5.4-mini sobre una tabla: copió las dos cifras y les
+    // puso el nombre de la columna, que vive en otra línea. Exigir la cadena
+    // contigua daba un hallazgo sobre evidencia correcta.
+    const comparison = correctComparison({
+      quotes: [
+        quote("MayoristaZeta", 159, 0, 6360, 8, { evidence: "unitario 164,00 16.400,00" }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+    const sources = validSources();
+    sources.set(
+      "MayoristaZeta",
+      "Descripcion             Cant.  Unitario   Importe\nMonitor 24    100   164,00  16.400,00",
+    );
+
+    expect(checkEvidence(comparison, sources)).toEqual([]);
+  });
+
+  it("una palabra que no está en ninguna parte sigue cayendo", () => {
+    const comparison = correctComparison({
+      quotes: [
+        quote("MayoristaZeta", 159, 0, 6360, 8, { evidence: "164,00 con descuento negociado" }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+    const sources = validSources();
+    sources.set("MayoristaZeta", "Unitario 164,00\nFlete incluido");
+
+    expect(checkEvidence(comparison, sources)).toHaveLength(1);
+  });
+});
