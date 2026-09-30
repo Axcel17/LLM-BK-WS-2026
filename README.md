@@ -68,8 +68,8 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 | `npm run typecheck`      | Compila sin emitir                                                    |
 | `npm run verify-state`   | Comprueba el estado de entrega contra lo que documentan README y guía |
 | `npm run format:check`   | Verifica el formato                                                   |
-| `npm run solutions`      | Copia las versiones completas sobre `src/`                            |
-| `npm run gaps`           | Restituye los `TODO`                                                  |
+| `npm run solutions`      | Mantenimiento: escribe las versiones completas sobre `src/`           |
+| `npm run gaps`           | Mantenimiento: restituye el estado de entrega                         |
 | `npm run baseline`       | Registra la huella del catálogo de herramientas                       |
 | `npm run caso`           | Prueba el flujo: el caso validado, o una requisición propia           |
 | `npm run verify-catalog` | Contrasta `data/catalogo.json` contra el que publican los portales    |
@@ -83,12 +83,10 @@ el código mecánico viene escrito.
 
 ```bash
 grep -rn "TODO(" src/          # o el panel de tareas del editor
-npm run solutions              # las versiones completas, si un tramo se atasca
-npm run gaps                   # revierte
 ```
 
-**El recorrido está en [`GUIA.md`](GUIA.md).** Ahí va cada `TODO` con su tramo, su comando y lo que
-enseña.
+**El recorrido está en [`GUIA.md`](GUIA.md).** Ahí va cada `TODO` con su tramo, su comando, lo que
+enseña y el código que resuelve.
 
 ---
 
@@ -104,7 +102,11 @@ src/
   loop.ts             el ciclo del agente, sin librería de por medio
 
   domain/             el caso y su contrato de datos
+    intake.ts         admisión: la petición en prosa se vuelve requisición
     catalog.ts        acceso a los datos del encargo
+    suppliers.ts      el catálogo de proveedores, el mismo de los portales
+    quotes.ts         arma la cotización que responde a lo pedido
+    paths.ts          dónde viven los datos del caso
     schemas.ts        TODO 1 · forma de la salida
 
   mcp/                conexión con el exterior
@@ -114,11 +116,13 @@ src/
 
   guardrails/         las barreras
     checks.ts         TODO 3 · verificación por código
+    traceability.ts   rastrea una cita hasta el texto que la respalda
     judge.ts          evaluación por modelo
     approval.ts       acciones que el agente no ejecuta por sí mismo
 
   platform/           infraestructura transversal
     providers.ts      selección de proveedor de modelo
+    runs.ts           registro de corridas
     tracing.ts        instrumentación OpenTelemetry
 
 tests/                refleja la estructura de src/, más las regresiones
@@ -272,9 +276,6 @@ silencio.
 git checkout -B soluciones main
 npm run solutions && git commit -am "chore: soluciones aplicadas"
 ```
-
-No es necesario cambiar de rama para consultar una solución: `npm run solutions` y `npm run gaps`
-funcionan sin conexión desde `main`.
 
 ---
 
