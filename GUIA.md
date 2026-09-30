@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **145 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **175 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -547,6 +547,20 @@ npm run caso -- "Necesitamos 100 monitores de 24 pulgadas, plazo maximo 10 dias 
 Los totales ya no son los de 40 unidades. Cada proveedor cotiza sobre 100 y las verificaciones
 comprueban contra 100, porque `get_quote` deriva producto y cantidad de la misma requisición contra
 la que se verifica —y no de lo que el agente le pase, que sería dejarlo elegir el examen—.
+
+**Y no todos manejan todo.** Los cinco proveedores no venden lo mismo, igual que en la Parte 1:
+
+```bash
+npm run caso -- "Necesitamos 30 sillas ergonomicas, plazo maximo 15 dias habiles, tope 8000 dolares"
+```
+
+Solo Suministros Delta las tiene. Los otros tres responden que no forman parte de su línea, y eso
+llega al comparativo como ausencia con su motivo —`product_not_carried`—, no como una cotización de
+cero. Con un producto que nadie identifica el encargo queda `out_of_scope`: el dato está, lo que
+falta es quien lo venda, y eso no es una requisición incompleta.
+
+El catálogo es el mismo que usan los portales de la Parte 1, en `data/catalogo.json`.
+`npm run verify-catalog` comprueba que la copia local siga coincidiendo con la publicada.
 
 Un detalle que conviene mirar: MayoristaZeta despacha cajas de diez. Pida 95 y facturará 100. Eso no
 es un defecto de la simulación, es lo que hace un mayorista, y es la clase de discrepancia que un

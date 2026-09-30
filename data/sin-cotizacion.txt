@@ -1,0 +1,10 @@
+{{razonSocial}} — Respuesta a solicitud {{referencia}}
+
+Producto solicitado: {{producto}}
+Cantidad: {{cantidad}} unidades
+Estado: Sin cotizacion
+
+{{producto}} no forma parte de nuestra linea. No emitimos cotizacion por este
+articulo.
+
+Para otros articulos de nuestro catalogo, envie una nueva solicitud.

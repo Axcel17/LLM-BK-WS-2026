@@ -1,0 +1,234 @@
+{
+  "version": "2026-09-30",
+  "nota": "Fuente unica del caso. La consumen los cinco portales de este repositorio y el repositorio del taller, que guarda una copia y la contrasta contra esta. Los campos 'nombre' y 'especificacion' son texto que se muestra y van con su ortografia; 'id' y 'unidadPlazo' son valores de maquina y van sin tildes. Cada consumidor decide como los presenta.",
+  "productos": [
+    {
+      "id": "monitor-24",
+      "nombre": "Monitor 24\" Full HD",
+      "especificacion": "panel IPS, 75 Hz, HDMI + VGA",
+      "sinonimos": [
+        "monitor",
+        "monitores",
+        "monitor 24",
+        "monitor de 24",
+        "monitor 24 pulgadas",
+        "pantalla",
+        "pantallas",
+        "display",
+        "displays"
+      ]
+    },
+    {
+      "id": "dock-usbc",
+      "nombre": "Estación de acople USB-C",
+      "especificacion": "doble salida de video, entrega 90 W",
+      "sinonimos": [
+        "dock",
+        "docks",
+        "docking",
+        "docking station",
+        "estacion de acople",
+        "estaciones de acople",
+        "replicador de puertos",
+        "base usb c",
+        "hub usb c"
+      ]
+    },
+    {
+      "id": "kit-teclado-mouse",
+      "nombre": "Kit teclado y mouse inalámbricos",
+      "especificacion": "2,4 GHz, distribución latinoamericana",
+      "sinonimos": [
+        "teclado",
+        "teclados",
+        "mouse",
+        "raton",
+        "kit teclado",
+        "teclado y mouse",
+        "combo teclado",
+        "teclado inalambrico",
+        "teclados inalambricos"
+      ]
+    },
+    {
+      "id": "silla-ergonomica",
+      "nombre": "Silla ergonómica",
+      "especificacion": "soporte lumbar regulable, respaldo en malla",
+      "sinonimos": [
+        "silla",
+        "sillas",
+        "silla ergonomica",
+        "sillas ergonomicas",
+        "silla de oficina",
+        "sillas de oficina",
+        "asiento",
+        "asientos"
+      ]
+    }
+  ],
+  "proveedores": [
+    {
+      "id": "tecnoimport",
+      "nombre": "Tecnoimport",
+      "razonSocial": "TECNOIMPORT S.A.",
+      "cotiza": true,
+      "diasEntrega": 6,
+      "unidadPlazo": "habiles",
+      "fleteUsd": 85.0,
+      "fleteIncluido": false,
+      "precios": {
+        "monitor-24": {
+          "unitarioUsd": 168.0,
+          "conGarantiaExtendidaUsd": null
+        },
+        "dock-usbc": {
+          "unitarioUsd": 210.0,
+          "conGarantiaExtendidaUsd": null
+        },
+        "kit-teclado-mouse": {
+          "unitarioUsd": 42.0,
+          "conGarantiaExtendidaUsd": null
+        }
+      },
+      "prefijoReferencia": "TI"
+    },
+    {
+      "id": "mayoristazeta",
+      "nombre": "MayoristaZeta",
+      "razonSocial": "MAYORISTA ZETA CIA. LTDA.",
+      "cotiza": true,
+      "diasEntrega": 8,
+      "unidadPlazo": "habiles",
+      "fleteUsd": 0.0,
+      "fleteIncluido": true,
+      "unidadVenta": {
+        "tipo": "caja",
+        "unidadesPorCaja": 10
+      },
+      "precios": {
+        "monitor-24": {
+          "porCajaUsd": 1590.0
+        }
+      },
+      "nota": "Solo cotiza monitores. No publica precios en la pagina: adjunta cotizacion.pdf, que es un archivo fijo de este repositorio, y por eso su catalogo se limita al producto que ese PDF describe.",
+      "prefijoReferencia": "MZ"
+    },
+    {
+      "id": "globalstock",
+      "nombre": "GlobalStock",
+      "razonSocial": "GLOBALSTOCK TRADING CIA. LTDA.",
+      "cotiza": true,
+      "diasEntrega": 22,
+      "unidadPlazo": "calendario",
+      "fleteUsd": 0.0,
+      "fleteIncluido": true,
+      "precios": {
+        "monitor-24": {
+          "unitarioUsd": 149.0,
+          "conGarantiaExtendidaUsd": null
+        },
+        "dock-usbc": {
+          "unitarioUsd": 195.0,
+          "conGarantiaExtendidaUsd": null
+        },
+        "kit-teclado-mouse": {
+          "unitarioUsd": 38.0,
+          "conGarantiaExtendidaUsd": null
+        }
+      },
+      "prefijoReferencia": "GS"
+    },
+    {
+      "id": "delta",
+      "nombre": "Suministros Delta",
+      "razonSocial": "SUMINISTROS DELTA CIA. LTDA.",
+      "cotiza": true,
+      "diasEntrega": 9,
+      "unidadPlazo": "habiles",
+      "fleteUsd": 60.0,
+      "fleteIncluido": false,
+      "precios": {
+        "monitor-24": {
+          "unitarioUsd": 164.0,
+          "conGarantiaExtendidaUsd": 179.0
+        },
+        "dock-usbc": {
+          "unitarioUsd": 205.0,
+          "conGarantiaExtendidaUsd": null
+        },
+        "silla-ergonomica": {
+          "unitarioUsd": 185.0,
+          "conGarantiaExtendidaUsd": null
+        }
+      },
+      "prefijoReferencia": "SD"
+    },
+    {
+      "id": "importandina",
+      "nombre": "ImportAndina",
+      "razonSocial": "IMPORTANDINA S.A.",
+      "cotiza": false,
+      "precios": {},
+      "prefijoReferencia": "IA"
+    }
+  ],
+  "reglaDeResolucion": "Normalizar el texto pedido: minusculas, sin tildes, y todo lo que no sea letra o digito reducido a un espacio. Un producto coincide si alguno de sus sinonimos normalizado aparece como subcadena del texto normalizado. Si coinciden varios, gana el del sinonimo mas largo. Si no coincide ninguno, el producto no esta identificado.",
+  "casosDeResolucion": [
+    {
+      "texto": "Monitor 24\" Full HD",
+      "esperado": "monitor-24"
+    },
+    {
+      "texto": "100 monitores de 24 pulgadas",
+      "esperado": "monitor-24"
+    },
+    {
+      "texto": "MONITORES",
+      "esperado": "monitor-24"
+    },
+    {
+      "texto": "pantallas para las estaciones nuevas",
+      "esperado": "monitor-24"
+    },
+    {
+      "texto": "estaciones de acople USB-C",
+      "esperado": "dock-usbc"
+    },
+    {
+      "texto": "docking station de doble salida",
+      "esperado": "dock-usbc"
+    },
+    {
+      "texto": "teclados inalambricos",
+      "esperado": "kit-teclado-mouse"
+    },
+    {
+      "texto": "kit teclado y mouse",
+      "esperado": "kit-teclado-mouse"
+    },
+    {
+      "texto": "sillas ergonomicas con soporte lumbar",
+      "esperado": "silla-ergonomica"
+    },
+    {
+      "texto": "sillas de oficina",
+      "esperado": "silla-ergonomica"
+    },
+    {
+      "texto": "licencias de Adobe Photoshop",
+      "esperado": null
+    },
+    {
+      "texto": "camiones Hino de 12 toneladas",
+      "esperado": null
+    },
+    {
+      "texto": "xyzabc",
+      "esperado": null
+    },
+    {
+      "texto": "",
+      "esperado": null
+    }
+  ]
+}

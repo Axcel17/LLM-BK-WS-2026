@@ -12,6 +12,7 @@
     "test:only": "vitest run",
     "typecheck": "tsc --noEmit",
     "verify-state": "tsx scripts/verify-delivered-state.ts",
+    "verify-catalog": "tsx scripts/verify-catalog.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "agent": "tsx --env-file=.env src/cli.ts",

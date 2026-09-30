@@ -97,10 +97,23 @@ const quoteSchemaDe = (c: Constraints) =>
       .describe("Cita textual de la cotización que sustenta los números anteriores"),
   });
 
-/** Un proveedor consultado que no entregó cotización. */
+/**
+ * Un proveedor consultado que no entregó cotización.
+ *
+ * Cinco motivos, y ninguno es un error. Que un proveedor no maneje el producto
+ * —o no lo identifique— es información sobre el mercado, igual que un plazo
+ * imposible: registrarlo como cotización con un cero lo convertiría en una
+ * oferta barata, y el comparativo recomendaría a quien no puede vender.
+ */
 export const noResponseSchema = z.object({
   supplier: z.string(),
-  status: z.enum(["in_progress", "awaiting_clarification", "no_contact"]),
+  status: z.enum([
+    "in_progress",
+    "awaiting_clarification",
+    "no_contact",
+    "product_not_carried",
+    "product_not_identified",
+  ]),
   detail: z.string(),
 });
 

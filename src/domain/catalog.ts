@@ -7,14 +7,14 @@
  */
 
 import { appendFileSync, readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
+import { DATA_DIR } from "./paths.js";
 import { renderQuote } from "./quotes.js";
 import type { Constraints } from "./schemas.js";
 
-export const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data");
-const QUOTES_DIR = join(DATA_DIR, "quotes");
+export { DATA_DIR } from "./paths.js";
+
 const ORDER_LOG = join(DATA_DIR, "orders.log");
 
 /** Restricciones del encargo: qué se pide, con qué límites y bajo qué criterio. */
@@ -75,7 +75,7 @@ export function listSuppliers(): readonly string[] {
  */
 export function readQuote(supplier: string): string {
   const brief = readBrief();
-  return renderQuote(QUOTES_DIR, supplier, brief.product, brief.quantity);
+  return renderQuote(supplier, brief.product, brief.quantity);
 }
 
 /**

@@ -1,0 +1,8 @@
+{{razonSocial}} — Respuesta a solicitud {{referencia}}
+
+Producto solicitado: {{pedido}}
+Cantidad: {{cantidad}} unidades
+Estado: Sin cotizacion — producto no identificado
+
+No identificamos el articulo solicitado en nuestro catalogo. Indiquenos la
+descripcion comercial del producto y volvemos a cotizar.

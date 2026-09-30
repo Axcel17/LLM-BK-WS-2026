@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **145 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **175 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -62,16 +62,17 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 
 ## Scripts
 
-| Comando                | Qué hace                                                              |
-| ---------------------- | --------------------------------------------------------------------- |
-| `npm test`             | Typecheck y suite completa                                            |
-| `npm run typecheck`    | Compila sin emitir                                                    |
-| `npm run verify-state` | Comprueba el estado de entrega contra lo que documentan README y guía |
-| `npm run format:check` | Verifica el formato                                                   |
-| `npm run solutions`    | Copia las versiones completas sobre `src/`                            |
-| `npm run gaps`         | Restituye los `TODO`                                                  |
-| `npm run baseline`     | Registra la huella del catálogo de herramientas                       |
-| `npm run caso`         | Prueba el flujo: el caso validado, o una requisición propia           |
+| Comando                  | Qué hace                                                              |
+| ------------------------ | --------------------------------------------------------------------- |
+| `npm test`               | Typecheck y suite completa                                            |
+| `npm run typecheck`      | Compila sin emitir                                                    |
+| `npm run verify-state`   | Comprueba el estado de entrega contra lo que documentan README y guía |
+| `npm run format:check`   | Verifica el formato                                                   |
+| `npm run solutions`      | Copia las versiones completas sobre `src/`                            |
+| `npm run gaps`           | Restituye los `TODO`                                                  |
+| `npm run baseline`       | Registra la huella del catálogo de herramientas                       |
+| `npm run caso`           | Prueba el flujo: el caso validado, o una requisición propia           |
+| `npm run verify-catalog` | Contrasta `data/catalogo.json` contra el que publican los portales    |
 
 ---
 
@@ -169,11 +170,33 @@ hasta el texto del proveedor. Son el mismo problema en dos lugares, y por eso es
 copias.
 
 **Y la cotización responde a la requisición.** Antes cada proveedor servía un archivo con 40
-unidades escritas dentro: una requisición de 100 monitores recorría toda la cadena y llegaba a un
-comparativo cuyos totales eran los de otra cantidad —cuatro verificaciones aritméticas saltaban y no
-se recomendaba a nadie—. Ahora `data/quotes/` son plantillas, una por proveedor y cada una con su
-propio formato, y `src/domain/quotes.ts` las rellena con los términos comerciales de los portales de
-la Parte 1: precio unitario, flete y plazo fijos por proveedor, cantidad variable.
+unidades de monitor escritas dentro: una requisición de 100 recorría toda la cadena y llegaba a un
+comparativo cuyos totales eran los de otra cantidad, y pedir cualquier otro producto devolvía un
+precio de monitor con la descripción del monitor. Ahora `data/quotes/` son plantillas, una por
+proveedor y cada una con su formato, y `src/domain/quotes.ts` las rellena desde el catálogo.
+
+**Un solo catálogo para las dos mitades del taller.** `data/catalogo.json` es una copia de
+[`catalogo.json`](https://github.com/Axcel17/proveedores-andes/blob/main/catalogo.json) del
+repositorio de los portales, que son la Parte 1. Ahí viven los productos con sus sinónimos y, por
+proveedor, el plazo, el flete y qué maneja a qué precio. `npm run verify-catalog` contrasta la copia
+contra la publicada: si alguien cambia un precio en un lado y no en el otro, lo dice. Es el mismo
+trato que `tool-baseline.json` hace con las herramientas MCP —dos sistemas, un contrato, y una
+comprobación que avisa cuando divergen—, y la copia existe porque los tramos 1 a 4 corren sin red.
+
+| Producto                         | Tecnoimport | MayoristaZeta | GlobalStock | Delta  | ImportAndina |
+| -------------------------------- | ----------- | ------------- | ----------- | ------ | ------------ |
+| Monitor 24" Full HD              | 168,00      | 1.590,00/caja | 149,00      | 164,00 | no cotiza    |
+| Estación de acople USB-C         | 210,00      | —             | 195,00      | 205,00 | no cotiza    |
+| Kit teclado y mouse inalámbricos | 42,00       | —             | 38,00       | —      | no cotiza    |
+| Silla ergonómica                 | —           | —             | —           | 185,00 | no cotiza    |
+
+La cobertura es desigual a propósito, y de ahí salen **tres respuestas donde antes solo había una**:
+cotiza, identifica el producto y no lo maneja, o no lo identifica. Las tres son resultados y viajan
+en `noResponse` con su motivo. Si ninguno lo maneja, el encargo queda `out_of_scope`: el dato está,
+lo que falta es quien lo venda —y eso no es una requisición incompleta—.
+
+La regla que lleva texto libre a producto está escrita en `catalogo.json` junto a los catorce casos
+con los que se comprueba, porque la implementan dos programas y tienen que coincidir.
 
 El producto y la cantidad los toma `get_quote` de la requisición, no de quien la llama. Si el agente
 eligiera qué cantidad cotizar, pediría 40 donde la requisición dice 100 y la verificación aritmética

@@ -9,18 +9,14 @@
  *     npm test -- quotes
  */
 
-import { join } from "node:path";
-
 import { describe, expect, it } from "vitest";
 
-import { DATA_DIR } from "../../src/domain/catalog.js";
 import { renderQuote } from "../../src/domain/quotes.js";
 
-const QUOTES = join(DATA_DIR, "quotes");
 const PRODUCT = 'Monitor 24" Full HD';
 
 function quote(supplier: string, quantity = 40): string {
-  return renderQuote(QUOTES, supplier, PRODUCT, quantity);
+  return renderQuote(supplier, PRODUCT, quantity);
 }
 
 describe("el caso validado", () => {
@@ -78,19 +74,49 @@ describe("MayoristaZeta despacha cajas completas", () => {
   });
 });
 
-describe("el producto se devuelve tal como se pidió", () => {
-  it("aparece en la ficha del proveedor", () => {
-    expect(renderQuote(QUOTES, "GlobalStock", "Silla ergonomica con soporte lumbar", 12)).toContain(
-      "Silla ergonomica con soporte lumbar",
-    );
+describe("el producto sale del catálogo, no del texto", () => {
+  it("el nombre en la cotización es el del catálogo", () => {
+    // Antes el proveedor devolvía lo que se hubiera escrito, y «camiones» salía
+    // cotizado a precio de monitor. Ahora el texto se resuelve contra el
+    // catálogo y lo que se imprime es el artículo identificado.
+    expect(renderQuote("Suministros Delta", "sillas de oficina", 12)).toContain("Silla ergonomica");
+  });
+
+  it("cada proveedor cobra el precio que el catálogo le asigna", () => {
+    // Estación de acople: 210 en Tecnoimport, 195 en GlobalStock.
+    expect(renderQuote("Tecnoimport", "docking station", 10)).toContain("2.100,00");
+    expect(renderQuote("GlobalStock", "docking station", 10)).toContain("1.950,00");
   });
 
   it("un nombre largo no desalinea la tabla", () => {
     // La descripción ocupa 45 columnas: el resto de la fila no se mueve.
-    const text = renderQuote(QUOTES, "Tecnoimport", "Estacion de acople USB-C de doble salida", 10);
-    const row = text.split("\n").find((line) => line.includes("1.680,00"));
+    const text = renderQuote("Tecnoimport", "estaciones de acople USB-C", 10);
+    const row = text.split("\n").find((line) => line.includes("2.100,00"));
 
     expect(row).toHaveLength(75);
+  });
+});
+
+describe("cuando el proveedor no puede cotizar", () => {
+  it("lo dice cuando no maneja el producto", () => {
+    const text = renderQuote("Tecnoimport", "sillas ergonomicas", 10);
+
+    expect(text).toContain("Silla ergonomica");
+    expect(text).toContain("no forma parte de nuestra linea");
+    expect(text).not.toMatch(/\d,\d\d/);
+  });
+
+  it("pide una precisión cuando no lo identifica", () => {
+    const text = renderQuote("GlobalStock", "camiones Hino de 12 toneladas", 5);
+
+    expect(text).toContain("No identificamos");
+    expect(text).toContain("camiones Hino de 12 toneladas");
+  });
+
+  it("ImportAndina no cotiza, sea lo que sea que se le pida", () => {
+    for (const producto of ['Monitor 24" Full HD', "sillas ergonomicas", "camiones"]) {
+      expect(renderQuote("ImportAndina", producto, 40)).toContain("Cotizacion: No emitida");
+    }
   });
 });
 
