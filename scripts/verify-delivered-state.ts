@@ -19,7 +19,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 /** Lo que el material promete. Cambiar aquí obliga a cambiarlo en los documentos. */
-const PROMETIDO = { pasan: 112, fallan: 11, pendientes: 1 } as const;
+const PROMETIDO = { pasan: 123, fallan: 11, pendientes: 1 } as const;
 
 /** Documentos que repiten la cifra y deben coincidir. */
 const DOCUMENTOS = ["README.md", "GUIA.md"] as const;
@@ -28,6 +28,10 @@ type Resumen = {
   numPassedTests: number;
   numFailedTests: number;
   numTodoTests: number;
+  testResults: Array<{
+    name: string;
+    assertionResults: Array<{ status: string }>;
+  }>;
 };
 
 function correrSuite(): Resumen {
@@ -47,6 +51,59 @@ function correrSuite(): Resumen {
   } finally {
     rmSync(folder, { recursive: true, force: true });
   }
+}
+
+function porArchivo(resumen: Resumen): Map<string, { pasan: number; fallan: number }> {
+  const raiz = join(process.cwd(), "tests", "/");
+  return new Map(
+    resumen.testResults.map((archivo) => [
+      archivo.name.replace(raiz, ""),
+      {
+        pasan: archivo.assertionResults.filter((a) => a.status === "passed").length,
+        fallan: archivo.assertionResults.filter((a) => a.status === "failed").length,
+      },
+    ]),
+  );
+}
+
+/**
+ * Emite el desglose por archivo, en las dos ramas, como filas de tabla.
+ *
+ * El material del instructor lleva esa tabla para poder decir en voz alta qué
+ * debe ver cada participante. Medirla a mano la desfasa cada vez que alguien
+ * agrega una prueba, así que se regenera: `npm run verify-state -- --table`.
+ */
+function emitirTabla(): void {
+  const swap = (rama: "gaps" | "solutions") =>
+    execFileSync("npx", ["tsx", "scripts/swap.ts", rama], { stdio: "ignore" });
+
+  try {
+    swap("gaps");
+    const entrega = porArchivo(correrSuite());
+    swap("solutions");
+    const resuelto = porArchivo(correrSuite());
+
+    const orden = [...entrega.keys()].sort((a, b) => {
+      const pendiente = (k: string) => ((entrega.get(k)?.fallan ?? 0) > 0 ? 1 : 0);
+      return pendiente(a) - pendiente(b) || a.localeCompare(b);
+    });
+
+    for (const archivo of orden) {
+      const { pasan, fallan } = entrega.get(archivo) ?? { pasan: 0, fallan: 0 };
+      const conTodo =
+        fallan === 0
+          ? `**${pasan} pasan**`
+          : `${pasan} pasan, ${fallan} falla${fallan > 1 ? "n" : ""}`;
+      console.log(`| \`${archivo}\` | ${conTodo} | ${resuelto.get(archivo)?.pasan ?? 0} |`);
+    }
+  } finally {
+    swap("gaps");
+  }
+}
+
+if (process.argv.includes("--table")) {
+  emitirTabla();
+  process.exit(0);
 }
 
 const problems: string[] = [];

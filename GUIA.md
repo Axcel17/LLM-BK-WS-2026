@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **112 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **123 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -495,6 +495,36 @@ herramienta, con los atributos `gen_ai.*` del estándar. La traducción está en
 
 **El proveedor.** Cambiarlo son dos líneas en `.env`. Solo interviene en
 `src/platform/providers.ts`.
+
+### Texto libre, y la verificación de lo extraído
+
+`npm run agent` corre siempre el mismo encargo. En uso real la entrada es prosa, y puede llegar
+incompleta:
+
+```bash
+npm run caso                                                  # el caso validado, con sus afirmaciones
+npm run caso -- "Necesito 40 teclados para el viernes, presupuesto ajustado"
+```
+
+El segundo no consulta a nadie. `src/domain/intake.ts` lee la prosa, extrae lo que encuentra y
+enumera lo que falta: «para el viernes» no es un plazo en días hábiles y «presupuesto ajustado» no
+es un tope. Devuelve una pregunta y se detiene. Cinco proveedores no consultados y una ronda que no
+se pagó.
+
+**Lo que hace verificable a la extracción es que cita.** Un tope leído y uno supuesto salen iguales:
+`budgetCapUsd: 20000` no dice de dónde vino. La admisión devuelve, junto a cada dato, el fragmento
+literal de la petición del que lo sacó, y `checkExtraction` comprueba que ese fragmento esté ahí.
+Compruébelo pidiendo algo que la petición no dice:
+
+```bash
+npm run caso -- "Necesitamos 100 monitores de 24 pulgadas en cinco dias habiles"
+```
+
+Sin tope declarado, el dato falta y la corrida se detiene; no se inventa. Si en cambio el modelo lo
+inventara, la cita no aparecería en el texto y `checkExtraction` lo reportaría antes de la primera
+consulta. Es comparación de texto, no una segunda opinión: `src/guardrails/traceability.ts`
+normaliza —sin tildes, sin puntuación, uniendo separadores de miles— y el mismo módulo le sirve a
+`checkEvidence` para rastrear los precios del informe hasta el texto del proveedor.
 
 ### El costo
 

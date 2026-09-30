@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **112 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **123 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -149,6 +149,18 @@ anterior: si el agente interpretara la petición y después se verificara contra
 él mismo declaró, bastaría con declarar un tope alto para que nada lo excediera. Escalar ahí cuesta
 además una llamada, no seis.
 
+**Y la extracción se verifica.** Un tope leído y uno supuesto tienen la misma forma en la salida:
+`budgetCapUsd: 20000` no dice de dónde salió. Por eso la admisión cita, para cada dato, el fragmento
+literal de la petición del que lo sacó, y `checkExtraction` comprueba que ese fragmento esté
+realmente ahí. Es determinista —comparación de texto, no una segunda opinión de un modelo— y corre
+antes de consultar a un solo proveedor: si un dato no se sostiene, la ronda no empieza.
+
+La comparación normaliza antes de buscar, en `src/guardrails/traceability.ts`: sin tildes, sin
+puntuación, uniendo separadores de miles, porque el modelo cita lo que leyó y no lo transcribe
+carácter por carácter. Ese mismo módulo lo usa `checkEvidence` para rastrear los precios del informe
+hasta el texto del proveedor. Son el mismo problema en dos lugares, y por eso es un módulo y no dos
+copias.
+
 `BRIEF_JSON` lleva la requisición admitida al servidor MCP, que corre en otro proceso, de modo que
 `get_brief` sirva la misma contra la que se verifica.
 
@@ -223,9 +235,12 @@ modo estricto del compilador cubre la corrección y Prettier el formato.
 **Los importes se comparan en centavos enteros.** JavaScript no tiene tipo decimal: `6360.01 - 6360`
 da `0.010000000000218`, y comparar en dólares produce falsos positivos.
 
-**Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica —siete
-comprobaciones, sin llamadas a modelo—. `guardrails/judge.ts` cubre lo que exige criterio, en una
-llamada aparte, sin herramientas y sin acceso al razonamiento que produjo el resultado.
+**Dos capas de verificación.** `guardrails/checks.ts` cubre lo que tiene respuesta mecánica, sin
+llamadas a modelo: siete comprobaciones sobre el informe comparativo, que `runAllChecks` compone,
+más `checkExtraction` y `checkEscalation`, que verifican otros objetos —la extracción contra la
+petición, la escalación contra la requisición— y por eso corren en otro momento.
+`guardrails/judge.ts` cubre lo que exige criterio, en una llamada aparte, sin herramientas y sin
+acceso al razonamiento que produjo el resultado.
 
 **Y la segunda capa también se mide.** `npm run measure` deja fuera al evaluador a propósito: un
 juez no determinista sobre un agente no determinista da un número que no se puede atribuir.

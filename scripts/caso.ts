@@ -12,7 +12,7 @@
 import { runAgent } from "../src/agent.js";
 import { briefFrom, intake } from "../src/domain/intake.js";
 import { constraintsOf, readBrief } from "../src/domain/catalog.js";
-import { checkEscalation, runAllChecks } from "../src/guardrails/checks.js";
+import { checkEscalation, checkExtraction, runAllChecks } from "../src/guardrails/checks.js";
 import { judgeComparison } from "../src/guardrails/judge.js";
 import { connectCatalog } from "../src/mcp/client.js";
 import {
@@ -100,6 +100,16 @@ async function admit(request: string): Promise<boolean> {
     return false;
   }
 
+  // La extracción se verifica antes de usarse: un valor que no está en la
+  // petición no puede gobernar lo que sigue.
+  const findings = checkExtraction(admitted, request);
+  if (findings.length > 0) {
+    console.log("  ADMISIÓN · la extracción no se sostiene\n");
+    for (const { detail } of findings) console.log(`    ${detail}`);
+    console.log("\n  No se consultó a ningún proveedor.\n");
+    return false;
+  }
+
   process.env["BRIEF_JSON"] = JSON.stringify(briefFrom(admitted, readBrief().suppliers));
   console.log(
     `  ADMISIÓN · ${admitted.product} · ${admitted.quantity} u · ` +
@@ -177,4 +187,23 @@ async function main(): Promise<void> {
   }
 }
 
-await main();
+/**
+ * Un fallo del proveedor no es un fallo del ejercicio.
+ *
+ * La capa gratuita se satura, y treinta clones consultándola a la vez la
+ * saturan a propósito. Sin este borde, la salida son cuarenta líneas de pila de
+ * `node_modules` que no dicen qué hacer.
+ */
+try {
+  await main();
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  const saturated = /high demand|overloaded|rate limit|429|quota/i.test(message);
+
+  console.error(
+    saturated
+      ? "\n  El proveedor está saturado. Reintente en un minuto, o cambie de proveedor en `.env`.\n"
+      : `\n  La corrida falló: ${message.split("\n")[0]?.slice(0, 160)}\n`,
+  );
+  process.exitCode = 1;
+}

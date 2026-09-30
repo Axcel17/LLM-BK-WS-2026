@@ -11,7 +11,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { briefFrom, type IntakeOutcome } from "../../src/domain/intake.js";
+import { briefFrom, type IntakeOutcome, settle } from "../../src/domain/intake.js";
 
 function admitted(overrides: Partial<IntakeOutcome> = {}): IntakeOutcome {
   return {
@@ -21,6 +21,7 @@ function admitted(overrides: Partial<IntakeOutcome> = {}): IntakeOutcome {
     maxLeadTimeBusinessDays: 5,
     budgetCapUsd: 3000,
     warranty: null,
+    citations: [],
     missing: [],
     question: null,
     notes: null,
@@ -57,5 +58,62 @@ describe("briefFrom", () => {
     // Si quien pide pudiera cambiarlo, `checkTieBreak` no tendría contra qué
     // comprobar: sería un umbral interpretado otra vez.
     expect(briefFrom(admitted(), []).selectionCriterion).toContain("menor total puesto en bodega");
+  });
+});
+
+describe("settle", () => {
+  it("con los cuatro datos, la requisición está completa", () => {
+    expect(settle(admitted()).status).toBe("complete");
+  });
+
+  it("un dato ausente la vuelve incompleta, aunque el modelo no lo note", () => {
+    // El modo de falla real: el modelo devolvió los tres datos que leyó y
+    // rotuló el resultado como completo. El estado se calcula, no se pregunta.
+    const result = settle(admitted({ budgetCapUsd: null, missing: [], question: null }));
+
+    expect(result.status).toBe("missing_information");
+    expect(result.missing.map((m) => m.field)).toEqual(["budgetCapUsd"]);
+    expect(result.question).toContain("budgetCapUsd");
+  });
+
+  it("conserva la explicación del modelo cuando la dio", () => {
+    const result = settle(
+      admitted({
+        maxLeadTimeBusinessDays: null,
+        missing: [{ field: "maxLeadTimeBusinessDays", why: "La peticion no da unidad de tiempo." }],
+      }),
+    );
+
+    expect(result.missing[0]?.why).toBe("La peticion no da unidad de tiempo.");
+  });
+
+  it("descarta lo que el modelo enumeró como faltante si el dato sí está", () => {
+    const result = settle(
+      admitted({ missing: [{ field: "warranty", why: "No se menciona la garantia." }] }),
+    );
+
+    expect(result.status).toBe("complete");
+    expect(result.missing).toEqual([]);
+  });
+
+  it("enumera los cuatro cuando la petición no dice nada", () => {
+    const result = settle(
+      admitted({
+        product: null,
+        quantity: null,
+        maxLeadTimeBusinessDays: null,
+        budgetCapUsd: null,
+      }),
+    );
+
+    expect(result.missing).toHaveLength(4);
+  });
+});
+
+describe("briefFrom sobre una requisición incompleta", () => {
+  it("falla en lugar de entregar una requisición con huecos", () => {
+    // Sin esto, `budgetCapUsd` llegaría como null a la comparación y el tope
+    // dejaría de descalificar a nadie, en silencio.
+    expect(() => briefFrom(admitted({ budgetCapUsd: null }), [])).toThrow("budgetCapUsd");
   });
 });

@@ -13,6 +13,7 @@ import {
   checkArithmetic,
   checkCoverage,
   checkEscalation,
+  checkExtraction,
   checkEvidence,
   checkHardLimits,
   checkMissingResponses,
@@ -345,5 +346,63 @@ describe("checkEvidence · formas reales de citar", () => {
 
     expect(findings).toHaveLength(1);
     expect(findings[0]?.detail).toContain("descuento por volumen");
+  });
+});
+
+describe("checkExtraction", () => {
+  const request = "Necesitamos 100 monitores de 24 pulgadas, máximo 5 días hábiles";
+
+  it("detecta un dato que no aparece en la petición", () => {
+    // El modo de falla de la admisión: un presupuesto leído y uno supuesto
+    // tienen la misma forma, y sin la cita son indistinguibles.
+    const findings = checkExtraction(
+      { citations: [{ field: "budgetCapUsd", quotation: "presupuesto de 20000 dólares" }] },
+      request,
+    );
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("budgetCapUsd");
+    expect(findings[0]?.detail).toContain("no aparece");
+  });
+
+  it("acepta una cita que sí está, con otra forma", () => {
+    const findings = checkExtraction(
+      { citations: [{ field: "quantity", quotation: "100 MONITORES de 24 pulgadas" }] },
+      request,
+    );
+
+    expect(findings).toEqual([]);
+  });
+
+  it("sin citas no hay nada que rastrear", () => {
+    expect(checkExtraction({ citations: [] }, request)).toEqual([]);
+  });
+
+  it("reporta una por cada cita que no se sostiene", () => {
+    const findings = checkExtraction(
+      {
+        citations: [
+          { field: "quantity", quotation: "100 monitores de 24 pulgadas" },
+          { field: "budgetCapUsd", quotation: "con un techo de quince mil" },
+          { field: "warranty", quotation: "garantia extendida a 24 meses" },
+        ],
+      },
+      request,
+    );
+
+    expect(findings).toHaveLength(2);
+  });
+});
+
+describe("checkExtraction sobre un dato sin cita", () => {
+  it("reporta un campo extraído que no dice de dónde salió", () => {
+    // Sin la cita no hay nada que rastrear, y el campo pasaría sin verificar.
+    const findings = checkExtraction(
+      { citations: [{ field: "product", quotation: "monitores" }], budgetCapUsd: 20000 },
+      "Necesitamos monitores",
+    );
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("sin citar");
   });
 });

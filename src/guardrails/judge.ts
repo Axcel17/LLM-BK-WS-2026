@@ -17,7 +17,7 @@
  * razonamiento que lo produjo.
  */
 
-import { generateObject, type LanguageModel } from "ai";
+import { generateText, type LanguageModel, Output } from "ai";
 import { z } from "zod";
 
 import { resolveModel } from "../platform/providers.js";
@@ -85,13 +85,13 @@ export async function judgeComparison(
   comparison: Comparison,
   model: LanguageModel = resolveModel("judge"),
 ): Promise<Verdict> {
-  const { object } = await generateObject({
+  const { output } = await generateText({
     model,
-    schema: verdictSchema,
+    output: Output.object({ schema: verdictSchema }),
     system: RUBRIC,
     prompt: JSON.stringify(comparison, null, 2),
   });
-  return object;
+  return output;
 }
 
 export { RUBRIC };

@@ -14,6 +14,7 @@
 
 import { listSuppliers } from "../domain/catalog.js";
 import type { Comparison, Constraints, Outcome } from "../domain/schemas.js";
+import { untraceable } from "./traceability.js";
 
 /**
  * Margen de redondeo, en centavos.
@@ -247,54 +248,6 @@ const SIN_REQUISICION = [checkCoverage, checkNormalization, checkMissingResponse
 const CON_REQUISICION = [checkArithmetic, checkHardLimits, checkTieBreak] as const;
 
 /**
- * Reduce un texto a su contenido, descartando toda la forma.
- *
- * Deliberadamente agresivo. Cada forma de citar que el modelo inventa
- * —entrecomillar fragmentos, escapar saltos de línea al copiar una tabla—
- * produciría un hallazgo sobre evidencia legítima, y una verificación que salta
- * sobre salida correcta enseña a ignorarla.
- */
-function normalize(texto: string): string {
-  return (
-    texto
-      .replace(/\\[nrt]/g, " ")
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .toLowerCase()
-      // Los separadores entre dígitos son formato, no contenido: unen la cifra en
-      // vez de partirla. Sin esto, «1.590,00» daría «1 590 00» y «1590,00» daría
-      // «1590 00», que es la misma cifra escrita de dos maneras.
-      .replace(/(\d)[.,\u202f\u00a0'](?=\d)/g, "$1")
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim()
-  );
-}
-
-/**
- * Longitud mínima para que un fragmento sea evidencia y no coincidencia.
- *
- * Un trozo de seis caracteres aparece en cualquier texto por casualidad, y una
- * verificación que se satisface con eso no verifica nada.
- */
-const MIN_FRAGMENT_LENGTH = 14;
-
-/**
- * Parte la cita en los tramos que hay que encontrar en la fuente.
- *
- * El modelo suele entrecomillar dos o tres trozos de líneas distintas y unirlos.
- * Se separa antes de normalizar, porque los caracteres que marcan el corte son
- * los que la normalización descarta.
- */
-function fragments(quotation: string): string[] {
-  const pieces = quotation
-    .split(/["'`“”‘’]|\s*[/|]\s*|\.{3,}|…|\n|\\n/)
-    .map(normalize)
-    .filter((parte) => parte.length >= MIN_FRAGMENT_LENGTH);
-
-  return pieces.length > 0 ? pieces : [normalize(quotation)];
-}
-
-/**
  * La evidencia citada proviene del texto que devolvió la herramienta.
  *
  * Es la única que mira fuera del comparativo. Las otras seis comprueban
@@ -321,8 +274,7 @@ export function checkEvidence(
       continue;
     }
 
-    const inSource = normalize(source);
-    const missingFragments = fragments(quote.evidence).filter((f) => !inSource.includes(f));
+    const missingFragments = untraceable(quote.evidence, source);
 
     if (missingFragments.length > 0) {
       findings.push({
@@ -330,6 +282,55 @@ export function checkEvidence(
         detail: `La evidencia citada para ${quote.supplier} no aparece en lo que devolvió la herramienta: «${missingFragments[0]?.slice(0, 70)}».`,
       });
     }
+  }
+
+  return findings;
+}
+
+/**
+ * Lo extraído de la petición está de verdad en la petición.
+ *
+ * La admisión convierte prosa en datos, y ahí es donde un valor inventado entra
+ * sin que nada lo note: un presupuesto leído y uno supuesto tienen la misma
+ * forma. Esta comprueba que cada cita venga del texto original.
+ *
+ * No comprueba que la conversión sea correcta. Si la petición dice «para el
+ * viernes» y la admisión lo traduce a cinco días hábiles, la cita se rastrea y
+ * el número no se verifica: eso exige un calendario y un criterio.
+ */
+/**
+ * Los campos cuya extracción exige cita.
+ *
+ * La garantía queda fuera porque tiene valor por omisión: ausente de la
+ * petición, la admisión pone el estándar del proveedor, y exigirle una cita
+ * obligaría a citar lo que nadie escribió.
+ */
+const CITED_FIELDS = ["product", "quantity", "maxLeadTimeBusinessDays", "budgetCapUsd"] as const;
+
+export function checkExtraction(
+  result: {
+    citations: ReadonlyArray<{ field: string; quotation: string }>;
+  } & Partial<Record<(typeof CITED_FIELDS)[number], unknown>>,
+  request: string,
+): Finding[] {
+  const findings: Finding[] = [];
+
+  for (const { field, quotation } of result.citations) {
+    if (untraceable(quotation, request).length === 0) continue;
+    findings.push({
+      check: "extraction",
+      detail: `Se extrajo «${field}» citando «${quotation.slice(0, 60)}», que no aparece en la petición.`,
+    });
+  }
+
+  const cited = new Set(result.citations.map(({ field }) => field));
+  for (const field of CITED_FIELDS) {
+    if (result[field] === null || result[field] === undefined) continue;
+    if (cited.has(field)) continue;
+    findings.push({
+      check: "extraction",
+      detail: `Se extrajo «${field}» sin citar de dónde, de modo que nada lo contrasta con la petición.`,
+    });
   }
 
   return findings;
