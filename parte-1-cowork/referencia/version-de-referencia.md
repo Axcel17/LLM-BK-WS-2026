@@ -9,7 +9,7 @@ recorrido.
 
 ---
 
-## Los tres números de la instrucción del paso 3
+## Los tres números de `../abastecimiento/SKILL.md`
 
 ```text
 plazo máximo          10 días hábiles

@@ -133,10 +133,10 @@ for (const key of ["pasan", "fallan", "pendientes"] as const) {
  */
 const PARTE_1 = [
   {
-    archivo: "GUIA.md",
+    archivo: "parte-1-cowork/abastecimiento/SKILL.md",
     patron: /_{4,}/g,
     esperado: 3,
-    que: "espacios en blanco de la instrucción",
+    que: "espacios en blanco por rellenar",
   },
 ] as const;
 
