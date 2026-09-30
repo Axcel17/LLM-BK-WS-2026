@@ -123,6 +123,39 @@ for (const key of ["pasan", "fallan", "pendientes"] as const) {
   }
 }
 
+/**
+ * La Parte 1 se entrega sin resolver.
+ *
+ * Los dos blancos de la instrucción y las doce casillas de permisos son el
+ * ejercicio, y un ensayo que los complete y se comprometa entregaría el material
+ * resuelto sin que nada avise. Es la misma deriva silenciosa que este taller
+ * enseña a vigilar, aplicada a su propio material.
+ */
+const PARTE_1 = [
+  {
+    archivo: "parte-1-cowork/espacio-de-trabajo/instruccion-abastecimiento.md",
+    patron: /<<<[^>]*>>>/g,
+    esperado: 3,
+    que: "marcadores de completar",
+  },
+  {
+    archivo: "parte-1-cowork/permisos.md",
+    patron: /☐/g,
+    esperado: 12,
+    que: "casillas sin marcar",
+  },
+] as const;
+
+for (const { archivo, patron, esperado, que } of PARTE_1) {
+  const encontrados = (readFileSync(archivo, "utf8").match(patron) ?? []).length;
+  if (encontrados !== esperado) {
+    problems.push(
+      `${archivo} tiene ${encontrados} ${que} y debe tener ${esperado}: la Parte 1 se entrega ` +
+        "sin resolver.",
+    );
+  }
+}
+
 const figure = `${PROMETIDO.pasan} pruebas pasan y ${PROMETIDO.fallan} fallan`;
 for (const document of DOCUMENTOS) {
   if (!readFileSync(document, "utf8").includes(figure)) {
