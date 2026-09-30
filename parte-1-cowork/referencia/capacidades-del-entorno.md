@@ -3,7 +3,8 @@
 Hoja de referencia. El inventario completo de lo que un entorno gestionado admite, más allá de lo
 que alcanza a verse en un bloque de 45 minutos.
 
-Marcadas con **✓** las siete que se usan en el recorrido de la Parte 1.
+Marcadas con **✓** las seis que se usan en la Parte 1. La séptima, los servidores MCP propios, se
+demuestra en el tramo 3 de la Parte 2.
 
 ---
 
@@ -80,15 +81,15 @@ de unos 30 minutos a unos 4.
 
 ---
 
-## 8 · Servidores MCP propios ✓
+## 8 · Servidores MCP propios ✓ _(en la Parte 2)_
 
 Herramientas hechas a medida, registradas en el agente. Una base de datos interna, un sistema
 legado, un cálculo propietario. **El mismo servidor funciona después en código** — es la capa de
 portabilidad.
 
-Se demuestra al cerrar la Parte 1: `src/mcp/server.ts` de este repositorio, registrado en el entorno
-gestionado, responde lo mismo que responderá al código del tramo 3. El servidor no cambia; cambia
-quién lo consume.
+Se demuestra en el tramo 3, donde cada asistente escribe el cliente que lo consume desde código y el
+instructor lo registra además en el entorno gestionado. El servidor no cambia; cambia quién lo
+consume.
 
 ## Lo que existe y no se toca hoy
 
