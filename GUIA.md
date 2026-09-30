@@ -97,12 +97,7 @@ Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado
 **2.1** deja fuera `referencia/`, que contiene el comparativo esperado. Con acceso a ella, el agente
 resuelve el encargo leyendo un archivo y no visita ningún portal.
 
-**2.3** deja `Send email message` en `Needs approval` porque es la compuerta del paso 7.
-
-**Compare 2.2 y 2.3 con lo que escribió en el paso 1.** Si concedió de más, ahí está el hábito.
-
-Las seis de solo lectura pueden quedarse como estén: sin el scope de lectura no funcionan. El grupo
-a recorrer es **«Write/delete tools»**.
+**2.3** deja `Send email message` en `Needs approval` porque es el approval gate del paso 7.
 
 **Resultado de 2.4:** describe el encargo y enumera solo lo concedido. Si no reconoce la carpeta,
 repita 2.1.
@@ -123,14 +118,22 @@ decisión a una persona.
 ## Paso 3 · Guardar la instrucción — 4 min
 
 ```text
-abra       espacio-de-trabajo/instruccion-abastecimiento.md
-complete   2 blancos marcados <<< COMPLETAR >>>, con las restricciones duras
-           de datos/encargo.md
-guarde     como instrucción reutilizable, con el nombre `abastecimiento`
+abra        espacio-de-trabajo/instruccion-abastecimiento.md
+copie       el bloque de instrucción entero · 91 líneas
+reemplace   los 2 marcadores <<< COMPLETAR >>> por sus restricciones
+pegue       en una instrucción reutilizable nueva, de nombre `abastecimiento`
 ```
 
-Los dos blancos son el plazo máximo y el tope: qué valor tienen y qué ocurre con una cotización que
-no los cumple.
+**No se reescribe nada.** El texto se copia tal cual y solo se tocan dos puntos:
+
+```text
+<<< COMPLETAR · RESTRICCIÓN DE PLAZO >>>        el plazo máximo, y qué pasa
+                                                con quien lo excede
+<<< COMPLETAR · RESTRICCIÓN DE PRESUPUESTO >>>  el tope, y sobre qué cifra
+                                                se aplica
+```
+
+Los dos valores están en `datos/encargo.md`.
 
 Un mensaje pegado en la conversación se pierde al cerrarla; una instrucción guardada se reutiliza y
 se versiona. Su regla de contenido externo es lo que intercepta la inyección del paso 7: quien la

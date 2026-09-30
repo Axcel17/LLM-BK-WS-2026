@@ -1,8 +1,10 @@
 # Instrucción · Abastecimiento
 
-Complete los **dos blancos** marcados con `<<< COMPLETAR >>>` usando las restricciones duras de
-`datos/encargo.md`, y guarde el resultado como instrucción reutilizable con el nombre
-`abastecimiento`.
+**Copie el bloque de abajo entero** —las 91 líneas, todo lo que está entre las comillas triples—,
+reemplace los **dos marcadores `<<< COMPLETAR >>>`** por las restricciones duras de
+`datos/encargo.md`, y péguelo como instrucción reutilizable con el nombre `abastecimiento`.
+
+No hay nada más que escribir: el resto del texto se usa tal cual.
 
 Los blancos no son de redacción: son decisiones de negocio que se leen del encargo y se convierten
 en reglas. Es lo único que el sistema no puede deducir por sí mismo.
