@@ -68,39 +68,44 @@ Salidas del agente: `salidas/seguimiento.json` en el paso 4, `salidas/comparativ
 
 ---
 
-## Paso 1 · Permisos, primero en papel — 3 min
+## Paso 1 · La decisión, antes de conectar — 1 min
 
 No conecte nada todavía.
 
 ```text
 abra        parte-1-cowork/permisos.md
-decida      capa 1 · cuál de los 3 scopes de Google concede
-            momento 2 · en qué estado deja cada una de las 30 herramientas
-                         Always allow · Needs approval · Blocked
 responda    el sistema debe enviar un correo al terminar.
             ¿Qué necesita poder hacer en su bandeja, exactamente?
 ```
 
+Una línea, escrita antes de ver la pantalla. La decisión se toma en el paso 2; ésta es la que no
+está contaminada por lo que la interfaz trae marcado.
+
 **Por qué importa**
 
-- Los permisos concedidos definen el alcance del daño si el agente es manipulado.
-- Criterio por fila: (1) ¿lo necesita esta tarea, hoy? (2) ¿qué haría con este permiso si fuera
-  engañado?
-- Solo lectura: informa mal. Lectura y reenvío: puede reenviar correo a un tercero.
-- El paso 7 compara esta hoja con los permisos que el agente usó en realidad.
+- Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado, ¿qué haría con
+  eso?
+- El paso 7 compara esta respuesta con los permisos que el agente usó en realidad.
 
 ---
 
-## Paso 2 · Levantar el entorno — 6 min
+## Paso 2 · Levantar el entorno — 8 min
 
 ```text
-2.1  acceso a archivos     solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
-2.2  conector de correo    Gmail, con la cuenta personal
-2.3  permisos              el scope al autorizar · las 30 herramientas en ajustes → conectores
-                           lo que la tarea no usa queda en Blocked
-2.4  comprobar concedido   «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
-2.5  comprobar bloqueado   «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
+2.1  acceso a archivos   solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
+2.2  el scope            al autorizar Gmail · 3 opciones y un «select all»
+                         conceda el más estrecho que alcance para enviar
+2.3  las herramientas    ajustes → conectores → Gmail · 30, cada una con 3 estados
+                         Always allow · Needs approval · Blocked
+                         lo que la tarea no usa queda en Blocked
+2.4  comprobar concedido «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
+2.5  comprobar bloqueado «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
+
+En **2.2** y **2.3** está la decisión real del bloque. La tarea usa **una** de las treinta:
+`Send email message`, en `Needs approval`, que es la compuerta que se detiene en el paso 7.
+`Create draft email` en `Always allow` si quiere revisar el borrador. Las otras veintiocho, en
+`Blocked`.
 
 Resultado esperado en **2.4**: describe el encargo y enumera solo los permisos concedidos. Si no
 reconoce la carpeta, repita 2.1.
