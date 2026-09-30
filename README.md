@@ -78,30 +78,17 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 
 ## El ejercicio
 
-Seis `TODO` repartidos en tres archivos. Cada uno es una decisión de diseño cuya prueba
-correspondiente falla hasta que se resuelve. El código mecánico viene escrito.
-
-| `TODO` | Archivo                    | Decisión                                        |
-| ------ | -------------------------- | ----------------------------------------------- |
-| 1a     | `src/domain/schemas.ts`    | Cómo se representa un plazo no declarado        |
-| 1b     | `src/domain/schemas.ts`    | Si una lista vacía puede ser un valor omitido   |
-| 2      | `src/mcp/client.ts`        | De dónde sale el esquema de cada herramienta    |
-| 3a     | `src/guardrails/checks.ts` | Detectar un informe internamente contradictorio |
-| 3b     | `src/guardrails/checks.ts` | Cómo se comparan importes monetarios            |
-| 3c     | `src/guardrails/checks.ts` | Verificar la recomendación contra sus cifras    |
-
-De las siete, seis comprueban la coherencia interna del comparativo. La séptima, `checkEvidence`, es
-la única que contrasta contra lo que devolvieron las herramientas: sin ella un precio inventado
-produce un informe aritméticamente impecable que las otras seis aprueban. Viene resuelta.
-
-El editor los lista en su panel de tareas pendientes. Desde la terminal:
+Seis `TODO` en tres archivos. Cada uno es una decisión de diseño cuya prueba falla hasta resolverla;
+el código mecánico viene escrito.
 
 ```bash
-grep -rn "TODO(" src/
+grep -rn "TODO(" src/          # o el panel de tareas del editor
+npm run solutions              # las versiones completas, si un tramo se atasca
+npm run gaps                   # revierte
 ```
 
-**El recorrido paso a paso, con lo que cada `TODO` enseña, está en la Parte 2 de
-[`GUIA.md`](GUIA.md).**
+**El recorrido está en [`GUIA.md`](GUIA.md).** Ahí va cada `TODO` con su tramo, su comando y lo que
+enseña.
 
 ---
 
@@ -141,47 +128,35 @@ scripts/              maquinaria del ejercicio y utilidades
   solutions/          los mismos, resueltos
 ```
 
-`agent.ts` devuelve datos y `report.ts` les da formato. Esa separación permite verificar el
-contenido del informe en `tests/report.test.ts` sin capturar salida de consola.
+`agent.ts` devuelve datos y `report.ts` les da formato, de modo que el contenido del informe se
+verifica en `tests/report.test.ts` sin capturar salida de consola. Las reglas del agente viven en
+`data/instrucciones.md` y no dentro de un módulo: la consola de `panel/` lee el mismo archivo, y con
+las reglas en el código habría dos copias.
+
+---
+
+## Cómo funciona el flujo
 
 **La petición pasa por admisión antes de llegar al agente.** `src/domain/intake.ts` convierte la
-prosa en una requisición estructurada, o enumera qué falta y se detiene. Es una llamada aparte y
-anterior: si el agente interpretara la petición y después se verificara contra las restricciones que
-él mismo declaró, bastaría con declarar un tope alto para que nada lo excediera. Escalar ahí cuesta
-además una llamada, no seis.
+prosa en una requisición, o enumera qué falta y se detiene. Es una llamada aparte y anterior: si el
+agente interpretara la petición y luego se verificara contra las restricciones que él mismo declaró,
+bastaría con declarar un tope alto para que nada lo excediera.
 
-**Una requisición cotiza un producto, y la admisión lo impone.** Medido: ante «40 monitores y 20
-teclados» el modelo sumaba las cantidades en «60 unidades de monitores y teclados», y **ninguna de
-las siete verificaciones lo veía**, porque el comparativo resultante era coherente consigo mismo. El
-límite no es una comodidad: los portales del caso tienen un precio unitario fijo por proveedor, de
-modo que varios renglones en el código no tendrían con qué corresponderse del otro lado. Un producto
-con varias características —«monitor de 24 pulgadas con soporte VESA»— sigue siendo uno.
+**La extracción cita su fuente, y eso la hace comprobable.** `budgetCapUsd: 20000` no dice de dónde
+salió, así que la admisión devuelve el fragmento literal del que sacó cada dato y `checkExtraction`
+comprueba que esté en la petición. Es comparación de texto —`src/guardrails/traceability.ts`—, no
+una segunda opinión, y corre antes de consultar a un solo proveedor.
 
-**Y la extracción se verifica.** Un tope leído y uno supuesto tienen la misma forma en la salida:
-`budgetCapUsd: 20000` no dice de dónde salió. Por eso la admisión cita, para cada dato, el fragmento
-literal de la petición del que lo sacó, y `checkExtraction` comprueba que ese fragmento esté
-realmente ahí. Es determinista —comparación de texto, no una segunda opinión de un modelo— y corre
-antes de consultar a un solo proveedor: si un dato no se sostiene, la ronda no empieza.
+**Una requisición cotiza un producto.** Medido: ante «40 monitores y 20 teclados» el modelo sumaba
+las cantidades en un renglón inventado de 60 unidades, y ninguna verificación lo veía porque el
+comparativo era coherente consigo mismo.
 
-La comparación normaliza antes de buscar, en `src/guardrails/traceability.ts`: sin tildes, sin
-puntuación, uniendo separadores de miles, porque el modelo cita lo que leyó y no lo transcribe
-carácter por carácter. Ese mismo módulo lo usa `checkEvidence` para rastrear los precios del informe
-hasta el texto del proveedor. Son el mismo problema en dos lugares, y por eso es un módulo y no dos
-copias.
-
-**Y la cotización responde a la requisición.** Antes cada proveedor servía un archivo con 40
-unidades de monitor escritas dentro: una requisición de 100 recorría toda la cadena y llegaba a un
-comparativo cuyos totales eran los de otra cantidad, y pedir cualquier otro producto devolvía un
-precio de monitor con la descripción del monitor. Ahora `data/quotes/` son plantillas, una por
-proveedor y cada una con su formato, y `src/domain/quotes.ts` las rellena desde el catálogo.
-
-**Un solo catálogo para las dos mitades del taller.** `data/catalogo.json` es una copia de
-[`catalogo.json`](https://github.com/Axcel17/proveedores-andes/blob/main/catalogo.json) del
-repositorio de los portales, que son la Parte 1. Ahí viven los productos con sus sinónimos y, por
-proveedor, el plazo, el flete y qué maneja a qué precio. `npm run verify-catalog` contrasta la copia
-contra la publicada: si alguien cambia un precio en un lado y no en el otro, lo dice. Es el mismo
-trato que `tool-baseline.json` hace con las herramientas MCP —dos sistemas, un contrato, y una
-comprobación que avisa cuando divergen—, y la copia existe porque los tramos 1 a 4 corren sin red.
+**Las cotizaciones salen de un catálogo compartido con la Parte 1.** `data/catalogo.json` es copia
+del
+[que publican los portales](https://github.com/Axcel17/proveedores-andes/blob/main/catalogo.json), y
+`npm run verify-catalog` comprueba que no hayan divergido. `get_quote` toma el producto y la
+cantidad de la requisición, no de quien llama: si el agente eligiera la cantidad, pediría 40 donde
+la requisición dice 100 y la aritmética daría el resultado por bueno.
 
 | Producto                         | Tecnoimport | MayoristaZeta | GlobalStock | Delta  | ImportAndina |
 | -------------------------------- | ----------- | ------------- | ----------- | ------ | ------------ |
@@ -190,25 +165,9 @@ comprobación que avisa cuando divergen—, y la copia existe porque los tramos 
 | Kit teclado y mouse inalámbricos | 42,00       | —             | 38,00       | —      | no cotiza    |
 | Silla ergonómica                 | —           | —             | —           | 185,00 | no cotiza    |
 
-La cobertura es desigual a propósito, y de ahí salen **tres respuestas donde antes solo había una**:
-cotiza, identifica el producto y no lo maneja, o no lo identifica. Las tres son resultados y viajan
-en `noResponse` con su motivo. Si ninguno lo maneja, el encargo queda `out_of_scope`: el dato está,
-lo que falta es quien lo venda —y eso no es una requisición incompleta—.
-
-La regla que lleva texto libre a producto está escrita en `catalogo.json` junto a los catorce casos
-con los que se comprueba, porque la implementan dos programas y tienen que coincidir.
-
-El producto y la cantidad los toma `get_quote` de la requisición, no de quien la llama. Si el agente
-eligiera qué cantidad cotizar, pediría 40 donde la requisición dice 100 y la verificación aritmética
-daría por bueno el resultado: la misma trampa que la admisión separada evita.
-
-`BRIEF_JSON` lleva la requisición admitida al servidor MCP, que corre en otro proceso, de modo que
-`get_brief` sirva la misma contra la que se verifica.
-
-**Las reglas del agente viven en `data/instrucciones.md`**, no dentro de un módulo. Es la misma idea
-que la Parte 1 —una instrucción guardada se versiona y se comparte— y lo concreto es que la consola
-de `panel/` lee el mismo archivo. Con las reglas dentro del código habría dos copias, y una
-empezaría a mentir.
+**La cobertura es desigual a propósito**, y de ahí salen tres respuestas: cotiza, identifica el
+producto y no lo maneja, o no lo identifica. Las tres viajan en `noResponse` con su motivo. Si
+ninguno lo maneja, el encargo queda `out_of_scope` — el dato está, falta quien lo venda.
 
 ---
 
