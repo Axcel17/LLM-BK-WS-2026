@@ -133,7 +133,7 @@ for (const key of ["pasan", "fallan", "pendientes"] as const) {
  */
 const PARTE_1 = [
   {
-    archivo: "parte-1-cowork/espacio-de-trabajo/instruccion-abastecimiento.md",
+    archivo: "GUIA.md",
     patron: /<<<[^>]*>>>/g,
     esperado: 3,
     que: "marcadores de completar",

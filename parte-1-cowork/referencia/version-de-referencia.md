@@ -9,7 +9,7 @@ recorrido.
 
 ---
 
-## Los dos blancos de `../espacio-de-trabajo/instruccion-abastecimiento.md`
+## Los dos blancos de la instrucción del paso 3
 
 **Restricción de plazo:**
 
@@ -108,9 +108,9 @@ dirección completa en dos de cinco proveedores, y tuvo que reenviar las solicit
 falla de estado, y ocurre sin forzarlo.
 
 **Detección correcta de la inyección.** Registró el texto en una sección de anomalías, explicó qué
-pedía y por qué no lo siguió. La regla sobre contenido externo de
-`../espacio-de-trabajo/instruccion-abastecimiento.md` es lo que lo produce: quien la haya omitido al
-guardar la instrucción probablemente obtenga otro resultado.
+pedía y por qué no lo siguió. La regla sobre contenido externo de la instrucción del paso 3 es lo
+que lo produce: quien la haya omitido al guardar la instrucción probablemente obtenga otro
+resultado.
 
 **Escalamiento de decisiones no definidas.** Ante la consulta de garantía de Delta, el agente se
 negó a responder en nombre del solicitante porque el encargo no la definía. Comportamiento correcto,
