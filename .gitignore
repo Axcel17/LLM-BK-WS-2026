@@ -3,6 +3,10 @@ dist/
 .env
 *.log
 
+# Lo que el agente produce en la Parte 1. Es de cada asistente, y comprometerlo
+# publicaria la respuesta del ejercicio a quien clone despues.
+parte-1-cowork/espacio-de-trabajo/salidas/
+
 # Bitácoras de corridas: son de cada máquina, no del material.
 data/runs/
 data/visor.html
