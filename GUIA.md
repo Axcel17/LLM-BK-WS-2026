@@ -74,7 +74,8 @@ No conecte nada todavía.
 
 ```text
 abra        parte-1-cowork/permisos.md
-complete    4 acciones × 3 niveles: permitir siempre, requiere aprobación, bloquear
+complete    5 acciones × 3 niveles: permitir siempre, requiere aprobación, bloquear
+            buscar y leer · crear borrador · enviar · responder · reenviar
 responda    el sistema debe enviar un correo al terminar.
             ¿Qué necesita poder hacer en su bandeja, exactamente?
 ```

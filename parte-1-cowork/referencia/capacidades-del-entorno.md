@@ -23,8 +23,8 @@ correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de
 electrónica, y sistemas de gestión comercial y de tickets.
 
 **El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por
-acción**. Leer, buscar, crear borradores, enviar y reenviar se configuran por separado, con tres
-niveles: permitir siempre, requiere aprobación, o bloqueado.
+acción**. En Gmail son cinco —buscar y leer, crear borrador, enviar, responder y reenviar— y cada
+una se configura por separado, con tres niveles: permitir siempre, requiere aprobación, o bloqueado.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
 
