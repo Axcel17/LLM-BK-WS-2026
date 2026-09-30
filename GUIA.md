@@ -353,52 +353,47 @@ npm install
 npm test
 ```
 
-El resultado esperado es **175 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
-sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
-
-Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
-escritas. Si falla el typecheck, o si falla alguna de las seis de `loop.test.ts`, el problema es la
-instalación y no el ejercicio.
-
-Los `TODO` aparecen en el panel de tareas pendientes del editor. Desde la terminal:
-
-```bash
-grep -rn "TODO(" src/
+```text
+debe dar         175 pruebas pasan y 11 fallan
+las 11           los seis TODO · se cierran en los tramos 2, 3 y 4
+si falla otra    es la instalación, no el ejercicio
+el tramo 5       necesita clave: copie .env.example a .env antes de llegar
 ```
 
-**Si un tramo se atasca:** `npm run solutions` pone las versiones completas en `src/`, y
-`npm run gaps` devuelve los `TODO`. Ambos sin conexión.
+Los `TODO` aparecen en el panel de tareas del editor. Desde la terminal, `grep -rn "TODO(" src/`.
 
-**Lo que llevara escrito no se pierde.** Antes de sobrescribir, el comando lo guarda en
-`scripts/.tuyo/` y dice cómo recuperarlo. Consultar una solución es una opción prevista, no un
-castigo.
+Si un tramo se atasca, `npm run solutions` pone las versiones completas en `src/` y `npm run gaps`
+devuelve los `TODO`. Antes de sobrescribir, guarda lo que llevara escrito en `scripts/.tuyo/` y dice
+cómo recuperarlo.
 
-El tramo 5 necesita una clave de modelo. Copie `.env.example` a `.env` antes de llegar.
+---
 
 ## Tramo 1 · El bucle desde adentro
-
-No hay nada que completar.
 
 ```bash
 npm test -- loop
 ```
 
-`src/loop.ts` implementa el ciclo de un agente sin librería de por medio. La función `run` son
-cuarenta líneas. Tres puntos:
+```text
+debe dar    6 pasan · nada que completar
+abra        src/loop.ts
+lea         la función `run` · son cuarenta líneas
+```
 
-**El modelo no ejecuta nada.** Emite una petición, y la línea `implementation(reply.args)` la
-atiende. La tabla `tools` delimita lo que el agente puede hacer, independientemente de lo que el
-modelo pida.
+**Qué es.** El ciclo de un agente sin librería de por medio: el mismo que el `Agent` del SDK hace
+por dentro.
 
-**La conversación completa se reenvía en cada llamada.** Lo que no esté en `messages` no existe para
-el modelo. Esa lista es todo el estado que el agente tiene dentro de una corrida; entre corridas no
-conserva nada.
+**Tres cosas que se ven ahí y no en una diapositiva:**
 
-**`maxSteps` acota el gasto.** Sin ese tope, un modelo que nunca devuelve texto gira hasta agotar la
-cuota.
+- **El modelo no ejecuta nada.** Emite una petición y la línea `implementation(reply.args)` la
+  atiende. La tabla `tools` delimita lo que el agente puede hacer, decida lo que decida el modelo.
+- **La conversación se reenvía entera en cada llamada.** Lo que no esté en `messages` no existe para
+  el modelo: es todo el estado de una corrida, y entre corridas no conserva nada.
+- **`maxSteps` acota el gasto.** Sin ese tope, un modelo que nunca devuelve texto gira hasta agotar
+  la cuota.
 
-El patrón es ReAct: el modelo alterna razonar y actuar, y decide el paso siguiente con lo que acaba
-de observar. No hay un plan completo por adelantado.
+El patrón es ReAct: alterna razonar y actuar, y decide el paso siguiente con lo que acaba de
+observar. No hay plan por adelantado.
 
 ---
 
@@ -408,28 +403,31 @@ de observar. No hay un plan completo por adelantado.
 npm test -- schemas
 ```
 
-Dos `TODO` en `src/domain/schemas.ts`.
+```text
+debe dar    14 pasan · 3 fallan
+abra        src/domain/schemas.ts
+busque      TODO(1a)  el plazo no declarado
+            TODO(1b)  las dos listas vacías
+al terminar npm test -- schemas  →  17 pasan
+```
 
-**`TODO(1a)` · el plazo.** El campo tiene valor por defecto, así que el modelo puede omitirlo. Se
-observó con `gemini-3.1-flash-lite`: no emitía el campo, y la verificación de plazo del tramo 4 se
-quedaba sin dato que comprobar, pasando en verde sobre una salida incompleta.
+**Qué es.** El esquema de Zod que define qué forma tiene una salida válida. Valida en ejecución y
+deriva los tipos de TypeScript a la vez, así que un contrato mal usado falla al compilar.
 
-Un proveedor puede no declarar plazo, así que hace falta poder representarlo. Pero omitir un campo
-no es lo mismo que declararlo desconocido. Confundir `.optional()` con `.nullable()` es el error
-previsible, y la prueba lo distingue.
+**TODO(1a) · el plazo.** Un proveedor puede no declararlo, así que hace falta poder representarlo.
+Pero omitir un campo no es lo mismo que declararlo desconocido.
 
-**`TODO(1b)` · las dos listas.** Tienen valor por defecto, de modo que el modelo puede omitirlas y
-el esquema las rellena con vacío. Una lista vacía debería ser una afirmación explícita.
+> Observado con `gemini-3.1-flash-lite`: no emitía el campo, y la verificación de plazo del tramo 4
+> se quedaba sin dato que comprobar — pasaba en verde sobre una salida incompleta.
 
-Hay un segundo motivo, que aparece al cambiar de proveedor: la salida estructurada estricta de
-OpenAI rechaza el esquema completo si una propiedad no es obligatoria.
+**TODO(1b) · las dos listas.** Con valor por defecto, el modelo puede omitirlas y el esquema las
+rellena con vacío. Una lista vacía debería ser una afirmación explícita.
 
-Zod cumple dos funciones a la vez —valida en ejecución y deriva los tipos de TypeScript—, de modo
-que un contrato mal usado falla al compilar.
+> Hay un segundo motivo, que aparece al cambiar de proveedor: la salida estructurada estricta de
+> OpenAI rechaza el esquema completo si una propiedad no es obligatoria.
 
-El piso de plausibilidad de `totalDeliveredUsd` viene escrito. Existe porque un esquema estricto
-obliga al modelo a poner algo en un campo obligatorio: sin ese piso, el proveedor sin cotización
-aparecía en `quotes` con precio 1.
+El piso de plausibilidad de `totalDeliveredUsd` viene escrito. Sin él, el proveedor que no cotizó
+aparecía en `quotes` con precio 1: un esquema estricto obliga a poner algo en un campo obligatorio.
 
 ---
 
@@ -439,37 +437,42 @@ aparecía en `quotes` con precio 1.
 npm test -- client
 ```
 
-Un `TODO` en `src/mcp/client.ts`. El acceso tipado viene escrito debajo.
+```text
+debe dar    2 pasan · 2 fallan · tardan unos segundos
+abra        src/mcp/client.ts
+busque      TODO(2)  de dónde sale el esquema de cada herramienta
+al terminar npm test -- client  →  4 pasan
+```
 
-`src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte que el agente consume
-sin saber en qué lenguaje está escrito ni dónde corre. Las cuatro pruebas de este tramo lo levantan
-como proceso hijo real en lugar de simularlo, y por eso tardan unos segundos.
+**Qué es.** `src/mcp/server.ts` expone el catálogo por el protocolo MCP: un proceso aparte que el
+agente consume sin saber en qué lenguaje está escrito ni dónde corre. Las pruebas lo levantan como
+proceso hijo real en lugar de simularlo — de ahí los segundos.
 
-**`TODO(2)` · de dónde sale el esquema de entrada.** Reescribirlo a mano mirando `get_quote`, que
-recibe un argumento, parece suficiente. El catálogo expone además `place_order`, que recibe dos, y
-una traducción a mano tiende a quedarse con el primero: el modelo pierde la capacidad de enviar el
-monto sin que nada falle de forma visible. La prueba
-`cada herramienta conserva los argumentos que el servidor declara` lo discrimina.
+**TODO(2).** Reescribir el esquema a mano mirando `get_quote`, que recibe un argumento, parece
+suficiente. El catálogo expone además `place_order`, que recibe dos.
+
+> Una traducción a mano tiende a quedarse con el primero: el modelo pierde la capacidad de enviar el
+> monto **sin que nada falle de forma visible**. La prueba
+> `cada herramienta conserva los argumentos que el servidor declara` lo discrimina.
 
 `description` es lo único que el modelo lee para decidir si usa una herramienta. Es documentación
 que cambia el comportamiento en ejecución.
 
-### Deriva del catálogo
+**Y quien controla el servidor cambia el agente sin tocar este proyecto.** Para verlo:
 
-Quien controla el servidor puede cambiar el comportamiento del agente sin tocar este proyecto, y el
-servidor no siempre es propio.
-
-`src/mcp/integrity.ts` toma una huella de cada herramienta y la compara contra
-`data/tool-baseline.json` en cada corrida. Para observarlo, edite la descripción de `get_quote` en
-`src/mcp/server.ts` y ejecute `npm run agent`:
-
+```text
+edite    la descripción de get_quote en src/mcp/server.ts
+corra    npm run agent
 ```
+
+```text
 INTEGRIDAD  el catálogo cambió desde la última huella:
   definición distinta: get_quote
 ```
 
-No detiene la ejecución, porque un cambio puede ser legítimo. Revierta la edición y
-`npm run baseline` vuelve a fijar la referencia.
+`src/mcp/integrity.ts` compara una huella de cada herramienta contra `data/tool-baseline.json`. No
+detiene la ejecución, porque un cambio puede ser legítimo. Revierta la edición y `npm run baseline`
+vuelve a fijar la referencia.
 
 ---
 
@@ -479,10 +482,19 @@ No detiene la ejecución, porque un cambio puede ser legítimo. Revierta la edic
 npm test -- checks
 ```
 
-Tres `TODO` en `src/guardrails/checks.ts`. De las siete verificaciones, cuatro vienen completas y de
-otras dos viene escrita la mitad mecánica.
+```text
+debe dar    31 pasan · 3 fallan
+abra        src/guardrails/checks.ts
+busque      TODO(3a)  el informe internamente contradictorio
+            TODO(3b)  el total contra sus componentes
+            TODO(3c)  el recomendado contra sus propias cifras
+al terminar npm test -- checks  →  34 pasan
+```
 
-| Verificación            | Qué se completa                                        |
+**Qué es.** La capa 1: siete verificaciones sobre el comparativo, sin llamar a ningún modelo. Cuatro
+vienen completas.
+
+| Verificación            | Estado                                                 |
 | ----------------------- | ------------------------------------------------------ |
 | `checkCoverage`         | `TODO(3a)` · solo el caso contradictorio               |
 | `checkArithmetic`       | `TODO(3b)` · la verificación completa                  |
@@ -490,47 +502,40 @@ otras dos viene escrita la mitad mecánica.
 | `checkNormalization`    | viene completa                                         |
 | `checkMissingResponses` | viene completa                                         |
 | `checkTieBreak`         | viene completa                                         |
+| `checkEvidence`         | viene completa                                         |
 
-**`TODO(3a)`.** Lo escrito cubre al proveedor que falta y al que sobra, y aun así deja pasar un
+**TODO(3a).** Lo escrito cubre al proveedor que falta y al que sobra, y aun así deja pasar un
 informe contradictorio: el mismo proveedor declarado como cotización y como ausencia. Salió de una
 corrida real, y como figuraba en alguna de las dos listas, la cobertura lo daba por cubierto.
 
-**`TODO(3b)`.** El total declarado debe cuadrar con precio unitario × cantidad + flete, con margen
-de redondeo. La prueba de precisión decide si el margen está bien planteado.
+**TODO(3b).** El total declarado debe cuadrar con unitario × cantidad + flete, con margen de
+redondeo. La prueba de precisión decide si el margen está bien planteado.
 
-**`TODO(3c)`.** Lo escrito confía en lo que cada cotización declara sobre sí misma, que es
-exactamente lo que un texto inyectado manipula: basta con declararse conforme. Falta comprobar al
-proveedor recomendado contra sus propias cifras.
+**TODO(3c).** Lo escrito confía en lo que cada cotización declara sobre sí misma — que es
+exactamente lo que un texto inyectado manipula: basta con declararse conforme.
 
-La regla 4 del prompt de `src/agent.ts` pide al modelo que descarte a quien excede el plazo.
-`checkHardLimits` comprueba ese mismo número pase lo que pase. Es la diferencia entre un umbral
-interpretado y uno impuesto, sobre el mismo dato.
+> **La misma restricción, dos veces.** La regla 4 del prompt pide descartar a quien excede el plazo;
+> `checkHardLimits` comprueba ese número pase lo que pase. Es la diferencia entre un umbral
+> interpretado y uno impuesto, sobre el mismo dato.
 
-**`checkTieBreak` viene completa.** Tres proveedores cumplen plazo y presupuesto —MayoristaZeta por
-6.360, Suministros Delta por 6.620 y Tecnoimport por 6.805— y el encargo declara cuál elegir entre
-ellos: el menor total puesto en bodega. Las cinco verificaciones anteriores comprobaban que la
-recomendación fuera admisible, no que fuera la mejor, de modo que recomendar a cualquiera de los
-tres pasaba en verde.
+**`checkTieBreak` viene completa, y es el hallazgo más probable del tramo 5.** Tres proveedores
+cumplen —MayoristaZeta 6.360, Delta 6.620, Tecnoimport 6.805— y el encargo declara cuál elegir: el
+menor total. Las verificaciones anteriores comprobaban que la recomendación fuera admisible, no que
+fuera la mejor.
 
-Es el hallazgo más probable del tramo 5. Con `gpt-5.4-mini` aparece en cerca de la mitad de las
-corridas, siempre igual:
-
-```
+```text
 [tie-break] Se recomienda a Suministros Delta por 6620,
             existiendo MayoristaZeta por 6360, que también cumple.
 ```
 
-Efecto medido sobre ese mismo modelo: 5 de 6 corridas correctas con cinco verificaciones, 3 de 6 con
-seis. El modelo no empeoró; cambió lo que se comprueba. La fiabilidad que se reporta es función de
-lo que se mide, y un sistema con menos comprobaciones no es más fiable: lo parece.
+Efecto medido sobre `gpt-5.4-mini`: 5 de 6 corridas correctas con cinco verificaciones, 3 de 6 con
+seis. El modelo no empeoró; cambió lo que se comprueba. **Un sistema con menos comprobaciones no es
+más fiable: lo parece.**
 
-### La segunda capa
-
-`src/guardrails/judge.ts` viene completa. Cubre lo que no tiene respuesta mecánica: si la evidencia
-permite rastrear los números hasta el texto del proveedor, si se explican los descartes.
-
-Es una llamada aparte, sin herramientas, que recibe el resultado sin el razonamiento que lo produjo.
-Un evaluador que ve el razonamiento tiende a validarlo.
+**La capa 2.** `src/guardrails/judge.ts` viene completa y cubre lo que no tiene respuesta mecánica:
+si la evidencia permite rastrear los números hasta el texto del proveedor, si se explican los
+descartes. Es una llamada aparte, sin herramientas, que recibe el resultado sin el razonamiento que
+lo produjo — un evaluador que ve el razonamiento tiende a validarlo.
 
 ---
 
@@ -540,158 +545,99 @@ Un evaluador que ve el razonamiento tiende a validarlo.
 npm run agent
 ```
 
-**Ejecute dos o tres veces.** Los pasos no serán idénticos. Con `gemini-3.1-flash-lite` cada corrida
-tarda entre 6 y 101 segundos —la varianza es real, no una impresión—; con `gpt-5.4-mini`, entre 7
-y 8.
+```text
+antes       copie .env.example a .env y ponga la clave
+ejecute     dos o tres veces · los pasos no serán idénticos
+latencia    gpt-5.4-mini 7–8 s · gemini-3.1-flash-lite 6–101 s
+```
 
-**El tope de pasos.** `MAX_STEPS=2 npm run agent` interrumpe la ejecución y entrega lo ya
-averiguado: qué se consultó, con qué argumentos y cuánto devolvió cada consulta. Sin ese registro,
-quien recibe el caso repite la investigación.
+**Qué hace.** Consulta a los cinco proveedores, normaliza, evalúa contra el encargo y entrega el
+comparativo con las dos capas de verificación encima.
 
-**Las trazas.** `TRACING=1 npm run agent` emite un span por llamada al modelo y por invocación de
-herramienta, con los atributos `gen_ai.*` del estándar. La traducción está en
-`src/platform/tracing.ts` y del otro lado puede ir cualquier recolector.
-
-**El proveedor.** Cambiarlo son dos líneas en `.env`. Solo interviene en
-`src/platform/providers.ts`.
-
-### Texto libre, y la verificación de lo extraído
-
-`npm run agent` corre siempre el mismo encargo. En uso real la entrada es prosa, y puede llegar
-incompleta:
+### Tres variantes que vale la pena correr
 
 ```bash
-npm run caso                                                  # el caso validado, con sus afirmaciones
-npm run caso -- "Necesito 40 teclados para el viernes, presupuesto ajustado"
+MAX_STEPS=2 npm run agent
 ```
 
-El segundo no consulta a nadie. `src/domain/intake.ts` lee la prosa, extrae lo que encuentra y
-enumera lo que falta: «para el viernes» no es un plazo en días hábiles y «presupuesto ajustado» no
-es un tope. Devuelve una pregunta y se detiene. Cinco proveedores no consultados y una ronda que no
-se pagó.
-
-**Una ronda cotiza un producto.** Pruebe a pedir dos:
-
-```bash
-npm run caso -- "40 monitores y 20 teclados, 10 dias habiles, tope 9000 dolares"
-```
-
-Se detiene y pregunta con cuál seguir. Antes de esa comprobación el modelo sumaba las cantidades
-—«60 unidades de monitores y teclados»— y **ninguna de las siete verificaciones lo detectaba**: el
-comparativo era coherente consigo mismo, solo que no significaba nada. Un producto con varias
-características sigue siendo uno.
-
-**Lo que hace verificable a la extracción es que cita.** Un tope leído y uno supuesto salen iguales:
-`budgetCapUsd: 20000` no dice de dónde vino. La admisión devuelve, junto a cada dato, el fragmento
-literal de la petición del que lo sacó, y `checkExtraction` comprueba que ese fragmento esté ahí.
-Compruébelo pidiendo algo que la petición no dice:
-
-```bash
-npm run caso -- "Necesitamos 100 monitores de 24 pulgadas en cinco dias habiles"
-```
-
-Sin tope declarado, el dato falta y la corrida se detiene; no se inventa. Si en cambio el modelo lo
-inventara, la cita no aparecería en el texto y `checkExtraction` lo reportaría antes de la primera
-consulta. Es comparación de texto, no una segunda opinión: `src/guardrails/traceability.ts`
-normaliza —sin tildes, sin puntuación, uniendo separadores de miles— y el mismo módulo le sirve a
-`checkEvidence` para rastrear los precios del informe hasta el texto del proveedor.
-
-**Y con la requisición completa, la cotización responde a lo que se pidió:**
-
-```bash
-npm run caso -- "Necesitamos 100 monitores de 24 pulgadas, plazo maximo 10 dias habiles, tope 20000 dolares"
-```
-
-Los totales ya no son los de 40 unidades. Cada proveedor cotiza sobre 100 y las verificaciones
-comprueban contra 100, porque `get_quote` deriva producto y cantidad de la misma requisición contra
-la que se verifica —y no de lo que el agente le pase, que sería dejarlo elegir el examen—.
-
-**Y no todos manejan todo.** Los cinco proveedores no venden lo mismo, igual que en la Parte 1:
-
-```bash
-npm run caso -- "Necesitamos 30 sillas ergonomicas, plazo maximo 15 dias habiles, tope 8000 dolares"
-```
-
-Solo Suministros Delta las tiene. Los otros tres responden que no forman parte de su línea, y eso
-llega al comparativo como ausencia con su motivo —`product_not_carried`—, no como una cotización de
-cero. Con un producto que nadie identifica el encargo queda `out_of_scope`: el dato está, lo que
-falta es quien lo venda, y eso no es una requisición incompleta.
-
-El catálogo es el mismo que usan los portales de la Parte 1, en `data/catalogo.json`.
-`npm run verify-catalog` comprueba que la copia local siga coincidiendo con la publicada.
-
-Un detalle que conviene mirar: MayoristaZeta despacha cajas de diez. Pida 95 y facturará 100. Eso no
-es un defecto de la simulación, es lo que hace un mayorista, y es la clase de discrepancia que un
-comparativo tiene que poder declarar.
-
-### El costo
-
-La salida incluye el desglose por paso:
-
-```
-  paso 1:    812 entrada     15 salida
-  paso 2:    950 entrada    101 salida
-  paso 3:   2089 entrada    931 salida
-  total:    3851 entrada   1047 salida  · 0 de caché (0 %)
-```
-
-La entrada crece en cada vuelta porque el bucle reenvía la conversación completa más las
-definiciones de herramientas. En un flujo largo ese crecimiento domina el costo.
-
-**El caché depende del proveedor, y conviene mirarlo en su propia corrida.** Medido sobre este mismo
-agente:
-
-| Proveedor               | Entrada | De caché         |
-| ----------------------- | ------- | ---------------- |
-| `gpt-5.4-mini`          | 3.929   | 2.048 · **52 %** |
-| `gemini-3.1-flash-lite` | 10.909  | 0 · **0 %**      |
-
-Los proveedores cachean el prefijo repetido a partir de un mínimo propio, y no todos lo aplican
-igual ni lo informan igual. El mismo código, la misma tarea, y la mitad del costo de entrada cambia
-de lugar según a quién se le pida. Es una variable de costo que no está en el código.
-
-Lo que sí se controla es cuánto devuelve cada herramienta. `get_quote` entrega el texto crudo de la
-cotización, que es la mayor parte del contexto. Resumirlo reduciría el costo y perdería la fidelidad
-que hace visible el texto inyectado.
-
-### La compuerta de aprobación
-
-El catálogo expone `place_order`, que emite la orden de compra en firme. La capacidad existe porque
-en el sistema real existe.
-
-La regla 8 del prompt pide que el agente no adjudique, de modo que en una corrida normal no lo
-intenta. Retirar la regla:
+Interrumpe antes de terminar y entrega lo ya averiguado: qué se consultó, con qué argumentos y
+cuánto devolvió cada consulta. **Sin ese registro, quien recibe el caso repite la investigación.**
 
 ```bash
 DROP_PROMPT_RULE=1 npm run agent
 ```
 
-```
+Retira la regla de no adjudicar. El agente intenta emitir la orden y el arnés lo detiene antes de
+ejecutar:
+
+```text
 COMPUERTA DE APROBACIÓN
   DENEGADO  place_order({"supplier":"Suministros Delta","totalUsd":6620})
   Este agente recomienda, no adjudica.
 ```
 
-`src/guardrails/approval.ts` decide según un criterio único: la reversibilidad. Consultar una
-cotización se deshace; emitir una orden, no. El arnés consulta la compuerta antes de ejecutar
-cualquier herramienta, así que la denegación no depende de que el modelo colabore.
+`src/guardrails/approval.ts` decide por un solo criterio: la reversibilidad. Consultar una
+cotización se deshace; emitir una orden, no. **La denegación no depende de que el modelo colabore.**
 
-En esta variante el resto del comparativo puede degradarse, porque se está pidiendo otra cosa. Lo
-que demuestra es la denegación.
+```bash
+TRACING=1 npm run agent
+```
+
+Un span por llamada al modelo y por invocación de herramienta, con los atributos `gen_ai.*` del
+estándar. La traducción está en `src/platform/tracing.ts`; del otro lado puede ir cualquier
+recolector.
+
+### Texto libre
+
+`npm run agent` corre siempre el mismo encargo. En uso real la entrada es prosa, y puede llegar
+incompleta o fuera de alcance.
+
+```bash
+npm run caso
+npm run caso -- "40 teclados para el viernes, presupuesto ajustado"
+npm run caso -- "40 monitores y 20 teclados, 10 dias habiles, tope 9000 dolares"
+npm run caso -- "100 monitores de 24 pulgadas, plazo maximo 10 dias habiles, tope 20000 dolares"
+npm run caso -- "30 sillas ergonomicas, plazo maximo 15 dias habiles, tope 8000 dolares"
+```
+
+```text
+sin argumento          el caso validado · afirma la respuesta conocida
+falta plazo y tope     se detiene y pregunta · cero proveedores consultados
+dos productos          se detiene: una ronda cotiza uno
+100 monitores          cotiza sobre 100 · las verificaciones comprueban contra 100
+30 sillas              solo Delta las maneja · los otros responden sin cotización
+```
+
+**Escalar temprano cuesta una llamada; escalar tarde, seis.** «Para el viernes» no es un plazo en
+días hábiles y «presupuesto ajustado» no es un tope: la admisión lo enumera, pregunta y se detiene
+antes de consultar a nadie. Es `src/domain/intake.ts`, una llamada aparte y anterior al agente.
+
+**Lo que hace verificable a la extracción es que cita.** Un tope leído y uno supuesto salen iguales
+—`budgetCapUsd: 20000` no dice de dónde vino—, así que la admisión devuelve el fragmento literal del
+que sacó cada dato y `checkExtraction` comprueba que esté ahí. Es comparación de texto, no una
+segunda opinión.
+
+**Y el agente no elige qué cantidad cotizar.** `get_quote` la toma de la misma requisición contra la
+que se verifica. Si pudiera pasarla, pediría 40 donde la requisición dice 100 y la aritmética daría
+el resultado por bueno: sería calificar su propio examen.
+
+**Una ausencia es un resultado.** Quien no maneja el producto lo dice, y llega al comparativo con su
+motivo, no como cotización de cero. Si nadie lo maneja, el encargo queda `out_of_scope`: el dato
+está, falta quien lo venda. El catálogo es el mismo de la Parte 1, y `npm run verify-catalog`
+comprueba que no hayan divergido.
+
+> MayoristaZeta despacha cajas de diez. Pida 95 y facturará 100. No es un defecto de la simulación,
+> es lo que hace un mayorista, y es la clase de discrepancia que un comparativo tiene que poder
+> declarar.
 
 ### Qué gobierna realmente al agente
-
-El encargo admite un texto propio:
 
 ```bash
 npm run agent -- "Averigua únicamente qué proveedores incluyen el flete. No compares totales."
 ```
 
-El plan de herramientas cambia. El resultado, no. Medido dos veces sobre `gemini-3.1-flash-lite`,
-entregó el comparativo completo con la misma recomendación, y en una de las corridas gastó 22.979
-tokens de entrada contra los 7.530 del encargo normal.
-
-Un agente recibe tres entradas, y la del usuario es la más débil:
+El plan de herramientas cambia. El resultado, no: entrega el comparativo completo con la misma
+recomendación.
 
 | Entrada            | Quién la escribe | Alcance                             |
 | ------------------ | ---------------- | ----------------------------------- |
@@ -703,57 +649,81 @@ Las instrucciones ordenan conseguir todas las cotizaciones y recomendar la de me
 `comparisonSchema` exige los cinco proveedores con sus totales. Entre ambas no queda espacio para
 otra cosa.
 
-Un agente con contrato estricto opera como función especializada con interfaz en lenguaje natural,
-no como asistente general. Hacerlo gobernable por el encargo requiere relajar instrucciones y
+**Un agente con contrato estricto opera como función especializada con interfaz en lenguaje natural,
+no como asistente general.** Hacerlo gobernable por el encargo exige relajar instrucciones y
 esquema, lo que elimina la base sobre la que se verifica el resultado.
 
-### Su propia prueba de regresión
+---
+
+# Después de la sesión
+
+Lo que no cabe en los 90 minutos, y es deliberado dejarlo anotado.
+
+## Su propia prueba de regresión
 
 `tests/regression.test.ts` contiene fallos observados en corridas reales, convertidos en pruebas.
 Hay un `it.todo` esperando el suyo.
 
-Ejecute el agente hasta observar un resultado que no debería haberse aceptado y declárelo ahí. La
-estabilización de un sistema no determinista procede por acumulación de casos observados, no por
+Ejecute el agente hasta observar un resultado que no debería haberse aceptado y declárelo ahí. **La
+estabilización de un sistema no determinista procede por acumulación de casos observados**, no por
 ajuste de instrucciones hasta obtener una corrida correcta.
 
-Los hallazgos que las verificaciones produzcan sobre la salida real son parte del ejercicio.
-
----
-
-### Medir la fiabilidad
+## Medir la fiabilidad
 
 ```bash
 npm run measure -- 6
 ```
 
-Ejecuta el flujo seis veces y reporta cuántas producen salida válida y cuántas son correctas
-—recomiendan MayoristaZeta y pasan las siete verificaciones—, con la latencia por corrida.
-
-**Esto no cabe en la sesión, y es deliberado dejarlo anotado.** Seis corridas con
-`gemini-3.1-flash-lite` son entre 7 y 13 minutos; con `gpt-5.4-mini`, algo menos de uno. La tabla de
-abajo es la medición ya hecha: sirve para discutir el resultado sin esperar. Correrlo por cuenta
-propia después de la sesión es, justamente, el ejercicio.
-
-Medición vigente, con las siete verificaciones:
+Corre el flujo seis veces y reporta cuántas producen salida válida y cuántas son correctas
+—recomiendan MayoristaZeta y pasan las siete verificaciones—, con la latencia de cada una. Con
+`gemini-3.1-flash-lite` son entre 7 y 13 minutos; con `gpt-5.4-mini`, menos de uno.
 
 | Proveedor               | Válidas | Correctas | Mediana | Rango     |
 | ----------------------- | ------- | --------- | ------- | --------- |
 | `gemini-3.1-flash-lite` | 7/7     | 7/7       | 12,6 s  | 6–101 s   |
 | `gpt-5.4-mini`          | 6/6     | 3/6       | 7,6 s   | 7,0–8,1 s |
 
-Fallan de formas opuestas, y conviene mirar la columna del rango antes que la de la mediana. Gemini
-acierta todo lo que produce, pero una corrida de cada siete tarda más de minuto y medio, y la capa
-gratuita se agota por minuto: seis corridas seguidas devuelven «You exceeded your current quota» y
-hay que esperar. `gpt-5.4-mini` responde en ocho segundos siempre, y la mitad de las veces
-recomienda al proveedor equivocado por no aplicar el criterio de desempate.
+Fallan de formas opuestas, y conviene mirar el rango antes que la mediana. Gemini acierta todo lo
+que produce, pero una corrida de cada siete pasa de minuto y medio, y su capa gratuita se agota por
+minuto: seis seguidas devuelven «You exceeded your current quota». `gpt-5.4-mini` responde en ocho
+segundos siempre, y la mitad de las veces recomienda al proveedor equivocado por no aplicar el
+criterio de desempate.
 
 **Las tres formas de equivocarse, medidas.** Recomendar al segundo más barato pudiendo recomendar al
-más barato —lo detecta `checkTieBreak`—; poner al proveedor que no cotizó en la lista de
-cotizaciones con una cifra inventada —lo detectan `checkCoverage` y `checkArithmetic`—; y tomar el
-precio por caja de MayoristaZeta como si fuera el total —lo detecta `checkArithmetic`—. Las tres
-salieron en seis corridas, y ninguna la vio el evaluador de la capa 2.
+más barato —`checkTieBreak`—; poner al proveedor que no cotizó en la lista de cotizaciones con una
+cifra inventada —`checkCoverage` y `checkArithmetic`—; y tomar el precio por caja de MayoristaZeta
+como si fuera el total —`checkArithmetic`—. Las tres salieron en seis corridas, y **ninguna la vio
+el evaluador de la capa 2.**
 
 **Seis corridas no son una medición.** El intervalo de confianza de 3 de 6 es demasiado ancho para
 afirmar una tasa. Lo que seis corridas sí establecen es **cuál** es el modo de falla: las tres
 incorrectas fallaron igual, siempre en el desempate. La consistencia es el dato aprovechable; el
-porcentaje, no. Subir `npm run measure -- 20` estrecha el intervalo a cambio de tiempo y de cuota.
+porcentaje, no.
+
+## El costo, y dónde se va
+
+La salida incluye el desglose por paso:
+
+```text
+  paso 1:    812 entrada     15 salida
+  paso 2:    950 entrada    101 salida
+  paso 3:   2089 entrada    931 salida
+  total:    3851 entrada   1047 salida  · 0 de caché (0 %)
+```
+
+La entrada crece en cada vuelta porque el bucle reenvía la conversación completa más las
+definiciones de herramientas. En un flujo largo ese crecimiento domina el costo.
+
+**El caché depende del proveedor.** Medido sobre este mismo agente:
+
+| Proveedor               | Entrada | De caché         |
+| ----------------------- | ------- | ---------------- |
+| `gpt-5.4-mini`          | 3.929   | 2.048 · **52 %** |
+| `gemini-3.1-flash-lite` | 10.909  | 0 · **0 %**      |
+
+El mismo código, la misma tarea, y la mitad del costo de entrada cambia de lugar según a quién se le
+pida. **Es una variable de costo que no está en el código.**
+
+Lo que sí se controla es cuánto devuelve cada herramienta. `get_quote` entrega el texto crudo de la
+cotización, que es la mayor parte del contexto. Resumirlo reduciría el costo y perdería la fidelidad
+que hace visible el texto inyectado.
