@@ -67,7 +67,7 @@ Salidas del agente: `salidas/seguimiento.json` en el paso 4, `salidas/comparativ
 
 ---
 
-## Paso 1 · La decisión, antes de conectar — 1 min
+## Paso 1 · La decisión, antes de conectar
 
 No conecte nada todavía. Escriba una línea, donde quiera:
 
@@ -78,7 +78,7 @@ Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado
 
 ---
 
-## Paso 2 · Levantar el entorno — 8 min
+## Paso 2 · Levantar el entorno
 
 ```text
 2.1  acceso a archivos   solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
@@ -117,7 +117,7 @@ decisión a una persona.
 
 ---
 
-## Paso 3 · Instalar la instrucción — 3 min
+## Paso 3 · Instalar la instrucción
 
 ```text
 añada     Customize → Skills → Add · seleccione parte-1-cowork/abastecimiento/
@@ -134,7 +134,7 @@ contenido externo es lo que intercepta la inyección del paso 7.
 
 ---
 
-## Paso 4 · Primera corrida — 12 min
+## Paso 4 · Primera corrida
 
 **Primero, a propósito incompleto:**
 
@@ -183,7 +183,7 @@ no usted.**
 
 ---
 
-## Paso 5 · El disparador — 3 min
+## Paso 5 · El disparador
 
 Las cotizaciones tardan unos minutos. Ese intervalo se usa para configurar la tarea que las
 recogerá.
@@ -210,7 +210,7 @@ despierta con la aplicación abierta.
 
 ---
 
-## Paso 6 · Segunda corrida — 10 min
+## Paso 6 · Segunda corrida
 
 ```text
 Scheduled → recoger cotizaciones → ejecutar a demanda
@@ -250,7 +250,7 @@ espacio-de-trabajo/salidas/comparativo.md
 
 ---
 
-## Paso 7 · El envío, y lo que la compuerta detiene — 8 min
+## Paso 7 · El envío, y lo que la compuerta detiene
 
 ```text
 escriba    Envíame por correo la recomendación final.
@@ -337,13 +337,13 @@ cuándo consultarla  después de ejecutar el ejercicio, no antes
 Cinco tramos. Los cuatro primeros no necesitan clave ni conexión: corren contra una corrida grabada.
 Solo el quinto llama a un modelo.
 
-| Tramo                           | Duración | `TODO`     |
-| ------------------------------- | -------- | ---------- |
-| 1 · El bucle desde adentro      | 11 min   | —          |
-| 2 · El contrato de datos        | 19 min   | 1a, 1b     |
-| 3 · El servidor de herramientas | 20 min   | 2          |
-| 4 · Las dos capas de evaluación | 19 min   | 3a, 3b, 3c |
-| 5 · La corrida real             | 21 min   | —          |
+| Tramo                           | `TODO`     |
+| ------------------------------- | ---------- |
+| 1 · El bucle desde adentro      | —          |
+| 2 · El contrato de datos        | 1a, 1b     |
+| 3 · El servidor de herramientas | 2          |
+| 4 · Las dos capas de evaluación | 3a, 3b, 3c |
+| 5 · La corrida real             | —          |
 
 ## Antes de empezar
 
