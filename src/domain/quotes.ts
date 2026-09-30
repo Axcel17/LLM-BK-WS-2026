@@ -37,7 +37,14 @@ interface Supplier {
   readonly values: (product: string, quantity: number) => Record<string, string>;
 }
 
-/** Fila de tabla: descripción a 45, cantidad a 7, unitario a 11, importe a 12. */
+/**
+ * Fila de tabla: descripción a 45, cantidad a 7, unitario a 11, importe a 12.
+ *
+ * La descripción es el producto tal como se pidió, sin especificación añadida.
+ * Antes la plantilla llevaba pegada la del monitor y un producto cualquiera
+ * salía con ella: «camiones, panel IPS 75Hz, HDMI/VGA». Un proveedor que
+ * devuelve texto libre no puede describir lo que no sabe qué es.
+ */
 function tableRow(description: string, quantity: number, unitPrice: number): string {
   return (
     description.slice(0, 45).padEnd(45) +
@@ -51,7 +58,7 @@ const SUPPLIERS: Record<string, Supplier> = {
   Tecnoimport: {
     values: (product, quantity) => ({
       producto: product,
-      linea: tableRow(`${product}, panel IPS 75Hz, HDMI/VGA`, quantity, 168),
+      linea: tableRow(product, quantity, 168),
       flete: tableRow("Flete y despacho a bodega del cliente", 1, 85),
       unitario: money(168),
       fleteUsd: money(85),
@@ -85,7 +92,7 @@ const SUPPLIERS: Record<string, Supplier> = {
   "Suministros Delta": {
     values: (product, quantity) => ({
       producto: product,
-      linea: tableRow(`${product}, panel IPS 75Hz`, quantity, 164),
+      linea: tableRow(product, quantity, 164),
       flete: tableRow("Flete y despacho a bodega (no incluido)", 1, 60),
       total: money(164 * quantity + 60),
       unitarioConGarantia: money(179),

@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **139 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **143 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 

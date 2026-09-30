@@ -127,8 +127,8 @@ export class StepLimitReached extends Error {
     readonly gathered: readonly CompletedQuery[],
   ) {
     super(
-      `El agente no produjo un resultado en ${steps} pasos. La ejecución se ` +
-        `detuvo antes de seguir gastando.`,
+      `El agente no produjo un resultado en ${steps} paso${steps === 1 ? "" : "s"}. ` +
+        `La ejecución se detuvo antes de seguir gastando.`,
     );
     this.name = "StepLimitReached";
   }

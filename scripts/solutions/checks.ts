@@ -143,6 +143,19 @@ export function checkHardLimits(comparison: Comparison, c: Constraints): Finding
       });
     }
 
+    // Un plazo sin declarar no puede cumplir un plazo. Sin esta línea, dejar el
+    // campo en nulo saltaba la comparación de arriba y el proveedor quedaba
+    // conforme sin que nada lo hubiera comprobado. Observado en corrida real: el
+    // agente devuelve nulo cuando la cotización da días calendario.
+    if (quote.leadTimeBusinessDays === null && quote.meetsLeadTime) {
+      findings.push({
+        check: "hard-limits",
+        detail:
+          `${quote.supplier}: declarado conforme sin plazo declarado. Un plazo que no se ` +
+          `conoce no se puede contrastar con el máximo de ${c.maxLeadTimeBusinessDays}.`,
+      });
+    }
+
     if (quote.totalDeliveredUsd > c.budgetCapUsd && quote.meetsBudget) {
       findings.push({
         check: "hard-limits",

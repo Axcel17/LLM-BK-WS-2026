@@ -440,3 +440,33 @@ describe("checkEvidence · la etiqueta de una columna no es una invención", () 
     expect(checkEvidence(comparison, sources)).toHaveLength(1);
   });
 });
+
+describe("checkHardLimits · plazo sin declarar", () => {
+  it("un plazo nulo no puede quedar conforme", () => {
+    // El hueco medido: la comparación con el máximo exige un número, así que
+    // dejar el campo en nulo la saltaba entera y el proveedor pasaba conforme
+    // sin que nada lo hubiera comprobado.
+    const comparison = correctComparison({
+      quotes: [
+        quote("GlobalStock", 149, 0, 5960, null, { meetsLeadTime: true }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+
+    const findings = checkHardLimits(comparison, CASE_CONSTRAINTS);
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.detail).toContain("sin plazo declarado");
+  });
+
+  it("un plazo nulo declarado no conforme no es un hallazgo", () => {
+    const comparison = correctComparison({
+      quotes: [
+        quote("GlobalStock", 149, 0, 5960, null, { meetsLeadTime: false }),
+        ...correctComparison().quotes.slice(1),
+      ],
+    });
+
+    expect(checkHardLimits(comparison, CASE_CONSTRAINTS)).toEqual([]);
+  });
+});

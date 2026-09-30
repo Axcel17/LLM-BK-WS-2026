@@ -298,7 +298,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **139 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
+El resultado esperado es **143 pruebas pasan y 11 fallan**. Las once corresponden a los seis `TODO`
 sin completar y se resuelven a lo largo de los tramos 2, 3 y 4.
 
 Ocho archivos de prueba pasan enteros desde el primer minuto: cubren las piezas que se entregan
@@ -483,7 +483,8 @@ npm run agent
 ```
 
 **Ejecute dos o tres veces.** Los pasos no serán idénticos. Con `gemini-3.1-flash-lite` cada corrida
-tarda entre 51 y 130 segundos; con `gpt-5.4-mini`, entre 6 y 7.
+tarda entre 6 y 101 segundos —la varianza es real, no una impresión—; con `gpt-5.4-mini`, entre 7
+y 8.
 
 **El tope de pasos.** `MAX_STEPS=2 npm run agent` interrumpe la ejecución y entrega lo ya
 averiguado: qué se consultó, con qué argumentos y cuánto devolvió cada consulta. Sin ese registro,
@@ -652,14 +653,22 @@ propia después de la sesión es, justamente, el ejercicio.
 
 Medición vigente, con las siete verificaciones:
 
-| Proveedor               | Válidas | Correctas | Mediana |
-| ----------------------- | ------- | --------- | ------- |
-| `gemini-3.1-flash-lite` | 4/6     | 4/6       | 73,1 s  |
-| `gpt-5.4-mini`          | 6/6     | 3/6       | 6,6 s   |
+| Proveedor               | Válidas | Correctas | Mediana | Rango     |
+| ----------------------- | ------- | --------- | ------- | --------- |
+| `gemini-3.1-flash-lite` | 7/7     | 7/7       | 12,6 s  | 6–101 s   |
+| `gpt-5.4-mini`          | 6/6     | 3/6       | 7,6 s   | 7,0–8,1 s |
 
-Fallan de formas opuestas. Gemini falla en producir —saturación de la capa gratuita y un tope de
-pasos agotado— pero todo lo que produce es correcto. `gpt-5.4-mini` produce siempre, y la mitad de
-las veces recomienda al proveedor equivocado por no aplicar el criterio de desempate.
+Fallan de formas opuestas, y conviene mirar la columna del rango antes que la de la mediana. Gemini
+acierta todo lo que produce, pero una corrida de cada siete tarda más de minuto y medio, y la capa
+gratuita se agota por minuto: seis corridas seguidas devuelven «You exceeded your current quota» y
+hay que esperar. `gpt-5.4-mini` responde en ocho segundos siempre, y la mitad de las veces
+recomienda al proveedor equivocado por no aplicar el criterio de desempate.
+
+**Las tres formas de equivocarse, medidas.** Recomendar al segundo más barato pudiendo recomendar al
+más barato —lo detecta `checkTieBreak`—; poner al proveedor que no cotizó en la lista de
+cotizaciones con una cifra inventada —lo detectan `checkCoverage` y `checkArithmetic`—; y tomar el
+precio por caja de MayoristaZeta como si fuera el total —lo detecta `checkArithmetic`—. Las tres
+salieron en seis corridas, y ninguna la vio el evaluador de la capa 2.
 
 **Seis corridas no son una medición.** El intervalo de confianza de 3 de 6 es demasiado ancho para
 afirmar una tasa. Lo que seis corridas sí establecen es **cuál** es el modo de falla: las tres

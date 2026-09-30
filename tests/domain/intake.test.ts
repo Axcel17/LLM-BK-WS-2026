@@ -11,7 +11,12 @@
 
 import { describe, expect, it } from "vitest";
 
-import { briefFrom, type IntakeOutcome, settle } from "../../src/domain/intake.js";
+import {
+  briefFrom,
+  extractionSchema,
+  type IntakeOutcome,
+  settle,
+} from "../../src/domain/intake.js";
 
 function admitted(overrides: Partial<IntakeOutcome> = {}): IntakeOutcome {
   return {
@@ -115,5 +120,36 @@ describe("briefFrom sobre una requisición incompleta", () => {
     // Sin esto, `budgetCapUsd` llegaría como null a la comparación y el tope
     // dejaría de descalificar a nadie, en silencio.
     expect(() => briefFrom(admitted({ budgetCapUsd: null }), [])).toThrow("budgetCapUsd");
+  });
+});
+
+describe("el esquema de extracción", () => {
+  function extraction(citations: Array<{ field: string; quotation: string }>) {
+    return {
+      product: 'Monitor 24" Full HD',
+      quantity: 40,
+      maxLeadTimeBusinessDays: 10,
+      budgetCapUsd: 7000,
+      warranty: null,
+      citations,
+      missing: [],
+      question: null,
+      notes: null,
+    };
+  }
+
+  it("admite una cita de dos caracteres", () => {
+    // Medido con gemini-3.1-flash-lite: cita la cifra desnuda «40» donde
+    // gpt-5.4-mini cita «40 monitores». Un piso de longitud aquí rechazaba una
+    // cita correcta y con ella el objeto entero.
+    const parsed = extractionSchema.safeParse(extraction([{ field: "quantity", quotation: "40" }]));
+
+    expect(parsed.success).toBe(true);
+  });
+
+  it("no admite una cita vacía, que no señala nada", () => {
+    const parsed = extractionSchema.safeParse(extraction([{ field: "quantity", quotation: "" }]));
+
+    expect(parsed.success).toBe(false);
   });
 });

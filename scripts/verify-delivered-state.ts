@@ -19,7 +19,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 /** Lo que el material promete. Cambiar aquí obliga a cambiarlo en los documentos. */
-const PROMETIDO = { pasan: 139, fallan: 11, pendientes: 1 } as const;
+const PROMETIDO = { pasan: 143, fallan: 11, pendientes: 1 } as const;
 
 /** Documentos que repiten la cifra y deben coincidir. */
 const DOCUMENTOS = ["README.md", "GUIA.md"] as const;

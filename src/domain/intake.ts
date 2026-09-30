@@ -40,7 +40,7 @@ proveedor. El plazo se expresa siempre en días hábiles; si la petición lo da 
 días calendario o en una fecha, conviértelo y dilo en 'notes'.
 `.trim();
 
-const extraction = z.object({
+export const extractionSchema = z.object({
   product: z.string().nullable(),
   quantity: z.number().int().positive().nullable(),
   maxLeadTimeBusinessDays: z.number().int().positive().nullable(),
@@ -57,7 +57,17 @@ const extraction = z.object({
   citations: z.array(
     z.object({
       field: requisitionFieldSchema,
-      quotation: z.string().min(3).describe("Fragmento literal de la petición del que sale"),
+      /**
+       * Sin longitud mínima, y no por descuido.
+       *
+       * Medido con gemini-3.1-flash-lite: cita la cifra desnuda —«40»— donde
+       * gpt-5.4-mini cita «40 monitores». Un piso de tres caracteres rechazaba
+       * una cita correcta y con ella el objeto entero: siete de dieciséis
+       * peticiones morían con «response did not match schema». Cuánto texto
+       * hace falta para que algo sea evidencia lo decide quien lo rastrea, en
+       * `traceability.ts`, que es donde se compara contra la fuente.
+       */
+      quotation: z.string().min(1).describe("Fragmento literal de la petición del que sale"),
     }),
   ),
 
@@ -71,7 +81,7 @@ const extraction = z.object({
   notes: z.string().nullable(),
 });
 
-type Extraction = z.infer<typeof extraction>;
+type Extraction = z.infer<typeof extractionSchema>;
 
 /** Los cuatro sin los que no hay ronda que consultar. */
 const ESSENTIAL = ["product", "quantity", "maxLeadTimeBusinessDays", "budgetCapUsd"] as const;
@@ -136,7 +146,7 @@ export async function intake(
 ): Promise<IntakeOutcome> {
   const { output } = await generateText({
     model,
-    output: Output.object({ schema: extraction }),
+    output: Output.object({ schema: extractionSchema }),
     system: RUBRIC,
     prompt: request,
   });

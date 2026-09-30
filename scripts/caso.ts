@@ -9,7 +9,7 @@
  * lugar de afirmar.
  */
 
-import { runAgent } from "../src/agent.js";
+import { runAgent, StepLimitReached } from "../src/agent.js";
 import { briefFrom, intake } from "../src/domain/intake.js";
 import { constraintsOf, readBrief } from "../src/domain/catalog.js";
 import { checkEscalation, checkExtraction, runAllChecks } from "../src/guardrails/checks.js";
@@ -19,6 +19,7 @@ import {
   formatChecks,
   formatComparison,
   formatEscalation,
+  formatHandoff,
   formatJudgement,
 } from "../src/report.js";
 import type { Outcome } from "../src/domain/schemas.js";
@@ -197,13 +198,21 @@ async function main(): Promise<void> {
 try {
   await main();
 } catch (error) {
-  const message = error instanceof Error ? error.message : String(error);
-  const saturated = /high demand|overloaded|rate limit|429|quota/i.test(message);
+  // El tope de pasos es un resultado previsto, no un fallo: lo que ya se
+  // averiguó vale, y quien retome el caso no tiene que volver a consultarlo.
+  if (error instanceof StepLimitReached) {
+    console.error(`\n  TOPE ALCANZADO: ${error.message}`);
+    console.error(`${formatHandoff(error.gathered)}\n`);
+    process.exitCode = 2;
+  } else {
+    const message = error instanceof Error ? error.message : String(error);
+    const saturated = /high demand|overloaded|rate limit|429|quota/i.test(message);
 
-  console.error(
-    saturated
-      ? "\n  El proveedor está saturado. Reintente en un minuto, o cambie de proveedor en `.env`.\n"
-      : `\n  La corrida falló: ${message.split("\n")[0]?.slice(0, 160)}\n`,
-  );
-  process.exitCode = 1;
+    console.error(
+      saturated
+        ? "\n  El proveedor está saturado. Reintente en un minuto, o cambie de proveedor en `.env`.\n"
+        : `\n  La corrida falló: ${message.split("\n")[0]?.slice(0, 160)}\n`,
+    );
+    process.exitCode = 1;
+  }
 }
