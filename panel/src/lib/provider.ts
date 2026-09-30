@@ -16,7 +16,7 @@ type Role = "agent" | "judge";
 function settingsFor(papel: Role) {
   const prefix = papel === "judge" ? "JUDGE_" : "";
   return {
-    languageModel: process.env[`${prefix}PROVIDER`] ?? process.env["PROVIDER"] ?? "google",
+    languageModel: process.env[`${prefix}PROVIDER`] ?? process.env["PROVIDER"] ?? "openai",
     model: process.env[`${prefix}MODEL`] ?? process.env["MODEL"] ?? "",
   };
 }

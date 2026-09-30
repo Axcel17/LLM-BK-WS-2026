@@ -76,7 +76,7 @@ async function main(): Promise<void> {
     id: runId(),
     startedAt: new Date().toISOString(),
     durationMs: 0,
-    provider: process.env["PROVIDER"] ?? "google",
+    provider: process.env["PROVIDER"] ?? "openai",
     model: process.env["MODEL"] ?? "(por defecto del proveedor)",
     maxSteps: maxSteps(),
     request: text === "" ? null : text,

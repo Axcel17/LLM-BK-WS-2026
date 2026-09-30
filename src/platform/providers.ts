@@ -29,8 +29,8 @@ export function resolveModel(role: "agent" | "judge" = "agent"): LanguageModel {
   const prefix = role === "judge" ? "JUDGE_" : "";
   const provider = (process.env[`${prefix}PROVIDER`] ??
     process.env.PROVIDER ??
-    "google") as ProviderName;
-  const modelId = process.env[`${prefix}MODEL`] ?? process.env.MODEL ?? "gemini-3.1-flash-lite";
+    "openai") as ProviderName;
+  const modelId = process.env[`${prefix}MODEL`] ?? process.env.MODEL ?? "gpt-5.4-mini";
 
   if (!(provider in API_KEY_BY_PROVIDER)) {
     throw new Error(`PROVIDER '${provider}' no reconocido. Use google u openai.`);

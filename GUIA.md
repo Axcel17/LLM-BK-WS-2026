@@ -41,6 +41,10 @@ cuenta personal de Google             una cuenta corporativa puede bloquear el c
 este repositorio                      clonado o descargado
 ```
 
+Para clonarlo hacen falta Git y Node. Cómo instalarlos en macOS y en Windows está en
+[`README.md`](README.md#requisitos); esta parte no necesita Node, pero la Parte 2 sí, y hacerlo
+ahora evita perder tiempo en el cambio.
+
 No hace falta nada más. Los portales están publicados y sus direcciones están en
 `datos/proveedores.md`.
 
@@ -348,6 +352,9 @@ Solo el quinto llama a un modelo.
 
 ## Antes de empezar
 
+Git, Node 20 o superior y una clave de OpenAI. Si falta alguno, la instalación paso a paso para
+macOS y Windows está en [`README.md`](README.md#requisitos).
+
 ```bash
 npm install
 npm test
@@ -417,7 +424,7 @@ deriva los tipos de TypeScript a la vez, así que un contrato mal usado falla al
 Pero **omitir un campo no es lo mismo que declararlo desconocido**: con `.default(null)` el modelo
 puede no emitirlo y el esquema lo rellena.
 
-Quite esa línea:
+Reemplace el campo por esto — es el mismo, sin `.default(null)`:
 
 ```ts
 leadTimeBusinessDays: z
@@ -425,7 +432,6 @@ leadTimeBusinessDays: z
   .int()
   .min(0)
   .nullable()
-  .default(null)   // ← esta línea sale
   .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
 ```
 

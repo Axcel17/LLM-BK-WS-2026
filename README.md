@@ -23,13 +23,60 @@ Cada parte funciona por separado.
 
 ## Requisitos
 
-- **Node.js 20** o superior.
-- **Clave de un proveedor de modelo**, solo para la ejecución real. Google AI Studio la da sin
-  tarjeta. Las pruebas corren sin clave y sin conexión.
+Tres cosas: **Git**, **Node.js 20 o superior** y una **clave de OpenAI**. Si ya las tiene, salte a
+[Instalación](#instalación). Si no, siga la sección que corresponda a su sistema.
+
+Compruebe qué le falta:
+
+```bash
+git --version      # debe decir 2.x
+node --version     # debe decir v20 o superior
+```
+
+Si un comando responde «command not found» o «no se reconoce», esa herramienta falta.
+
+### Instalar en macOS
+
+Abra la **Terminal** (⌘ + espacio, escriba «Terminal»).
+
+```bash
+# Git: macOS lo instala solo al pedirlo por primera vez.
+git --version      # si falta, acepte el cuadro que ofrece instalarlo
+
+# Node.js: descárguelo de nodejs.org/es y ejecute el .pkg (elija LTS).
+```
+
+Con Homebrew ya instalado, la alternativa es `brew install git node`.
+
+### Instalar en Windows
+
+Abra **PowerShell** (tecla Windows, escriba «PowerShell»).
+
+1. **Git** — descargue de [git-scm.com/download/win](https://git-scm.com/download/win) y ejecute el
+   instalador. Acepte todas las opciones por omisión.
+2. **Node.js** — descargue la versión **LTS** de [nodejs.org/es](https://nodejs.org/es) y ejecute el
+   `.msi`.
+3. **Cierre PowerShell y ábralo de nuevo.** Los instaladores modifican el `PATH` y una ventana
+   abierta antes no lo ve. Es la causa más común de que `node --version` siga fallando.
+
+### La clave del modelo
+
+Se necesita solo para la ejecución real; las pruebas corren sin clave y sin conexión.
+
+El taller usa **OpenAI** por omisión. Cree una clave en
+[platform.openai.com/api-keys](https://platform.openai.com/api-keys). Requiere saldo: una corrida
+completa cuesta centavos, pero la cuenta debe tener crédito cargado.
+
+Google AI Studio da una clave gratuita sin tarjeta y `.env.example` explica cómo cambiar a ella.
+Sirve, pero su capa gratuita se satura y devuelve `503`: la corrida muere en el tope de pasos sin
+que haya nada mal en el código. Para una sala con treinta personas conectándose a la vez, no es la
+opción segura.
 
 ## Instalación
 
 ```bash
+git clone https://github.com/Axcel17/LLM-BK-WS-2026.git
+cd LLM-BK-WS-2026
 npm install
 npm test
 ```
@@ -38,9 +85,16 @@ El resultado esperado es **190 pruebas pasan y 11 fallan**. Las 11 corresponden 
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
+> `npm install` tarda uno o dos minutos y escribe avisos en amarillo. Son normales. Lo que importa
+> es que termine sin la palabra `error`.
+
 ## Ejecución
 
-Copie `.env.example` a `.env` y coloque la clave.
+Copie `.env.example` a `.env` y coloque la clave en `OPENAI_API_KEY=`.
+
+```bash
+cp .env.example .env      # en Windows PowerShell: copy .env.example .env
+```
 
 ```bash
 npm run agent                      # una corrida completa, el encargo del caso

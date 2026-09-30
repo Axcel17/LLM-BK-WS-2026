@@ -366,7 +366,7 @@ export function agentCard() {
 /** Configuración vigente, para no tener que abrir `.env` para saberla. */
 export function configuration() {
   return {
-    provider: process.env["PROVIDER"] ?? "google",
+    provider: process.env["PROVIDER"] ?? "openai",
     model: process.env["MODEL"] ?? "(por defecto del proveedor)",
     judgeModel: process.env["JUDGE_MODEL"] ?? process.env["MODEL"] ?? "(el mismo del agente)",
     stepLimit: Number(process.env["MAX_STEPS"] ?? 12),
