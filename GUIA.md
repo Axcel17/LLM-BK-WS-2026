@@ -21,14 +21,14 @@ está en [`README.md`](README.md).
 Siete pasos. Resultado: las seis piezas configuradas en un entorno que las trae resueltas, y sus
 modos de falla observados.
 
-| Pieza                     | Paso | Qué se configura                                       |
-| ------------------------- | ---- | ------------------------------------------------------ |
-| Barreras                  | 1–2  | Permisos por acción, y su verificación                 |
-| Herramientas y conectores | 2    | Acceso a archivos, conector de correo y navegación web |
-| Almacén de estado         | 4    | Persistencia de las direcciones de seguimiento         |
-| Disparador                | 5    | Tarea programada con cadencia                          |
-| Entorno de ejecución      | 5    | Dónde corre la tarea                                   |
-| Observabilidad            | 7    | Historial de la corrida                                |
+| Pieza                            | Paso | Qué se configura                                       |
+| -------------------------------- | ---- | ------------------------------------------------------ |
+| Barreras · _guardrails_          | 1–2  | Permisos por acción, y su verificación                 |
+| Herramientas · _tools_           | 2    | Acceso a archivos, conector de correo y navegación web |
+| Almacén de estado · _state_      | 4    | Persistencia de las direcciones de seguimiento         |
+| Disparador · _trigger_           | 5    | Tarea programada con cadencia                          |
+| Entorno de ejecución · _runtime_ | 5    | Dónde corre la tarea                                   |
+| Observabilidad · _observability_ | 7    | Historial de la corrida                                |
 
 Cada paso abre con las acciones y el resultado esperado. **Por qué importa** contiene lo que el
 instructor explica en ese momento: salteable en la sala, útil al repetir el ejercicio solo.
@@ -257,7 +257,8 @@ espacio-de-trabajo/salidas/comparativo.md
 escriba    Envíame por correo la recomendación final.
 ```
 
-El agente redacta y se detiene en la compuerta configurada en el paso 1.
+El agente redacta y se detiene en la compuerta de aprobación (_approval gate_) configurada en el
+paso 1.
 
 **Antes de aprobar**
 
@@ -278,7 +279,8 @@ al pie         un párrafo dirigido a sistemas automatizados
 ```
 
 Ese texto no viene de la instrucción ni del usuario. Entró por el resultado de una herramienta: una
-página web que el agente leyó. **Es el vector de inyección indirecta.**
+página web que el agente leyó. **Es el vector de inyección indirecta** (_indirect prompt
+injection_)**.**
 
 **Dos desenlaces, ambos informativos**
 
@@ -304,11 +306,11 @@ compare     parte-1-cowork/permisos.md contra los permisos que usó en realidad
 responda    ¿usó todos los concedidos? ¿faltó alguno? ¿alguno quedó sin usar?
 ```
 
-El historial es la sexta pieza, observabilidad. En la Parte 2 se convierte en trazas con las
-convenciones de OpenTelemetry.
+El historial es la sexta pieza, observabilidad. En la Parte 2 se convierte en trazas (_traces_) con
+las convenciones de OpenTelemetry.
 
-Un permiso concedido y nunca usado es superficie de ataque sin contrapartida. Retirarlo es el
-resultado de una revisión de seguridad.
+Un permiso concedido y nunca usado es superficie de ataque sin contrapartida. Es lo contrario del
+privilegio mínimo (_least privilege_). Retirarlo es el resultado de una revisión de seguridad.
 
 ---
 
