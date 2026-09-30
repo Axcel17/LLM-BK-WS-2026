@@ -39,13 +39,25 @@ Trae la lectura de toda la bandeja como acompañante.
 
 ### Capa 2 · las herramientas
 
-De las treinta, esta tarea necesita **una**:
+Se ajustan una por una. De las treinta, esta tarea necesita **una**:
 
 ```text
-Send email message     es todo
+Send email message      es todo
+Create draft email      opcional, si se quiere revisar el borrador antes del envío
 ```
 
-`Create draft email` se concede si se quiere revisar el borrador antes del envío. Ninguna otra.
+Las veintiocho restantes quedan en el estado más restrictivo. **El número que hace la clase:** el
+conector ofrece treinta herramientas y la tarea necesita una. No es un principio abstracto, es una
+cuenta que cada asistente hace en su pantalla.
+
+**Las que más sorprenden al quedar fuera:**
+
+```text
+Search email threads    la tarea no busca nada en la bandeja
+Forward email           con lectura concedida, saca correo a un tercero
+Move message to Trash   un agente engañado hace perder correo que él no envió
+Mark message as Spam    entrena el filtro para perder correo futuro
+```
 
 **El criterio que ordena la decisión:** la compuerta va entre la última acción reversible —el
 borrador— y la primera irreversible —el envío—.

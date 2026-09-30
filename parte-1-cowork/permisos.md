@@ -36,17 +36,17 @@ alcanza?
 
 ---
 
-## Capa 2 · Los permisos por herramienta
+## Capa 2 · Los permisos de herramienta
 
-En **ajustes → conectores → Gmail** hay una sección «Tool permissions», con treinta herramientas
-repartidas en dos grupos.
+En **ajustes → conectores → Gmail**, sección «Tool permissions». Treinta herramientas, en dos grupos
+plegables, y **cada una se ajusta por separado**. Cada herramienta admite dos estados.
 
 ```text
-solo lectura · 6
+Read-only tools · 6
   Get draft email · Get email message · Get email thread
   List draft emails · List labels · Search email threads
 
-escritura y borrado · 24
+Write/delete tools · 24
   Create draft email · Update draft email · Delete draft email
   Send email message · Reply to email · Forward email
   Move message to Trash · Move thread to Trash
@@ -60,7 +60,8 @@ escritura y borrado · 24
   Modify message labels
 ```
 
-**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas:
+**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas y deje el resto en el
+estado más restrictivo:
 
 ```
 _______________________________________________________________________
@@ -68,13 +69,13 @@ _______________________________________________________________________
 _______________________________________________________________________
 ```
 
----
+Son treinta decisiones, no una. Esa es la diferencia entre conceder un conector y configurarlo.
 
-## Las dos preguntas que hay que hacerse en cada herramienta
+## Las dos preguntas, en cada capa
 
-**1. ¿La tarea la necesita?** No «¿podría servir algún día?». ¿La necesita **esta** tarea, hoy?
+**1. ¿La tarea lo necesita?** No «¿podría servir algún día?». ¿Lo necesita **esta** tarea, hoy?
 
-**2. Si el agente fuera engañado, ¿qué haría con ella?**
+**2. Si el agente fuera engañado, ¿qué haría con lo concedido?**
 
 Esa segunda pregunta es el alcance del daño:
 

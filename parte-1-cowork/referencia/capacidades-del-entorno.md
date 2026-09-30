@@ -30,9 +30,9 @@ capa 1   el scope de OAuth del proveedor    qué puede tocar el conector
 capa 2   permisos por herramienta en Claude cuándo se permite usar cada una
 ```
 
-En Gmail la capa 1 son tres scopes de Google, cada uno un paquete cerrado; la capa 2 son treinta
-herramientas, seis de solo lectura y veinticuatro de escritura o borrado. La segunda no puede
-ampliar la primera.
+En Gmail la capa 1 son tres scopes de Google, cada uno un paquete cerrado. La capa 2 son treinta
+herramientas, agrupadas en solo lectura (6) y escritura o borrado (24), **y cada una se ajusta por
+separado**. La segunda capa no puede ampliar la primera.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
 
