@@ -134,9 +134,9 @@ for (const key of ["pasan", "fallan", "pendientes"] as const) {
 const PARTE_1 = [
   {
     archivo: "GUIA.md",
-    patron: /<<<[^>]*>>>/g,
+    patron: /_{4,}/g,
     esperado: 3,
-    que: "marcadores de completar",
+    que: "espacios en blanco de la instrucción",
   },
 ] as const;
 

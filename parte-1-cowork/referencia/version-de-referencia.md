@@ -9,21 +9,17 @@ recorrido.
 
 ---
 
-## Los dos blancos de la instrucción del paso 3
+## Los tres números de la instrucción del paso 3
 
-**Restricción de plazo:**
+```text
+plazo máximo          10 días hábiles
+tope de presupuesto   USD 7.000,00
+cantidad              40 unidades
+```
 
-> El plazo máximo es de 10 días hábiles. Una cotización con plazo superior queda descartada, sin
-> importar su precio ni ninguna otra condición. El plazo es criterio de descalificación, no un
-> factor a ponderar.
-
-**Restricción de presupuesto:**
-
-> El tope es de USD 7.000,00 y se aplica sobre el total puesto en bodega para las 40 unidades — es
-> decir, incluyendo el flete cuando el proveedor lo cobra aparte. No se aplica sobre el precio de
-> lista ni sobre el subtotal antes de flete.
-
----
+Los tres están en `datos/encargo.md`. El único que se presta a error es el tope: se aplica sobre el
+**total puesto en bodega**, no sobre el precio de lista ni sobre el subtotal antes de flete. Un
+proveedor más barato por unidad puede quedar por encima del tope al sumar el despacho.
 
 ## Los permisos resueltos
 

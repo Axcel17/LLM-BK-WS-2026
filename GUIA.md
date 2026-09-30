@@ -118,12 +118,12 @@ decisión a una persona.
 
 ```text
 copie       el bloque de abajo, entero
-reemplace   los 2 marcadores <<< COMPLETAR >>> con los valores de datos/encargo.md
+rellene     los 3 espacios en blanco del punto 5, con los valores de datos/encargo.md
 pegue       en una instrucción reutilizable nueva, de nombre `abastecimiento`
 ```
 
-**No se reescribe nada.** Solo se tocan dos puntos: el plazo máximo y qué pasa con quien lo excede,
-y el tope y sobre qué cifra se aplica.
+**No se redacta nada: son tres números.** El plazo en días hábiles, el tope en dólares y la cantidad
+de unidades. Los tres están en `datos/encargo.md`.
 
 ```text
 Eres el agente de abastecimiento de Distribuidora Andes, un mayorista de equipamiento de
@@ -180,12 +180,14 @@ FASE 2 · RECOGER, NORMALIZAR Y COMPARAR
 
 5. Evalúa cada cotización contra las restricciones duras:
 
-   <<< COMPLETAR · RESTRICCIÓN DE PLAZO >>>
-   Lea datos/encargo.md y escriba aquí el plazo máximo y qué ocurre con una cotización que
-   no lo cumple.
+   - PLAZO. El plazo máximo es de ____ días hábiles. Una cotización que lo exceda queda
+     descartada, sin importar su precio ni ninguna otra condición. Es criterio de
+     descalificación, no un factor a ponderar.
 
-   <<< COMPLETAR · RESTRICCIÓN DE PRESUPUESTO >>>
-   Lea datos/encargo.md y escriba aquí el tope y sobre qué cifra se aplica.
+   - PRESUPUESTO. El tope es de USD ________ y se aplica sobre el total puesto en bodega
+     para las ____ unidades del encargo, es decir incluyendo el flete cuando el proveedor
+     lo cobra aparte. No se aplica sobre el precio de lista ni sobre el subtotal antes
+     de flete.
 
 6. Escribe salidas/comparativo.md con:
    - el cuadro de todas las cotizaciones normalizadas
