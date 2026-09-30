@@ -169,7 +169,7 @@ export function gatheredSoFar(steps: ReadonlyArray<unknown>): CompletedQuery[] {
  * `checkEvidence` las necesita para contrastar lo declarado contra la fuente, y
  * reconstruirlas después, fuera de aquí, sería adivinar.
  */
-export function quotedSources(steps: ReadonlyArray<unknown>): Map<string, string> {
+function quotedSources(steps: ReadonlyArray<unknown>): Map<string, string> {
   const sources = new Map<string, string>();
 
   for (const step of steps) {

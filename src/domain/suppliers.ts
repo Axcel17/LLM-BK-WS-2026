@@ -72,7 +72,7 @@ export function readSupplierCatalog(): SupplierCatalog {
  * separaría en silencio. Los catorce casos del propio catálogo son lo que
  * comprueba que sigan de acuerdo.
  */
-export function normalizeProductText(text: string): string {
+function normalizeProductText(text: string): string {
   return text
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")

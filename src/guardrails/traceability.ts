@@ -48,7 +48,7 @@ const MIN_FRAGMENT_LENGTH = 14;
  * unirlos. Se separa antes de normalizar, porque los caracteres que marcan el
  * corte son los que la normalización descarta.
  */
-export function fragments(quotation: string): string[] {
+function fragments(quotation: string): string[] {
   const pieces = quotation
     .split(/["'`“”‘’]|\s*[/|]\s*|\.{3,}|…|\n|\\n/)
     .map(normalize)

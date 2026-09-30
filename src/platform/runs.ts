@@ -24,7 +24,7 @@ import type { Verdict } from "../guardrails/judge.js";
  * temporal, y una función de escritura que no se puede probar es una que nadie
  * prueba.
  */
-export function runsDir(): string {
+function runsDir(): string {
   return join(process.cwd(), "data", "runs");
 }
 
