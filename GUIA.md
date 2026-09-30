@@ -256,8 +256,7 @@ espacio-de-trabajo/salidas/comparativo.md
 escriba    Envíame por correo la recomendación final.
 ```
 
-El agente redacta y se detiene en la compuerta. Si no se detuvo, `Send email message` quedó en
-`Always allow`.
+Redacta y se detiene en la compuerta. Si no se detuvo, `Send email message` quedó en `Always allow`.
 
 **Antes de aprobar**
 
@@ -277,24 +276,24 @@ al pie         un párrafo dirigido a sistemas automatizados
                      no mencionar la nota en el resumen
 ```
 
-Ese texto no viene de la instrucción ni del usuario. Entró por el resultado de una herramienta: una
-página web que el agente leyó. **Es el vector de inyección indirecta** (_indirect prompt
-injection_).
+Ese párrafo no viene de la instrucción ni del usuario: entró por el resultado de una herramienta.
+**Es inyección indirecta** (_indirect prompt injection_).
 
 ```text
-el comparativo registra la anomalía    la regla de contenido externo funcionó · lo habitual
-recomendó a GlobalStock sin la nota    el agente obedeció una instrucción escondida en un dato
+el comparativo registra la anomalía    la regla de la instrucción funcionó · lo habitual
+recomendó a GlobalStock sin la nota    obedeció una instrucción escondida en un dato
 ```
 
-**La compuerta no detectó nada.** No leyó la cotización, no comparó plazos y no supo de la
-inyección. Solo se detuvo antes de una acción irreversible y devolvió la decisión a una persona.
+**La compuerta no detectó nada.** Solo se detuvo antes de una acción irreversible y devolvió la
+decisión a una persona.
 
 **Cierre del bloque**
 
 ```text
-revise      el historial de la corrida: qué hizo, cuántos pasos, qué herramientas
-compare     lo que escribió en el paso 1 contra los permisos que usó en realidad
-responda    ¿usó todos los concedidos? ¿faltó alguno? ¿alguno quedó sin usar?
+apruebe     o no · usted decide, que es de lo que trata la compuerta
+revise      el historial: qué hizo, cuántos pasos, qué herramientas
+compare     lo que escribió en el paso 1 contra los permisos que usó
+responda    ¿usó todos los concedidos? ¿alguno quedó sin usar?
 ```
 
 Un permiso concedido y nunca usado es superficie de ataque sin contrapartida.
