@@ -22,21 +22,16 @@ El puente autorizado a una aplicación real, sin compartir contraseñas. Disponi
 correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de equipo, firma
 electrónica, y sistemas de gestión comercial y de tickets.
 
-**El punto crítico, y lo que se configura en el paso 2:** el permiso se concede en dos capas
-independientes.
+**El punto crítico, y lo que se configura en el paso 2:** el permiso se concede en dos momentos.
 
 ```text
-capa 1   el scope de OAuth del proveedor    qué puede tocar el conector
-capa 2   permisos por herramienta en Claude cuándo se permite usar cada una
+al conectar    el scope de OAuth del proveedor · qué puede tocar el conector
+ya conectado   permisos por herramienta · cuándo se usa cada una
 ```
 
-En Gmail la capa 1 son tres scopes de Google, cada uno un paquete cerrado. La capa 2 son treinta
-herramientas, agrupadas en solo lectura (6) y escritura o borrado (24), **y cada una se ajusta por
-separado**, con dos estados: `Always allow` y `Needs approval`. `Blocked` existe solo en planes Team
-y Enterprise.
-
-La segunda capa no puede ampliar la primera, y en un plan personal tampoco puede bloquear: el único
-bloqueo duro es el scope.
+En Gmail son tres scopes de Google —cada uno un paquete cerrado, con un «select all» a mano— y
+treinta herramientas, agrupadas en solo lectura (6) y escritura o borrado (24). Cada herramienta
+admite `Always allow`, `Needs approval` o `Blocked`. El segundo momento no puede ampliar el primero.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
 

@@ -9,21 +9,20 @@ Se completa **antes** de conectar nada, y a mano.
 El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones. Es
 la única operación que requiere sobre la bandeja.
 
-## Los permisos se conceden en dos capas
+## Los permisos se conceden en dos momentos
 
 ```text
-capa 1   el scope de Google      al autorizar el conector · define qué puede tocar
-capa 2   permisos de herramienta  ajustes de Claude · define cuándo se permite cada una
+al conectar    el scope de Google · define qué puede tocar el conector
+ya conectado   ajustes → conectores → Gmail · define cuándo se usa cada herramienta
 ```
 
-Las dos se conceden por separado y la segunda no puede ampliar la primera.
+El segundo no puede ampliar el primero.
 
 ---
 
-## Capa 1 · El scope de Google
+## Momento 1 · El scope, al autorizar
 
-Al autorizar el conector aparecen tres. Cada uno es un paquete cerrado: se concede entero o no se
-concede. Marque el que va a conceder.
+La pantalla de Google ofrece tres, cada uno un paquete cerrado, **y un «select all»**.
 
 | Scope, como lo presenta Google                         | Qué incluye                     | ¿Conceder? |
 | ------------------------------------------------------ | ------------------------------- | ---------- |
@@ -31,29 +30,23 @@ concede. Marque el que va a conceder.
 | Manage drafts and send emails                          | borradores y envío, sin lectura | ☐          |
 | Read, compose, and send emails from your Gmail account | lectura **y** escritura, juntas | ☐          |
 
-**La pregunta.** La tarea envía y nunca lee. ¿Cuál de los tres es el más estrecho que aun así
-alcanza?
+**«Select all» es un botón, y conceder los tres es una decisión.** Que cueste un clic no la hace más
+pequeña.
+
+**La pregunta.** La tarea envía y nunca lee. ¿Cuál es el más estrecho que aun así alcanza?
 
 ---
 
-## Capa 2 · Los permisos de herramienta
+## Momento 2 · Las herramientas, ya conectado
 
-En **ajustes → conectores → Gmail**, sección «Tool permissions». Treinta herramientas, en dos grupos
-plegables, y **cada una se ajusta por separado**.
-
-Los estados son dos:
+En **ajustes → conectores → Gmail**. Treinta herramientas, agrupadas en solo lectura (6) y escritura
+o borrado (24). Cada una se ajusta por separado, con tres estados.
 
 ```text
 Always allow     la ejecuta sin preguntar
 Needs approval   se detiene y pide su aprobación cada vez
+Blocked          no la puede usar
 ```
-
-**No hay «bloquear».** Un tercer estado, `Blocked`, existe solo en planes Team y Enterprise. En un
-plan personal, lo más restrictivo que puede hacer con una herramienta es que le pregunte.
-
-De ahí una consecuencia que conviene anotar ahora y comprobar en el paso 2.5: **el único bloqueo
-real disponible es el scope de la capa 1.** Lo que no entra por el scope, el agente no puede
-hacerlo, pregunte o no.
 
 ```text
 Read-only tools · 6
@@ -74,43 +67,47 @@ Write/delete tools · 24
   Modify message labels
 ```
 
-**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas y deje el resto en
-`Needs approval`:
+**Las preguntas.** De las treinta, ¿cuál necesita **esta** tarea? ¿En qué estado la deja? ¿Y las
+demás?
 
 ```
-_______________________________________________________________________
+Always allow    _______________________________________________________
 
-_______________________________________________________________________
+Needs approval  _______________________________________________________
+
+Blocked         el resto · ______ herramientas
 ```
 
 Son treinta decisiones, no una. Esa es la diferencia entre conceder un conector y configurarlo.
 
-## Las dos preguntas, en cada capa
+---
+
+## Las dos preguntas, en cada decisión
 
 **1. ¿La tarea lo necesita?** No «¿podría servir algún día?». ¿Lo necesita **esta** tarea, hoy?
 
-**2. Si el agente fuera engañado, ¿qué haría con lo concedido?**
+**2. Si el agente fuera engañado, ¿qué haría con esto?**
 
-Esa segunda pregunta es el alcance del daño:
+La segunda es el alcance del daño:
 
 ```text
-solo lectura                informa mal
-Send email message          escribe a un tercero en su nombre
-Forward email               saca el contenido de su bandeja a un tercero
-Move message to Trash       le hace perder correo que no envió él
-Mark message as Spam        entrena su filtro para que pierda correo futuro
+Search email threads   lee toda su bandeja y puede resumirla a donde sea
+Send email message     escribe a un tercero en su nombre
+Forward email          saca el contenido de su bandeja a un tercero
+Move message to Trash  le hace perder correo que él no envió
+Mark message as Spam   entrena su filtro para perder correo futuro
 ```
 
 ---
 
 ## Después de decidir
 
-Anote por qué dejó fuera lo que dejó fuera. En el paso 7 va a volver a esta hoja.
+Anote por qué bloqueó lo que bloqueó. En el paso 7 va a volver a esta hoja.
 
 ```
-No concedí ___________________ porque ___________________________________
+Bloqueé ___________________ porque ______________________________________
 
-No concedí ___________________ porque ___________________________________
+Bloqueé ___________________ porque ______________________________________
 ```
 
 ---
@@ -130,7 +127,6 @@ Compare esta hoja con lo que el sistema usó en realidad:
 
 > **Fuentes.** Los tres scopes son los de Google:
 > [`gmail.readonly`, `gmail.compose` y `gmail.modify`](https://developers.google.com/workspace/gmail/api/auth/scopes).
-> Los estados y el listado de herramientas son los del panel de conectores de la aplicación de
-> escritorio, tomados en septiembre de 2026. `Blocked` como tercer estado está documentado para
-> [planes Team y Enterprise](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities).
-> Conviene contrastarlo contra la pantalla antes del evento.
+> Las treinta herramientas y sus tres estados son los del panel de conectores de la aplicación de
+> escritorio, tomados en septiembre de 2026. Conviene contrastarlo contra la pantalla antes del
+> evento.

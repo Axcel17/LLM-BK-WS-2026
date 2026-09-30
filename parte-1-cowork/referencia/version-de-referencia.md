@@ -26,7 +26,7 @@ recorrido.
 
 ## Los permisos resueltos
 
-### Capa 1 · el scope de Google
+### Momento 1 · el scope de Google
 
 | Scope                                                  | Decisión     | Razón                                                           |
 | ------------------------------------------------------ | ------------ | --------------------------------------------------------------- |
@@ -34,48 +34,39 @@ recorrido.
 | Manage drafts and send emails                          | **conceder** | Borradores y envío, sin lectura. Es el más estrecho que alcanza |
 | Read, compose, and send emails from your Gmail account | **no**       | Incluye lectura, que la tarea no necesita                       |
 
-Conceder el tercero es el error previsible: su descripción menciona «send» y parece el indicado.
-Trae la lectura de toda la bandeja como acompañante.
+Dos errores previsibles, y conviene nombrarlos:
 
-### Capa 2 · las herramientas
+- **«Select all».** Está ahí, cuesta un clic y concede los tres.
+- **El tercer scope.** Su descripción dice «send» y parece el indicado. Trae la lectura de toda la
+  bandeja como acompañante.
 
-Se ajustan una por una. De las treinta, esta tarea necesita **una**:
+### Momento 2 · las treinta herramientas
 
-```text
-Send email message      es todo
-Create draft email      opcional, si se quiere revisar el borrador antes del envío
-```
-
-Las veintiocho restantes quedan en `Needs approval`, que en un plan personal es lo más restrictivo
-disponible: `Blocked` solo existe en Team y Enterprise. **El número que hace la clase:** el conector
-ofrece treinta herramientas y la tarea necesita una. No es un principio abstracto, es una cuenta que
-cada asistente hace en su pantalla.
-
-**Las que más sorprenden al quedar fuera:**
-
-```text
-Search email threads    la tarea no busca nada en la bandeja
-Forward email           con lectura concedida, saca correo a un tercero
-Move message to Trash   un agente engañado hace perder correo que él no envió
-Mark message as Spam    entrena el filtro para perder correo futuro
-```
-
-**Lo que esto implica, y conviene decirlo en el paso 1:** en un plan personal no se puede bloquear
-una herramienta, solo obligarla a preguntar. El único bloqueo real es el scope de la capa 1 — y por
-eso conceder «Manage drafts and send emails» en vez del scope amplio no es una preferencia, es la
-única barrera dura del bloque.
+| Herramienta        | Estado             | Razón                                                 |
+| ------------------ | ------------------ | ----------------------------------------------------- |
+| Create draft email | **Always allow**   | Reversible, sin efecto externo                        |
+| Send email message | **Needs approval** | Primera acción irreversible. **Aquí va la compuerta** |
+| Las otras 28       | **Blocked**        | Ninguna interviene en esta tarea                      |
 
 **El criterio que ordena la decisión:** la compuerta va entre la última acción reversible —el
-borrador— y la primera irreversible —el envío—.
+borrador— y la primera irreversible —el envío—. Es `Needs approval` sobre `Send email message` lo
+que detiene la corrida en el paso 7.
+
+**El número que hace la clase:** el conector ofrece treinta herramientas y esta tarea usa una.
+Veintiocho quedan bloqueadas.
 
 **Las que más sorprenden al quedar fuera:**
 
 ```text
 Search email threads   la tarea no busca nada en la bandeja
-Forward email          con lectura concedida, es la vía para sacar correo a un tercero
+Forward email          con lectura concedida, saca correo a un tercero
 Move message to Trash  un agente engañado hace perder correo que él no envió
 Mark message as Spam   entrena el filtro para perder correo futuro
 ```
+
+**Dos barreras, de distinta dureza.** No conceder el scope impide la acción pase lo que pase.
+`Blocked` la impide dentro de Claude. `Needs approval` no impide nada: traslada la decisión a una
+persona, treinta veces al día si hace falta. Por eso la compuerta va en un solo sitio y no en todos.
 
 ## El resultado esperado del comparativo
 
