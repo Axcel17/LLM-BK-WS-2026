@@ -366,9 +366,12 @@ Los `TODO` aparecen en el panel de tareas pendientes del editor. Desde la termin
 grep -rn "TODO(" src/
 ```
 
-**Si un tramo se atasca:** `npm run solutions` copia las versiones completas sobre `src/`, y
-`npm run gaps` las revierte. Ambos funcionan sin conexión. Consultar una solución es una opción
-prevista: el objetivo es entender por qué cada pieza existe.
+**Si un tramo se atasca:** `npm run solutions` pone las versiones completas en `src/`, y
+`npm run gaps` devuelve los `TODO`. Ambos sin conexión.
+
+**Lo que llevara escrito no se pierde.** Antes de sobrescribir, el comando lo guarda en
+`scripts/.tuyo/` y dice cómo recuperarlo. Consultar una solución es una opción prevista, no un
+castigo.
 
 El tramo 5 necesita una clave de modelo. Copie `.env.example` a `.env` antes de llegar.
 

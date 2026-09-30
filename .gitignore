@@ -8,6 +8,9 @@ dist/
 # publicaria la respuesta del ejercicio a quien clone despues.
 parte-1-cowork/espacio-de-trabajo/salidas/
 
+# Lo que el asistente llevaba escrito cuando miró una solución.
+scripts/.tuyo/
+
 # Bitácoras de corridas: son de cada máquina, no del material.
 data/runs/
 data/visor.html

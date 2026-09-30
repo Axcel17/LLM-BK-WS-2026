@@ -7,11 +7,15 @@
  * Ejecutar el agente no altera `src/`, pero resolver los `TODO` durante un
  * ensayo sí. Restaurar antes de distribuir el material.
  *
+ * **Antes de sobrescribir, guarda lo que hubiera escrito quien lo ejecuta.** Un
+ * asistente atascado en un `TODO` mira la solución y pierde media hora de
+ * trabajo: el comando existe para ayudar, no para castigar la curiosidad.
+ *
  *     npx tsx scripts/swap.ts gaps        lo que recibe el asistente
  *     npx tsx scripts/swap.ts solutions   el proyecto completo
  */
 
-import { copyFileSync, readFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,14 +36,39 @@ if (mode !== "gaps" && mode !== "solutions") {
 }
 
 const source = join(ROOT, "scripts", mode === "gaps" ? "gaps" : "solutions");
+const BACKUP = join(ROOT, "scripts", ".tuyo");
 
+/** Lo que está en `src/` no viene de este repositorio: lo escribió alguien. */
+function esTrabajoPropio(actual: string, file: string): boolean {
+  const gaps = readFileSync(join(ROOT, "scripts", "gaps", file), "utf8");
+  const solutions = readFileSync(join(ROOT, "scripts", "solutions", file), "utf8");
+  return actual !== gaps && actual !== solutions;
+}
+
+const guardados: string[] = [];
 let markers = 0;
+
 for (const { file, target } of SWAPPABLE) {
+  const destino = join(ROOT, "src", target);
+
+  if (esTrabajoPropio(readFileSync(destino, "utf8"), file)) {
+    mkdirSync(BACKUP, { recursive: true });
+    copyFileSync(destino, join(BACKUP, file));
+    guardados.push(`${file} → src/${target}`);
+  }
+
   const from = join(source, file);
-  copyFileSync(from, join(ROOT, "src", target));
+  copyFileSync(from, destino);
   markers += (readFileSync(from, "utf8").match(/TODO\(/g) ?? []).length;
 }
 
 console.log(`  src/ ahora tiene las versiones con ${mode === "gaps" ? "TODO" : "soluciones"}.`);
 console.log(`  Marcas TODO: ${markers}`);
-console.log(`  Verifique con: npm test`);
+
+if (guardados.length > 0) {
+  console.log(`\n  Lo que llevaba escrito quedó en scripts/.tuyo/ :`);
+  for (const g of guardados) console.log(`    ${g}`);
+  console.log(`  Para recuperarlo:  cp scripts/.tuyo/<archivo> src/<ruta>`);
+}
+
+console.log(`\n  Verifique con: npm test`);
