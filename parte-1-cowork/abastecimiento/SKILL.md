@@ -63,8 +63,16 @@ Para cada proveedor de datos/proveedores.md:
 4. Guarda la dirección de seguimiento COMPLETA que devuelve el sitio, con todos sus
    parámetros. Sin ella no se puede volver a la cotización.
 
-Al terminar todos, escribe salidas/seguimiento.json con: proveedor, número de
-referencia, dirección de seguimiento completa, hora de envío, y estado al enviar.
+Al terminar todos, escribe salidas/seguimiento.json. Debe contener DOS cosas:
+
+    encargo       el encargo admitido en la fase 0, completo: producto,
+                  cantidad, plazo en días hábiles, presupuesto y garantía
+    proveedores   por cada uno: nombre, número de referencia, dirección de
+                  seguimiento completa, hora de envío y estado al enviar
+
+El encargo va dentro del archivo porque la fase 2 puede correr en otra sesión, sin
+la conversación donde se admitió. Lo que no quede escrito, no existe: sin el plazo
+y el presupuesto no se puede evaluar nada, y el trabajo de las dos fases se pierde.
 
 No esperes a que las cotizaciones estén listas. Termina cuando tengas las referencias.
 
@@ -72,8 +80,12 @@ No esperes a que las cotizaciones estén listas. Termina cuando tengas las refer
 FASE 2 · RECOGER, NORMALIZAR Y COMPARAR
 ════════════════════════════════════════════════════════════
 
-1. Lee salidas/seguimiento.json y visita cada dirección guardada. NO vuelvas a enviar
+1. Lee salidas/seguimiento.json. De ahí salen el encargo —producto, cantidad, plazo,
+   presupuesto y garantía— y las direcciones. Visita cada una. NO vuelvas a enviar
    formularios: las solicitudes ya salieron.
+
+   Si el archivo no trae el encargo, no lo supongas ni evalúes de forma condicional:
+   dilo y pide los datos que faltan.
 
 2. Recoge lo que haya. Cada proveedor responde distinto: algunos publican la cotización
    en la página, otros la entregan como archivo adjunto que hay que abrir, otros piden

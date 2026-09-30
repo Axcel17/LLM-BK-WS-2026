@@ -161,19 +161,34 @@ Repite el encargo en una línea y arranca la fase 1.
 **Resultado esperado**
 
 ```text
-espacio-de-trabajo/salidas/seguimiento.json    5 entradas
-cada entrada                                   dirección de seguimiento COMPLETA
+espacio-de-trabajo/salidas/seguimiento.json
+
+  encargo        producto, cantidad, plazo, presupuesto, garantía
+  proveedores    5 entradas · cada una con la dirección COMPLETA
+
 Tecnoimport · MayoristaZeta · GlobalStock      solicitud en proceso
 Suministros Delta                              responde en el acto, con una pregunta
 ImportAndina                                   acusa recibo, sin plazo de respuesta
 ```
 
-**Fallo previsto:** guarda el número de referencia y omite la dirección completa. Sin el parámetro
-de tiempo la página no carga, y hay que reenviar la solicitud.
+**Abra el archivo y compruebe que el encargo está dentro.** Si solo tiene las direcciones, el paso 6
+no va a poder evaluar nada.
 
-No es recuperable: el paso 6 corre en una **sesión nueva**, sin la conversación de este paso. Lo que
-no quede en `seguimiento.json` no existe. Es el modo de falla del almacén de estado, y aquí se
-comprueba.
+**Dos fallos previstos, y los dos son de la misma pieza.**
+
+```text
+guarda la referencia y no la dirección completa   sin el parámetro de tiempo la
+                                                  página no carga
+guarda las direcciones y no el encargo            la fase 2 no tiene plazo ni
+                                                  presupuesto contra qué evaluar
+```
+
+El segundo salió en un ensayo real: el agente consultó a los cinco, normalizó las tres cotizaciones,
+detectó la inyección — y no pudo recomendar a nadie, porque el plazo y el tope solo existían en la
+conversación del paso 4, que ya había muerto. Hizo lo correcto al no suponerlos.
+
+Ninguno es recuperable: el paso 6 corre en una **sesión nueva**. Lo que no quede en
+`seguimiento.json` no existe. Es el almacén de estado, y aquí se comprueba.
 
 El entorno lanzó las cinco consultas a la vez, no una tras otra. **El abanico lo decidió el entorno,
 no usted.**
