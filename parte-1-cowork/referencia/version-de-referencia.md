@@ -19,8 +19,8 @@ presupuesto    USD 7.000,00 puestos en bodega
 garantía       no se menciona · la estándar del proveedor
 ```
 
-Están en `../encargo.md`, que el asistente lee y el agente no. La instrucción no los trae dentro:
-los pide, y si falta alguno se detiene antes de consultar a un solo proveedor.
+Los dicta la guía en el paso 4. La instrucción no los trae dentro: los pide, y si falta alguno se
+detiene antes de consultar a un solo proveedor.
 
 El único que se presta a error es el tope: se aplica sobre el **total puesto en bodega**, no sobre
 el precio de lista. Un proveedor más barato por unidad puede quedar por encima al sumar el despacho.

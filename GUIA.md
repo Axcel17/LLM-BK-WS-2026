@@ -51,7 +51,6 @@ separación.
 
 ```text
 parte-1-cowork/
-  encargo.md                       qué se necesita · lo lee usted, no el agente
   abastecimiento/SKILL.md          la instrucción · se añade tal cual
 
   espacio-de-trabajo/              ← lo único que recibe el agente
@@ -146,7 +145,9 @@ escriba   /abastecimiento
 No consulta a nadie. Enumera lo que falta —cantidad, plazo, presupuesto— y pregunta. Cinco portales
 no visitados porque faltaban tres datos.
 
-**Ahora el encargo real**, con los valores de `parte-1-cowork/encargo.md`:
+**Ahora el encargo real.** Un embarque se atrasó y hay 40 monitores comprometidos con un cliente en
+12 días hábiles; los 10 del encargo dejan dos de margen para el despacho propio. **No es
+negociable:** una entrega en 11 días no es «casi a tiempo», es un incumplimiento.
 
 ```text
 escriba   40 monitores de 24 pulgadas, entrega máxima 10 días hábiles,

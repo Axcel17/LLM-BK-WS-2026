@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 *.log
+.DS_Store
 
 # Lo que el agente produce en la Parte 1. Es de cada asistente, y comprometerlo
 # publicaria la respuesta del ejercicio a quien clone despues.
