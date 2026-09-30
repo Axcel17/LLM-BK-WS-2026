@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **183 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **190 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -48,7 +48,8 @@ npm run agent -- "100 teclados, 8 días hábiles, tope 5.000"   # otra requisici
 npm run agent -- --tarea "Averigua quién incluye el flete"    # otra tarea, mismo encargo
 npm run measure -- 6               # seis corridas, con tasa de acierto
 npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
-npm run caso                       # el caso validado, con sus afirmaciones
+npm run caso                       # lista los casos probados
+npm run caso -- monitores          # ejecuta uno y afirma su respuesta conocida
 npm run mcp-server                 # el servidor de herramientas, aislado
 ```
 
@@ -71,7 +72,7 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 | `npm run solutions`      | Mantenimiento: escribe las versiones completas sobre `src/`           |
 | `npm run gaps`           | Mantenimiento: restituye el estado de entrega                         |
 | `npm run baseline`       | Registra la huella del catálogo de herramientas                       |
-| `npm run caso`           | Afirma la respuesta conocida del caso validado. Sin argumentos        |
+| `npm run caso`           | Lista los casos probados; con un id ejecuta ese y lo afirma           |
 | `npm run verify-catalog` | Contrasta `data/catalogo.json` contra el que publican los portales    |
 
 ---
@@ -103,6 +104,7 @@ src/
   loop.ts             el ciclo del agente, sin librería de por medio
 
   domain/             el caso y su contrato de datos
+    cases.ts          los casos probados, con la respuesta que el catálogo obliga
     intake.ts         admisión: la petición en prosa se vuelve requisición
     catalog.ts        acceso a los datos del encargo
     suppliers.ts      el catálogo de proveedores, el mismo de los portales

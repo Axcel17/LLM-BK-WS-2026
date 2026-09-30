@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, ClipboardCheck, MessagesSquare } from "lucide-react";
+import { Activity, ClipboardCheck, MessagesSquare, Scale } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
   { href: "/chat", name: "Conversación", Icon: MessagesSquare },
-  { href: "/evaluacion", name: "Evaluación", Icon: ClipboardCheck },
+  // Dos evaluaciones distintas, y separarlas es el punto: una pregunta si el
+  // agente sigue resolviendo lo que resolvía, la otra si el evaluador sigue
+  // coincidiendo con las etiquetas. Bajo un solo nombre se confundían.
+  { href: "/evaluacion", name: "Casos probados", Icon: ClipboardCheck },
+  { href: "/evaluador", name: "Evaluador", Icon: Scale },
   { href: "/monitoreo", name: "Historial", Icon: Activity },
 ] as const;
 

@@ -149,6 +149,71 @@ export async function admit(request: string): Promise<Admission> {
   return JSON.parse(line) as Admission;
 }
 
+/** Un caso probado: la petición y qué enseña. La respuesta vive en el taller. */
+export type WorkshopCase = {
+  id: string;
+  nombre: string;
+  peticion: string;
+  porQue: string;
+};
+
+export type Assertion = { what: string; expected: string; actual: string; ok: boolean };
+
+/** Lo que devuelve ejecutar un caso. La traza está para mirarla, no para creerla. */
+export type CaseOutcome = {
+  id: string;
+  nombre: string;
+  peticion: string;
+  porQue: string;
+  assertions: Assertion[];
+  ok: boolean;
+  traza: {
+    admision: string;
+    recomendado: string | null;
+    comparativo: {
+      quotes: Array<{
+        supplier: string;
+        totalDeliveredUsd: number;
+        meetsLeadTime: boolean;
+        meetsBudget: boolean;
+      }>;
+      noResponse: Array<{ supplier: string; reason: string | null }>;
+      anomalies: Array<{ supplier: string; detectedText: string }>;
+      rationale: string;
+    } | null;
+    anomalias: string[];
+    hallazgos: Array<{ check: string; detail: string }>;
+    veredicto: { evidencia: boolean; descartes: boolean; anomalia: boolean; nota: string } | null;
+  };
+  error: string | null;
+};
+
+/** El banco de casos. Lo declara el taller; el panel no tiene una copia. */
+export async function readCases(): Promise<WorkshopCase[]> {
+  const { stdout } = await run("npm", ["run", "--silent", "casos"], {
+    cwd: REPO_ROOT,
+    maxBuffer: 1024 * 1024,
+    timeout: 60 * 1000,
+  });
+  return JSON.parse(stdout.trim().split("\n").at(-1) ?? "[]") as WorkshopCase[];
+}
+
+/**
+ * Ejecuta un caso y devuelve lo que pasó.
+ *
+ * Corre de verdad: admite, consulta a los proveedores, verifica y evalúa. No lee
+ * una corrida guardada. Una bitácora dice lo que pasó una vez; la pregunta que
+ * este banco responde es si sigue pasando hoy, con este modelo y estas reglas.
+ */
+export async function runCase(id: string): Promise<CaseOutcome> {
+  const { stdout } = await run("npm", ["run", "--silent", "caso", "--", id, "--json"], {
+    cwd: REPO_ROOT,
+    maxBuffer: 8 * 1024 * 1024,
+    timeout: 10 * 60 * 1000,
+  });
+  return JSON.parse(stdout.trim().split("\n").at(-1) ?? "{}") as CaseOutcome;
+}
+
 /** Las ocho reglas, del mismo archivo que lee `src/agent.ts`. */
 export function instructions(): string {
   return readFileSync(join(REPO_ROOT, "data", "instrucciones.md"), "utf8").trim();

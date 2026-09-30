@@ -354,7 +354,7 @@ npm test
 ```
 
 ```text
-debe dar         183 pruebas pasan y 11 fallan
+debe dar         190 pruebas pasan y 11 fallan
 las 11           los seis TODO · se cierran en los tramos 2, 3 y 4
 si falla otra    es la instalación, no el ejercicio
 el tramo 5       necesita clave: copie .env.example a .env antes de llegar
