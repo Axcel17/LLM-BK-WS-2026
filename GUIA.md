@@ -177,28 +177,41 @@ no usted.**
 
 ---
 
-## Paso 5 · La espera — 3 min
+## Paso 5 · El disparador — 3 min
+
+Las cotizaciones tardan unos minutos. Ese intervalo se usa para configurar la tarea que las
+recogerá.
 
 ```text
-configure   una tarea programada que recoja las cotizaciones con cadencia
-observe     dónde dice que va a correr
+Scheduled (barra izquierda) → New task → Set up manually
+
+  Task name      recoger cotizaciones
+  Prompt         Ejecuta la segunda fase: recoge las cotizaciones de las
+                 direcciones guardadas, normalízalas y arma el comparativo.
+  Approval mode  el que decidió en el paso 1
+  Frequency      Hourly · es la cadencia mínima, y no se disparará dentro del bloque
+  Folder         parte-1-cowork/espacio-de-trabajo
+  → Save
 ```
 
-La cadencia mínima disponible excede la duración del bloque, así que la segunda corrida se dispara a
-mano. Lo que importa es haberlo configurado.
+En el paso 6 esta tarea se ejecuta a demanda, desde esa misma pantalla. No hay que volver a escribir
+el encargo.
 
 **Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
-equipo apagado. Esta toca `espacio-de-trabajo/`, así que corre en su computadora y solo mientras
-esté despierta.
+equipo apagado. Esta toca una carpeta del disco, así que corre en su computadora y **solo mientras
+esté despierta y la aplicación abierta**. Si está dormida a la hora programada, la tarea se salta y
+corre al despertar.
 
 ---
 
 ## Paso 6 · Segunda corrida — 10 min
 
 ```text
-escriba    Ejecuta la segunda fase: recoge las cotizaciones de las direcciones guardadas,
-           normalízalas y arma el comparativo.
+Scheduled → recoger cotizaciones → ejecutar a demanda
 ```
+
+Es la tarea del paso 5. El disparador que acaba de configurar es el que hace el trabajo; usted solo
+decide cuándo.
 
 Si un portal sigue en «solicitud en proceso», su espera no venció: la página indica cuánto falta.
 Espere y repita el mismo mensaje. **No reenvíe el formulario** — genera otra referencia y reinicia
