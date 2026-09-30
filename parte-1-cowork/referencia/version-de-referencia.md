@@ -24,23 +24,40 @@ recorrido.
 
 ---
 
-## La tabla de permisos resuelta
+## Los permisos resueltos
 
-| Acción en Gmail | Nivel                   | Razón                                                                                 |
-| --------------- | ----------------------- | ------------------------------------------------------------------------------------- |
-| Buscar y leer   | **Bloquear**            | La tarea no lee correo. Conceder lectura amplía el radio de impacto sin contrapartida |
-| Crear borrador  | Permitir siempre        | Acción reversible, sin efecto externo                                                 |
-| Enviar          | **Requiere aprobación** | Primera acción irreversible del flujo. Aquí va la compuerta                           |
-| Responder       | **Bloquear**            | La tarea no contesta correo recibido. Nadie le escribe al agente                      |
-| Reenviar        | **Bloquear**            | Ajeno a la tarea. Con lectura, es la vía para sacar correo a un tercero               |
+### Capa 1 · el scope de Google
 
-El criterio que ordena la tabla: la compuerta va entre la última acción reversible —el borrador— y
-la primera irreversible —el envío.
+| Scope                                                  | Decisión     | Razón                                                           |
+| ------------------------------------------------------ | ------------ | --------------------------------------------------------------- |
+| View your email messages and settings                  | **no**       | La tarea no lee correo                                          |
+| Manage drafts and send emails                          | **conceder** | Borradores y envío, sin lectura. Es el más estrecho que alcanza |
+| Read, compose, and send emails from your Gmail account | **no**       | Incluye lectura, que la tarea no necesita                       |
 
-Enviar, responder y reenviar ya piden aprobación por defecto. Lo que por defecto queda permitido, y
-hay que cambiar, es leer: esta tarea no lo necesita. El conector de Gmail no ofrece «eliminar».
+Conceder el tercero es el error previsible: su descripción menciona «send» y parece el indicado.
+Trae la lectura de toda la bandeja como acompañante.
 
----
+### Capa 2 · las herramientas
+
+De las treinta, esta tarea necesita **una**:
+
+```text
+Send email message     es todo
+```
+
+`Create draft email` se concede si se quiere revisar el borrador antes del envío. Ninguna otra.
+
+**El criterio que ordena la decisión:** la compuerta va entre la última acción reversible —el
+borrador— y la primera irreversible —el envío—.
+
+**Las que más sorprenden al quedar fuera:**
+
+```text
+Search email threads   la tarea no busca nada en la bandeja
+Forward email          con lectura concedida, es la vía para sacar correo a un tercero
+Move message to Trash  un agente engañado hace perder correo que él no envió
+Mark message as Spam   entrena el filtro para perder correo futuro
+```
 
 ## El resultado esperado del comparativo
 

@@ -22,9 +22,17 @@ El puente autorizado a una aplicación real, sin compartir contraseñas. Disponi
 correo, calendario, almacenamiento en la nube, hojas de cálculo, mensajería de equipo, firma
 electrónica, y sistemas de gestión comercial y de tickets.
 
-**El punto crítico, y lo que se configura en el paso 2:** cada conector tiene permisos **por
-acción**. En Gmail son cinco —buscar y leer, crear borrador, enviar, responder y reenviar— y cada
-una se configura por separado, con tres niveles: permitir siempre, requiere aprobación, o bloqueado.
+**El punto crítico, y lo que se configura en el paso 2:** el permiso se concede en dos capas
+independientes.
+
+```text
+capa 1   el scope de OAuth del proveedor    qué puede tocar el conector
+capa 2   permisos por herramienta en Claude cuándo se permite usar cada una
+```
+
+En Gmail la capa 1 son tres scopes de Google, cada uno un paquete cerrado; la capa 2 son treinta
+herramientas, seis de solo lectura y veinticuatro de escritura o borrado. La segunda no puede
+ampliar la primera.
 
 > Ahí vive el privilegio mínimo. Un conector concedido entero es una decisión que nadie tomó.
 

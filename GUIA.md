@@ -74,8 +74,8 @@ No conecte nada todavía.
 
 ```text
 abra        parte-1-cowork/permisos.md
-complete    5 acciones × 3 niveles: permitir siempre, requiere aprobación, bloquear
-            buscar y leer · crear borrador · enviar · responder · reenviar
+decida      capa 1 · cuál de los 3 scopes de Google concede
+            capa 2 · cuáles de las 30 herramientas de Gmail permite
 responda    el sistema debe enviar un correo al terminar.
             ¿Qué necesita poder hacer en su bandeja, exactamente?
 ```
@@ -95,7 +95,7 @@ responda    el sistema debe enviar un correo al terminar.
 ```text
 2.1  acceso a archivos     solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
 2.2  conector de correo    Gmail, con la cuenta personal
-2.3  permisos              los niveles del paso 1 · no deje los valores por defecto
+2.3  permisos              el scope al autorizar · las herramientas en ajustes → conectores
 2.4  comprobar concedido   «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
 2.5  comprobar bloqueado   «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```

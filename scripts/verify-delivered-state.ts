@@ -141,7 +141,7 @@ const PARTE_1 = [
   {
     archivo: "parte-1-cowork/permisos.md",
     patron: /☐/g,
-    esperado: 15,
+    esperado: 3,
     que: "casillas sin marcar",
   },
 ] as const;

@@ -4,76 +4,116 @@ Se completa **antes** de conectar nada, y a mano.
 
 ---
 
-## El encargo, en términos de permisos
+## Lo que la tarea necesita hacer
 
 El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones. Es
 la única operación que requiere sobre la bandeja.
 
-## La decisión
-
-Para cada acción, un nivel. Marque uno:
-
-| Acción en Gmail           | Permitir siempre | Requiere aprobación | Bloquear |
-| ------------------------- | ---------------- | ------------------- | -------- |
-| **Buscar y leer** correos | ☐                | ☐                   | ☐        |
-| **Crear borrador**        | ☐                | ☐                   | ☐        |
-| **Enviar**                | ☐                | ☐                   | ☐        |
-| **Responder**             | ☐                | ☐                   | ☐        |
-| **Reenviar**              | ☐                | ☐                   | ☐        |
-
-### Qué permisos existen, y cuáles no
-
-Estas cinco son las acciones que el conector de Gmail expone. No hay más.
+## Los permisos se conceden en dos capas
 
 ```text
-buscar y leer     consulta la bandeja con lenguaje natural
-crear borrador    redacta sin efecto externo
-enviar            a un destinatario nuevo
-responder         al remitente de un mensaje recibido
-reenviar          a un tercero, con el contenido original
+capa 1   el scope de Google      al autorizar el conector · define qué puede tocar
+capa 2   permisos de herramienta  ajustes de Claude · define cuándo se permite cada una
 ```
 
-No existen: **eliminar**, **archivar**, ni **modificar etiquetas**. Lo que el conector no expone no
-hay que bloquearlo, y tampoco se puede conceder por error.
+Las dos se conceden por separado y la segunda no puede ampliar la primera.
 
-Por defecto, enviar, responder y reenviar piden aprobación; buscar y leer queda permitido. Ese valor
-por defecto es el que hay que cambiar en el paso 2.3.
+---
 
-> Fuente:
-> [Google Workspace en Claude](https://support.claude.com/en/articles/10166901-using-the-google-drive-integration).
-> Los tres niveles por acción se configuran en la aplicación de escritorio.
+## Capa 1 · El scope de Google
 
-## Las dos preguntas que hay que hacerse en cada fila
+Al autorizar el conector aparecen tres. Cada uno es un paquete cerrado: se concede entero o no se
+concede. Marque el que va a conceder.
 
-**1. ¿La tarea lo necesita?** No "¿podría servir algún día?". ¿Lo necesita **esta** tarea, hoy?
+| Scope, como lo presenta Google                         | Qué incluye                     | ¿Conceder? |
+| ------------------------------------------------------ | ------------------------------- | ---------- |
+| View your email messages and settings                  | leer y buscar, nada más         | ☐          |
+| Manage drafts and send emails                          | borradores y envío, sin lectura | ☐          |
+| Read, compose, and send emails from your Gmail account | lectura **y** escritura, juntas | ☐          |
 
-**2. Si el agente fuera engañado, ¿qué haría con este permiso?**
+**La pregunta.** La tarea envía y nunca lee. ¿Cuál de los tres es el más estrecho que aun así
+alcanza?
 
-Esa segunda pregunta es el **radio de impacto**. Un agente engañado que solo puede leer, informa
-mal. Uno que puede escribir, corrompe datos. Uno que puede leer la bandeja y reenviar, engañado por
-una página, reenvía su correo a un tercero.
+---
+
+## Capa 2 · Los permisos por herramienta
+
+En **ajustes → conectores → Gmail** hay una sección «Tool permissions», con treinta herramientas
+repartidas en dos grupos.
+
+```text
+solo lectura · 6
+  Get draft email · Get email message · Get email thread
+  List draft emails · List labels · Search email threads
+
+escritura y borrado · 24
+  Create draft email · Update draft email · Delete draft email
+  Send email message · Reply to email · Forward email
+  Move message to Trash · Move thread to Trash
+  Remove message from Trash · Remove thread from Trash
+  Mark message as Spam · Mark thread as Spam
+  Unmark message as Spam · Unmark thread as Spam
+  Apply sensitive label (Trash o Spam) a mensaje · y a hilo
+  Create label · Update label · Delete label
+  Add labels to message · Add labels to thread
+  Remove labels from message · Remove labels from thread
+  Modify message labels
+```
+
+**La pregunta.** De las treinta, ¿cuáles necesita **esta** tarea? Enumérelas:
+
+```
+_______________________________________________________________________
+
+_______________________________________________________________________
+```
+
+---
+
+## Las dos preguntas que hay que hacerse en cada herramienta
+
+**1. ¿La tarea la necesita?** No «¿podría servir algún día?». ¿La necesita **esta** tarea, hoy?
+
+**2. Si el agente fuera engañado, ¿qué haría con ella?**
+
+Esa segunda pregunta es el alcance del daño:
+
+```text
+solo lectura                informa mal
+Send email message          escribe a un tercero en su nombre
+Forward email               saca el contenido de su bandeja a un tercero
+Move message to Trash       le hace perder correo que no envió él
+Mark message as Spam        entrena su filtro para que pierda correo futuro
+```
 
 ---
 
 ## Después de decidir
 
-Anote aquí por qué bloqueó lo que bloqueó. En el paso 7 va a volver a esta hoja.
+Anote por qué dejó fuera lo que dejó fuera. En el paso 7 va a volver a esta hoja.
 
 ```
-Bloqueé ___________________ porque _______________________________________
+No concedí ___________________ porque ___________________________________
 
-Bloqueé ___________________ porque _______________________________________
+No concedí ___________________ porque ___________________________________
 ```
 
 ---
 
 ## Al cerrar el bloque
 
-Compare su tabla con los permisos que el sistema requirió:
+Compare esta hoja con lo que el sistema usó en realidad:
 
-- ¿Usó todos los permisos que concedió?
-- ¿Le faltó alguno?
-- ¿Alguno de los que concedió nunca se usó?
+- ¿Usó todo lo que concedió?
+- ¿Le faltó algo?
+- ¿Algo de lo concedido nunca se usó?
 
 > Un permiso concedido y nunca usado es superficie de ataque sin contrapartida. Es exactamente lo
 > que hay que quitar en una revisión de seguridad real.
+
+---
+
+> **Fuentes.** Los tres scopes son los de Google:
+> [`gmail.readonly`, `gmail.compose` y `gmail.modify`](https://developers.google.com/workspace/gmail/api/auth/scopes).
+> El listado de herramientas es el del panel de conectores de la aplicación de escritorio, tomado en
+> septiembre de 2026; conviene contrastarlo contra la pantalla antes del evento.
