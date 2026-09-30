@@ -1,6 +1,7 @@
 # Versión de referencia
 
-Los dos blancos de la instrucción resueltos, la tabla de permisos y el resultado esperado.
+Los dos blancos de la instrucción resueltos y el resultado esperado del comparativo. Los permisos ya
+los dice la guía en el paso 2; aquí está el porqué de cada uno.
 
 Destinada a consultarse **después** de ejecutar el ejercicio. Los seis modos de falla del final del
 documento describen comportamientos observables; leerlos antes de provocarlos reduce el valor del

@@ -93,24 +93,33 @@ está contaminada por lo que la interfaz trae marcado.
 
 ```text
 2.1  acceso a archivos   solo a espacio-de-trabajo/ · NO a parte-1-cowork/ completa
-2.2  el scope            al autorizar Gmail · 3 opciones y un «select all»
-                         conceda el más estrecho que alcance para enviar
-2.3  las herramientas    ajustes → conectores → Gmail · 30, cada una con 3 estados
-                         Always allow · Needs approval · Blocked
-                         lo que la tarea no usa queda en Blocked
+2.2  el scope            al autorizar Gmail, marque UNO:
+                         ☐ View your email messages and settings
+                         ☑ Manage drafts and send emails          ← este
+                         ☐ Read, compose, and send emails...
+                         no use «select all»
+2.3  las herramientas    ajustes → conectores → Gmail
+                         Create draft email    → Always allow
+                         Send email message    → Needs approval
+                         todas las demás       → Blocked
 2.4  comprobar concedido «¿Qué contiene datos/encargo.md, y qué puedes hacer en mi correo?»
 2.5  comprobar bloqueado «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
 
-En **2.2** y **2.3** está la decisión real del bloque. La tarea usa **una** de las treinta:
-`Send email message`, en `Needs approval`, que es la compuerta que se detiene en el paso 7.
-`Create draft email` en `Always allow` si quiere revisar el borrador. Las otras veintiocho, en
-`Blocked`.
+**Compare 2.2 y 2.3 con lo que escribió en el paso 1.** Si concedió de más, ahí está el hábito que
+esta sesión intenta romper. Si concedió de menos, el paso 7 se lo dirá.
+
+Las seis herramientas de solo lectura pueden quedarse como estén: sin el scope de lectura no
+funcionan de todos modos. **El grupo que hay que recorrer es «Write/delete tools».**
+
+`Needs approval` sobre `Send email message` es la compuerta que detiene la corrida en el paso 7. Si
+la deja en `Blocked`, el paso 7 no ocurre; si la deja en `Always allow`, el correo sale sin que
+nadie lo vea.
 
 Resultado esperado en **2.4**: describe el encargo y enumera solo los permisos concedidos. Si no
 reconoce la carpeta, repita 2.1.
 
-Resultado de **2.5**, según lo que decidió en el paso 1:
+Resultado de **2.5**, según lo que decidió:
 
 ```text
 se niega                no concedió el scope, o dejó la herramienta en Blocked
