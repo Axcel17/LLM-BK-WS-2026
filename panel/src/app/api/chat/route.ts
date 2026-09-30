@@ -17,7 +17,13 @@
 
 import { convertToModelMessages, stepCountIs, streamText, type UIMessage } from "ai";
 
-import { connectCatalog, configuration, instructions, APPROVAL_REASON } from "@/lib/workshop";
+import {
+  connectCatalog,
+  configuration,
+  instructions,
+  APPROVAL_REASON,
+  type Requisition,
+} from "@/lib/workshop";
 import { languageModel } from "@/lib/provider";
 
 export const maxDuration = 180;
@@ -73,10 +79,18 @@ export type MetadatosMensaje = {
 export async function POST(request: Request) {
   const {
     messages,
-    requierenFirma = ["place_order"],
-  }: { messages: UIMessage[]; requierenFirma?: string[] } = await request.json();
+    needsApproval = ["place_order"],
+    encargo,
+  }: {
+    messages: UIMessage[];
+    needsApproval?: string[];
+    encargo?: Requisition;
+  } = await request.json();
 
-  const catalog = await connectCatalog();
+  // La requisición admitida viaja con la conversación y gobierna este servidor
+  // MCP. Sin ella `get_brief` sirve el encargo del archivo, y el agente
+  // conversaría sobre un producto mientras se le preguntó por otro.
+  const catalog = await connectCatalog(encargo);
 
   const result = streamText({
     model: languageModel("agent"),
@@ -96,7 +110,7 @@ export async function POST(request: Request) {
     // del paso 1 de la Parte 1 —permisos por acción, antes de conectar nada—
     // puesta donde se puede cambiar y ver el efecto en la misma pantalla.
     toolApproval: ({ toolCall }) =>
-      requierenFirma.includes(toolCall.toolName)
+      needsApproval.includes(toolCall.toolName)
         ? { type: "user-approval" as const, reason: APPROVAL_REASON }
         : ("not-applicable" as const),
     onFinish: () => {

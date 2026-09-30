@@ -17,6 +17,7 @@
     "format:check": "prettier --check .",
     "agent": "tsx --env-file=.env src/cli.ts",
     "caso": "tsx --env-file=.env scripts/caso.ts",
+    "admit": "tsx --env-file=.env scripts/admit.ts",
     "mcp-server": "tsx src/mcp/server.ts",
     "measure": "tsx --env-file=.env scripts/measure-reliability.ts",
     "measure-judge": "tsx --env-file=.env scripts/measure-judge.ts",

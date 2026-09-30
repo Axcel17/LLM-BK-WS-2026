@@ -21,6 +21,7 @@ import {
 } from "@/components/ai-elements/tool";
 import { SessionBar, type AgentTool } from "@/components/session-bar";
 import { Button } from "@/components/ui/button";
+import type { Requisition } from "@/lib/workshop";
 
 export type AgentCard = {
   model: string;
@@ -63,7 +64,13 @@ function signature(part: ToolUIPart): string {
   return args.length > 0 ? `${name}(${args.join(", ")})` : `${name}()`;
 }
 
-export function AgentConversation({ agentCard }: { agentCard: AgentCard }) {
+export function AgentConversation({
+  agentCard,
+  encargo,
+}: {
+  agentCard: AgentCard;
+  encargo: Requisition;
+}) {
   const [draft, setDraft] = useState("");
   const [needsApproval, setNeedsApproval] = useState<string[]>(
     agentCard.tools.filter((h) => h.needsApproval).map((h) => h.name),
@@ -75,8 +82,10 @@ export function AgentConversation({ agentCard }: { agentCard: AgentCard }) {
         api: "/api/chat",
         // La política viaja con cada petición: lo que se marque arriba es lo
         // que la compuerta aplica en la vuelta siguiente.
+        // La requisición admitida viaja con cada petición, igual que la
+        // política: es lo que gobierna al servidor MCP de esta conversación.
         prepareSendMessagesRequest: ({ messages: m }) => ({
-          body: { messages: m, needsApproval },
+          body: { messages: m, needsApproval, encargo },
         }),
       }),
     });

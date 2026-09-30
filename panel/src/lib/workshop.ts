@@ -44,8 +44,13 @@ export type Catalog = { tools: ToolSet; close: () => Promise<void> };
  * El esquema de entrada sale de lo que el servidor declara y no se reescribe a
  * mano, que es la decisión del `TODO(2)`: una traducción manual pierde
  * argumentos sin que nada falle de forma visible.
+ *
+ * La requisición se pasa por argumento y no por el entorno del panel. El panel
+ * es un servidor de larga vida que atiende varias conversaciones; fijarla en su
+ * proceso haría que la de una alcanzara a las otras. Cada conversación levanta
+ * su propio servidor y le entrega la suya.
  */
-export async function connectCatalog(): Promise<Catalog> {
+export async function connectCatalog(brief?: Requisition): Promise<Catalog> {
   const client = new Client({ name: "panel", version: "1.0.0" });
 
   await client.connect(
@@ -53,6 +58,12 @@ export async function connectCatalog(): Promise<Catalog> {
       command: "npx",
       args: ["tsx", "src/mcp/server.ts"],
       cwd: REPO_ROOT,
+      // El hijo no hereda el entorno por omisión. Sin esto `get_brief` sirve el
+      // archivo del caso aunque se haya admitido otra requisición.
+      env: {
+        ...(process.env as Record<string, string>),
+        ...(brief === undefined ? {} : { BRIEF_JSON: JSON.stringify(brief) }),
+      },
     }),
   );
 
@@ -103,6 +114,39 @@ export type Requisition = {
 
 export function requisition(): Requisition {
   return JSON.parse(readFileSync(join(REPO_ROOT, "data", "brief.json"), "utf8")) as Requisition;
+}
+
+/**
+ * Lo que la admisión responde a una petición en prosa.
+ *
+ * Las tres formas son las de `src/admission.ts`, más `error` para cuando el
+ * proveedor del modelo no responde: en pantalla hay que poder decirlo.
+ */
+export type Admission =
+  | { status: "admitted"; brief: Requisition; outcome: { notes: string | null } }
+  | {
+      status: "incomplete";
+      outcome: { missing: Array<{ field: string; why: string }>; question: string | null };
+    }
+  | { status: "unfounded"; findings: Array<{ detail: string }> }
+  | { status: "error"; error: string };
+
+/**
+ * Admite una petición en prosa, o explica por qué no alcanza.
+ *
+ * Es literalmente `npm run admit -- "…"`, el mismo criterio que corre en la
+ * terminal. El panel no lo reimplementa: si admitiera con reglas propias, la
+ * consola y la terminal aceptarían peticiones distintas.
+ */
+export async function admit(request: string): Promise<Admission> {
+  const { stdout } = await run("npm", ["run", "--silent", "admit", "--", request], {
+    cwd: REPO_ROOT,
+    maxBuffer: 1024 * 1024,
+    timeout: 2 * 60 * 1000,
+  });
+
+  const line = stdout.trim().split("\n").at(-1) ?? "";
+  return JSON.parse(line) as Admission;
 }
 
 /** Las ocho reglas, del mismo archivo que lee `src/agent.ts`. */

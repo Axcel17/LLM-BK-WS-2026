@@ -1,17 +1,11 @@
-import { AgentConversation } from "@/components/agent-conversation";
-import { RequisitionPanel } from "@/components/requisition-panel";
+import { AdmissionGate } from "@/components/admission-gate";
 import { agentCard, requisition } from "@/lib/workshop";
 
 export const dynamic = "force-dynamic";
 
 export default function Chat() {
-  // La ficha y la requisición se arman en el servidor desde los mismos
-  // archivos que gobiernan al agente: `data/instrucciones.md` y
-  // `data/brief.json`. Nada de lo que muestra la consola está escrito aquí.
-  return (
-    <>
-      <RequisitionPanel data={requisition()} />
-      <AgentConversation agentCard={agentCard()} />
-    </>
-  );
+  // La ficha sale de `data/instrucciones.md`, el mismo archivo que gobierna al
+  // agente. La requisición del caso viaja como alternativa, no como encargo
+  // impuesto: aquí se declara el propio y la admisión decide si alcanza.
+  return <AdmissionGate agentCard={agentCard()} fallback={requisition()} />;
 }

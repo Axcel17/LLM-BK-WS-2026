@@ -27,14 +27,28 @@ El panel **no importa el TypeScript del taller**. Se comunica de las tres formas
 dos sistemas de verdad, y esa restricción es deliberada: obliga a que no haya dos copias de ninguna
 decisión.
 
-| Vía           | Qué cruza                 | Dónde                                                    |
-| ------------- | ------------------------- | -------------------------------------------------------- |
-| **Protocolo** | Las herramientas          | Levanta `src/mcp/server.ts` por MCP, igual que el agente |
-| **Archivos**  | La política, las corridas | `data/instrucciones.md` y `data/runs/*.json`             |
-| **Procesos**  | La evaluación             | Ejecuta `npm run measure-judge -- N --json`              |
+| Vía           | Qué cruza                  | Dónde                                                    |
+| ------------- | -------------------------- | -------------------------------------------------------- |
+| **Protocolo** | Las herramientas           | Levanta `src/mcp/server.ts` por MCP, igual que el agente |
+| **Archivos**  | La política, las corridas  | `data/instrucciones.md` y `data/runs/*.json`             |
+| **Procesos**  | La evaluación, la admisión | Ejecuta `npm run measure-judge` y `npm run admit`        |
 
 `data/instrucciones.md` lo leen los dos: `src/agent.ts` y esta consola. Si viviera dentro de un
 módulo, habría dos copias de las ocho reglas y una empezaría a mentir.
+
+## Primero se admite el encargo, después se conversa
+
+La conversación no empieza en blanco: se declara qué se necesita comprar y la admisión decide si
+alcanza. Es `npm run admit`, el mismo criterio que corre en la terminal, invocado por proceso — si
+el panel admitiera con reglas propias, la consola y la terminal aceptarían peticiones distintas.
+
+Lo admitido gobierna esa conversación y nada más. La requisición viaja en el cuerpo de cada petición
+y se le entrega al servidor MCP que esa conversación levanta, no al entorno del panel: es un
+servidor de larga vida que atiende a varias personas, y fijarla en su proceso haría que la de una
+alcanzara a las otras.
+
+Sin declarar nada se puede usar el encargo del caso validado, que es lo que `get_brief` sirve por
+omisión.
 
 ## El chat conversa, y eso tiene un costo
 
