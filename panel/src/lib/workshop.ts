@@ -149,6 +149,27 @@ export async function admit(request: string): Promise<Admission> {
   return JSON.parse(line) as Admission;
 }
 
+/** Lo que el mercado del taller sabe cotizar. */
+export type Product = { nombre: string; especificacion: string };
+
+/**
+ * Los productos del catálogo, para que la admisión no sea adivinanza.
+ *
+ * Sin esta lista alguien pide laptops, los cinco responden que no identifican el
+ * artículo y el encargo termina fuera de alcance sin que se entienda por qué.
+ * Qué proveedor maneja cuál no se dice: eso es lo que la ronda averigua.
+ */
+export function products(): Product[] {
+  const catalogo = JSON.parse(readFileSync(join(REPO_ROOT, "data", "catalogo.json"), "utf8")) as {
+    productos: Array<{ nombre: string; especificacion: string }>;
+  };
+
+  return catalogo.productos.map((p) => ({
+    nombre: p.nombre,
+    especificacion: p.especificacion,
+  }));
+}
+
 /** Un caso probado: la petición y qué enseña. La respuesta vive en el taller. */
 export type WorkshopCase = {
   id: string;

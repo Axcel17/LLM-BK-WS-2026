@@ -10,7 +10,12 @@ que no llegó y no obedecer ese texto.
 
 Material del taller **Dejemos de conversar con la IA y empecemos a delegar** · Innova-T Latam 2026.
 
-Consta de dos bloques prácticos, y ambos se siguen desde **[`GUIA.md`](GUIA.md)**.
+## Qué leer
+
+**El taller se sigue desde [`GUIA.md`](GUIA.md).** Este README es la referencia: qué instalar, cómo
+está organizado el proyecto y qué hace cada comando. Se consulta, no se lee de corrido.
+
+El único tramo que va antes de la guía es [Requisitos](#requisitos), para dejar el equipo listo.
 
 | Parte      | Material                             | Duración |
 | ---------- | ------------------------------------ | -------- |

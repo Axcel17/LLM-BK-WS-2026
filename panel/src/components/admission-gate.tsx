@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AgentConversation, type AgentCard } from "@/components/agent-conversation";
 import { RequisitionPanel } from "@/components/requisition-panel";
 import { Button } from "@/components/ui/button";
-import type { Admission, Requisition } from "@/lib/workshop";
+import type { Admission, Product, Requisition } from "@/lib/workshop";
 
 /**
  * La puerta: primero se admite el encargo, después se conversa.
@@ -21,9 +21,11 @@ import type { Admission, Requisition } from "@/lib/workshop";
 export function AdmissionGate({
   agentCard,
   fallback,
+  products,
 }: {
   agentCard: AgentCard;
   fallback: Requisition;
+  products: Product[];
 }) {
   const [encargo, setEncargo] = useState<Requisition | null>(null);
   const [draft, setDraft] = useState("");
@@ -72,12 +74,31 @@ export function AdmissionGate({
         cuatro no hay ronda que consultar, y se pregunta antes de gastar una sola consulta.
       </p>
 
+      <div className="border-border/60 bg-card/40 mt-5 rounded-xl border px-4 py-3">
+        <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.08em] uppercase">
+          Lo que este mercado cotiza
+        </p>
+        <ul className="mt-2 space-y-1">
+          {products.map((p) => (
+            <li key={p.nombre} className="flex flex-wrap gap-x-2 text-xs">
+              <span className="font-medium">{p.nombre}</span>
+              <span className="text-muted-foreground">{p.especificacion}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-muted-foreground border-border/60 mt-2.5 border-t pt-2 text-[11px] leading-relaxed">
+          Cualquier otra cosa se admite igual, y los cinco proveedores responderán que no la
+          identifican: el encargo terminará fuera de alcance. Qué proveedor maneja cuál es lo que la
+          ronda averigua.
+        </p>
+      </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
           void admit(draft);
         }}
-        className="border-border/70 bg-card focus-within:border-primary/50 focus-within:ring-primary/10 mt-5 flex items-end gap-2 rounded-2xl border p-2 shadow-sm transition-all focus-within:ring-4"
+        className="border-border/70 bg-card focus-within:border-primary/50 focus-within:ring-primary/10 mt-4 flex items-end gap-2 rounded-2xl border p-2 shadow-sm transition-all focus-within:ring-4"
       >
         <textarea
           value={draft}

@@ -1,5 +1,9 @@
 # Guía de laboratorio
 
+**Este es el documento que se sigue.** De principio a fin, en orden. El [`README.md`](README.md) no
+se lee de corrido: es la referencia a la que esta guía manda cuando hace falta —instalar Git y Node,
+estructura del proyecto, dependencias—.
+
 Los dos bloques prácticos del taller, en orden. 135 minutos en total.
 
 | Parte      | Qué se hace                                         | Duración |
@@ -11,8 +15,7 @@ Los dos bloques prácticos del taller, en orden. 135 minutos en total.
 agéntico en un entorno gestionado y observa sus modos de falla. La Parte 2 las escribe. Las carpetas
 de `src/` corresponden a esas mismas seis piezas.
 
-Cada parte funciona por separado. La referencia del proyecto —instalación, estructura, dependencias—
-está en [`README.md`](README.md).
+Cada parte funciona por separado.
 
 ---
 
@@ -129,6 +132,18 @@ añada     Customize → Skills → Add · seleccione parte-1-cowork/abastecimie
 
 No hay nada que rellenar. La instrucción declara **el método** y **exige el encargo** —producto,
 cantidad, plazo y presupuesto—: si falta alguno, pregunta antes de consultar a nadie.
+
+Este mercado cotiza cuatro productos, y una ronda cotiza uno solo:
+
+```text
+Monitor 24" Full HD               panel IPS, 75 Hz, HDMI + VGA
+Estación de acople USB-C          doble salida de video, entrega 90 W
+Kit teclado y mouse inalámbricos  2,4 GHz, distribución latinoamericana
+Silla ergonómica                  soporte lumbar regulable, respaldo en malla
+```
+
+Pedir otra cosa es válido: los cinco responderán que no la identifican. Cuál maneja cada proveedor
+es lo que la ronda averigua.
 
 Queda disponible como `/abastecimiento`.
 
@@ -704,6 +719,9 @@ recolector.
 
 En uso real la entrada es prosa, y puede llegar incompleta o fuera de alcance. El texto que se le
 pasa al agente **es la requisición**: pasa por admisión y gobierna la corrida entera.
+
+El mercado es el mismo de la Parte 1 —monitores, estaciones de acople, kits de teclado y mouse,
+sillas ergonómicas— y se reconocen por sinónimos: «pantallas», «docking», «teclados», «asientos».
 
 ```bash
 npm run caso
