@@ -169,8 +169,11 @@ ImportAndina                                   acusa recibo, sin plazo de respue
 ```
 
 **Fallo previsto:** guarda el número de referencia y omite la dirección completa. Sin el parámetro
-de tiempo la página no carga, y hay que reenviar la solicitud. Es el modo de falla del almacén de
-estado.
+de tiempo la página no carga, y hay que reenviar la solicitud.
+
+No es recuperable: el paso 6 corre en una **sesión nueva**, sin la conversación de este paso. Lo que
+no quede en `seguimiento.json` no existe. Es el modo de falla del almacén de estado, y aquí se
+comprueba.
 
 El entorno lanzó las cinco consultas a la vez, no una tras otra. **El abanico lo decidió el entorno,
 no usted.**
@@ -186,16 +189,21 @@ recogerá.
 Scheduled (barra izquierda) → New task → Set up manually
 
   Task name      recoger cotizaciones
-  Prompt         Ejecuta la segunda fase: recoge las cotizaciones de las
-                 direcciones guardadas, normalízalas y arma el comparativo.
+  Prompt         Usa la instrucción de abastecimiento y ejecuta su fase 2:
+                 lee salidas/seguimiento.json, visita cada dirección guardada,
+                 normaliza las cotizaciones y escribe salidas/comparativo.md.
   Approval mode  el que decidió en el paso 1
   Frequency      Hourly · es la cadencia mínima, y no se disparará dentro del bloque
   Folder         parte-1-cowork/espacio-de-trabajo
   → Save
 ```
 
-En el paso 6 esta tarea se ejecuta a demanda, desde esa misma pantalla. No hay que volver a escribir
-el encargo.
+En el paso 6 esta tarea se ejecuta a demanda, desde esa misma pantalla.
+
+**El prompt tiene que bastarse solo.** Una tarea programada corre en una sesión nueva: no tiene la
+conversación del paso 4, no recuerda a quién contactó ni qué le respondieron. Lo único que sobrevive
+es lo que quedó escrito —`salidas/seguimiento.json`, la carpeta y la instrucción instalada—, y por
+eso el prompt nombra el archivo en vez de decir «las direcciones guardadas».
 
 **Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
 equipo apagado. Esta toca una carpeta del disco, así que corre en su computadora y **solo mientras
