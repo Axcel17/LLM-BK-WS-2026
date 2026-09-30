@@ -362,9 +362,8 @@ el tramo 5       necesita clave: copie .env.example a .env antes de llegar
 
 Los `TODO` aparecen en el panel de tareas del editor. Desde la terminal, `grep -rn "TODO(" src/`.
 
-Si un tramo se atasca, `npm run solutions` pone las versiones completas en `src/` y `npm run gaps`
-devuelve los `TODO`. Antes de sobrescribir, guarda lo que llevara escrito en `scripts/.tuyo/` y dice
-cómo recuperarlo.
+**El código de los seis `TODO` está en esta guía**, en el tramo que le toca, con lo que decide cada
+uno. No hace falta buscarlo en otro lado.
 
 ---
 
@@ -415,13 +414,31 @@ al terminar npm test -- schemas  →  17 pasan
 deriva los tipos de TypeScript a la vez, así que un contrato mal usado falla al compilar.
 
 **TODO(1a) · el plazo.** Un proveedor puede no declararlo, así que hace falta poder representarlo.
-Pero omitir un campo no es lo mismo que declararlo desconocido.
+Pero **omitir un campo no es lo mismo que declararlo desconocido**: con `.default(null)` el modelo
+puede no emitirlo y el esquema lo rellena.
+
+Quite esa línea:
+
+```ts
+leadTimeBusinessDays: z
+  .number()
+  .int()
+  .min(0)
+  .nullable()
+  .default(null)   // ← esta línea sale
+  .describe("Plazo convertido a días hábiles. null si el proveedor no lo declara"),
+```
 
 > Observado con `gemini-3.1-flash-lite`: no emitía el campo, y la verificación de plazo del tramo 4
 > se quedaba sin dato que comprobar — pasaba en verde sobre una salida incompleta.
 
-**TODO(1b) · las dos listas.** Con valor por defecto, el modelo puede omitirlas y el esquema las
-rellena con vacío. Una lista vacía debería ser una afirmación explícita.
+**TODO(1b) · las dos listas.** Mismo problema: con valor por defecto el modelo puede omitirlas.
+**Una lista vacía debería ser una afirmación explícita**, no el resultado de no haber mirado.
+
+```ts
+noResponse: z.array(noResponseSchema),
+anomalies: z.array(anomalySchema),
+```
 
 > Hay un segundo motivo, que aparece al cambiar de proveedor: la salida estructurada estricta de
 > OpenAI rechaza el esquema completo si una propiedad no es obligatoria.
@@ -448,15 +465,38 @@ al terminar npm test -- client  →  4 pasan
 agente consume sin saber en qué lenguaje está escrito ni dónde corre. Las pruebas lo levantan como
 proceso hijo real en lugar de simularlo — de ahí los segundos.
 
-**TODO(2).** Reescribir el esquema a mano mirando `get_quote`, que recibe un argumento, parece
-suficiente. El catálogo expone además `place_order`, que recibe dos.
+**TODO(2).** `available` trae lo que el servidor declara: nombre, descripción y esquema de entrada.
+Hay que recorrerlo y registrar una herramienta por cada definición.
+
+```ts
+for (const definition of available) {
+  tools[definition.name] = tool({
+    description: definition.description ?? "",
+    // El esquema que el servidor declara se usa tal cual. Reescribirlo a mano
+    // aquí duplicaría el contrato en dos lugares, y el día que el servidor
+    // agregue un argumento esta copia se quedaría atrás sin avisar.
+    inputSchema: jsonSchema(definition.inputSchema as Parameters<typeof jsonSchema>[0]),
+    execute: async (args) =>
+      textOf(
+        await client.callTool({
+          name: definition.name,
+          arguments: args as Record<string, unknown>,
+        }),
+      ),
+  });
+}
+```
+
+**La decisión está en `inputSchema`.** Reescribirlo a mano mirando `get_quote`, que recibe un
+argumento, parece suficiente. El catálogo expone además `place_order`, que recibe dos.
 
 > Una traducción a mano tiende a quedarse con el primero: el modelo pierde la capacidad de enviar el
 > monto **sin que nada falle de forma visible**. La prueba
 > `cada herramienta conserva los argumentos que el servidor declara` lo discrimina.
 
 `description` es lo único que el modelo lee para decidir si usa una herramienta. Es documentación
-que cambia el comportamiento en ejecución.
+que cambia el comportamiento en ejecución. Y esta tabla es el límite del agente: una herramienta
+ausente de este registro no existe para el modelo, aunque su nombre aparezca en el prompt.
 
 **Y quien controla el servidor cambia el agente sin tocar este proyecto.** Para verlo:
 
@@ -504,15 +544,82 @@ vienen completas.
 | `checkTieBreak`         | viene completa                                         |
 | `checkEvidence`         | viene completa                                         |
 
-**TODO(3a).** Lo escrito cubre al proveedor que falta y al que sobra, y aun así deja pasar un
-informe contradictorio: el mismo proveedor declarado como cotización y como ausencia. Salió de una
-corrida real, y como figuraba en alguna de las dos listas, la cobertura lo daba por cubierto.
+**TODO(3a) · la contradicción.** Lo escrito cubre al proveedor que falta y al que sobra, y aun así
+deja pasar un informe contradictorio: **el mismo proveedor declarado como cotización y como
+ausencia.** Salió de una corrida real, y como figuraba en alguna de las dos listas, la cobertura lo
+daba por cubierto.
 
-**TODO(3b).** El total declarado debe cuadrar con unitario × cantidad + flete, con margen de
-redondeo. La prueba de precisión decide si el margen está bien planteado.
+```ts
+for (const supplier of [...quoted].filter((name) => absent.has(name)).sort()) {
+  findings.push({
+    check: "coverage",
+    detail: `${supplier} figura como cotización y como ausencia a la vez.`,
+  });
+}
+```
 
-**TODO(3c).** Lo escrito confía en lo que cada cotización declara sobre sí misma — que es
-exactamente lo que un texto inyectado manipula: basta con declararse conforme.
+**TODO(3b) · el total contra sus componentes.** Debe cuadrar con unitario × cantidad + flete, con
+margen de redondeo. Los importes se comparan **en centavos enteros**: `6360.01 - 6360` da
+`0.010000000000218` en coma flotante, y comparar en dólares produce falsos positivos.
+
+```ts
+const findings: Finding[] = [];
+
+for (const quote of comparison.quotes) {
+  const expectedCents = toCents(quote.unitPriceUsd) * c.quantity + toCents(quote.freightUsd);
+  const declaredCents = toCents(quote.totalDeliveredUsd);
+  const differenceCents = Math.abs(declaredCents - expectedCents);
+
+  if (differenceCents > TOLERANCE_CENTS) {
+    findings.push({
+      check: "arithmetic",
+      detail:
+        `${quote.supplier}: declara ${quote.totalDeliveredUsd} pero ` +
+        `${quote.unitPriceUsd} × ${c.quantity} + ${quote.freightUsd} = ` +
+        `${(expectedCents / 100).toFixed(2)} ` +
+        `(diferencia ${(differenceCents / 100).toFixed(2)}).`,
+    });
+  }
+}
+
+return findings;
+```
+
+**TODO(3c) · el recomendado contra sus propias cifras.** Lo escrito confía en lo que cada cotización
+declara sobre sí misma — **que es exactamente lo que un texto inyectado manipula**: basta con
+declararse conforme. Falta mirar los números del recomendado, no su declaración.
+
+```ts
+const recommended = comparison.quotes.find(
+  (quote) => quote.supplier === comparison.recommendedSupplier,
+);
+
+if (recommended) {
+  if (
+    recommended.leadTimeBusinessDays !== null &&
+    recommended.leadTimeBusinessDays > c.maxLeadTimeBusinessDays
+  ) {
+    findings.push({
+      check: "hard-limits",
+      detail:
+        `Se recomienda a ${recommended.supplier}, que entrega en ` +
+        `${recommended.leadTimeBusinessDays} días hábiles sobre un máximo de ` +
+        `${c.maxLeadTimeBusinessDays}.`,
+    });
+  }
+
+  if (recommended.totalDeliveredUsd > c.budgetCapUsd) {
+    findings.push({
+      check: "hard-limits",
+      detail:
+        `Se recomienda a ${recommended.supplier}, cuyo total de ` +
+        `${recommended.totalDeliveredUsd} supera el tope de ${c.budgetCapUsd}.`,
+    });
+  }
+}
+
+return findings;
+```
 
 > **La misma restricción, dos veces.** La regla 4 del prompt pide descartar a quien excede el plazo;
 > `checkHardLimits` comprueba ese número pase lo que pase. Es la diferencia entre un umbral
