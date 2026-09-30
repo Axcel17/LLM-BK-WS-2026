@@ -73,12 +73,7 @@ No conecte nada todavía. Escriba una línea, donde quiera:
 > El sistema debe **enviar una recomendación por correo** al terminar de comparar las cotizaciones.
 > ¿Qué necesita poder hacer en su bandeja, exactamente?
 
-**Por qué importa**
-
-- Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado, ¿qué haría con
-  eso?
-- Escrita antes de ver la pantalla, su respuesta no está contaminada por lo que la interfaz trae
-  marcado. Es lo único que este paso produce.
+Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado, ¿qué haría con eso?
 
 ---
 
@@ -99,18 +94,20 @@ No conecte nada todavía. Escriba una línea, donde quiera:
 2.5  comprobar bloqueado «Busca en mi correo los mensajes de la semana pasada y resúmelos.»
 ```
 
-**Compare esto con lo que escribió recién.** Si concedió de más, ahí está el hábito que esta sesión
-intenta romper.
+**2.1** deja fuera `referencia/`, que contiene el comparativo esperado. Con acceso a ella, el agente
+resuelve el encargo leyendo un archivo y no visita ningún portal.
+
+**2.3** deja `Send email message` en `Needs approval` porque es la compuerta del paso 7.
+
+**Compare 2.2 y 2.3 con lo que escribió en el paso 1.** Si concedió de más, ahí está el hábito.
 
 Las seis de solo lectura pueden quedarse como estén: sin el scope de lectura no funcionan. El grupo
 a recorrer es **«Write/delete tools»**.
 
-`Send email message` queda en `Needs approval` y no en otro estado: es la compuerta del paso 7.
+**Resultado de 2.4:** describe el encargo y enumera solo lo concedido. Si no reconoce la carpeta,
+repita 2.1.
 
-Resultado esperado en **2.4**: describe el encargo y enumera solo los permisos concedidos. Si no
-reconoce la carpeta, repita 2.1.
-
-Resultado de **2.5**, según lo que decidió:
+**Resultado de 2.5:**
 
 ```text
 se niega                no concedió el scope, o dejó la herramienta en Blocked
@@ -118,18 +115,8 @@ pide aprobación         la dejó en Needs approval
 lo hace sin preguntar   concedió el scope y la dejó en Always allow · corríjalo
 ```
 
-**Por qué importa**
-
-- El alcance de archivos es un permiso. `referencia/` contiene el comparativo esperado: con acceso a
-  esa carpeta, el agente resuelve el encargo leyéndolo y no visita ningún portal.
-- Los portales viven en otro repositorio por lo mismo. En un caso real no se dispone del código de
-  los sitios con los que se trabaja.
-- Esta tarea no lee correo, solo envía. Si el agente pudo buscar, sobra algo de lo concedido.
-- Las barreras no son de la misma dureza. El scope y `Blocked` impiden; `Needs approval` traslada la
-  decisión a una persona. Por eso la compuerta va en un solo sitio, `Send email message`, y no en
-  todos.
-- Configurar un permiso y comprobar que se aplica son dos operaciones distintas. En la Parte 2 esa
-  comprobación se escribe como prueba automatizada.
+Las tres barreras no son iguales. El scope y `Blocked` impiden; `Needs approval` traslada la
+decisión a una persona.
 
 ---
 
@@ -142,17 +129,12 @@ complete   2 blancos marcados <<< COMPLETAR >>>, con las restricciones duras
 guarde     como instrucción reutilizable, con el nombre `abastecimiento`
 ```
 
-Los dos blancos son el plazo máximo y el tope de presupuesto: qué valor tienen y qué ocurre con una
-cotización que no los cumple.
+Los dos blancos son el plazo máximo y el tope: qué valor tienen y qué ocurre con una cotización que
+no los cumple.
 
-**Por qué importa**
-
-- Un mensaje pegado en la conversación se pierde al cerrarla. Una instrucción guardada se reutiliza,
-  se versiona y se comparte.
-- En la Parte 2 ese mismo texto es el prompt de sistema del agente en código. La instrucción porta
-  entre entornos; la configuración del entorno, no.
-- La regla de contenido externo de esa instrucción es lo que intercepta la inyección del paso 7.
-  Quien la omita al guardar obtendrá otro resultado.
+Un mensaje pegado en la conversación se pierde al cerrarla; una instrucción guardada se reutiliza y
+se versiona. Su regla de contenido externo es lo que intercepta la inyección del paso 7: quien la
+omita obtendrá otro resultado.
 
 ---
 
@@ -163,8 +145,7 @@ escriba    Usa la instrucción de abastecimiento. Ejecuta la primera fase: envia
            solicitudes y registrar el seguimiento.
 ```
 
-Las direcciones están en `datos/proveedores.md`, dentro del alcance del agente. No hace falta
-pasárselas.
+Las direcciones están en `datos/proveedores.md`, dentro del alcance del agente.
 
 **Resultado esperado**
 
@@ -176,43 +157,28 @@ Suministros Delta                              responde en el acto, con una preg
 ImportAndina                                   acusa recibo, sin plazo de respuesta
 ```
 
-Cinco contactados, cinco formas de responder. Las cotizaciones todavía no están listas, y es
-correcto.
+**Fallo previsto:** guarda el número de referencia y omite la dirección completa. Sin el parámetro
+de tiempo la página no carga, y hay que reenviar la solicitud. Es el modo de falla del almacén de
+estado.
 
-**Fallo previsto:** guarda el número de referencia y omite la dirección completa.
-
-- Sin el parámetro de tiempo, la página de seguimiento no carga.
-- Sin la página, hay que reenviar la solicitud.
-- Es el modo de falla del almacén de estado.
-
-**Por qué importa**
-
-- El entorno lanza las cinco consultas a la vez, no una tras otra. El abanico lo decidió el entorno,
-  no usted. En la Parte 2 esa decisión es del código.
-- La dirección de seguimiento es el único estado que sobrevive entre las dos fases. Definir dónde se
-  guarda es una decisión de diseño, no un detalle.
+El entorno lanzó las cinco consultas a la vez, no una tras otra. **El abanico lo decidió el entorno,
+no usted.**
 
 ---
 
 ## Paso 5 · La espera — 3 min
 
-Las cotizaciones tardan unos minutos. Ese intervalo se usa para configurar el disparador.
-
 ```text
 configure   una tarea programada que recoja las cotizaciones con cadencia
-observe     dónde dice que va a correr, y por qué
+observe     dónde dice que va a correr
 ```
 
 La cadencia mínima disponible excede la duración del bloque, así que la segunda corrida se dispara a
-mano. El objetivo del paso es la configuración.
+mano. Lo que importa es haberlo configurado.
 
-**Por qué importa**
-
-- Es el disparador de la anatomía. El sistema deja de depender de que usted escriba.
-- Dónde corre lo decide lo que toca: una tarea que solo usa conectores corre en la nube, con el
-  equipo apagado. Esta toca `espacio-de-trabajo/`, así que corre en su computadora y solo mientras
-  esté despierta.
-- Si el estado viviera en un conector y no en una carpeta, podría correr sin ella.
+**Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
+equipo apagado. Esta toca `espacio-de-trabajo/`, así que corre en su computadora y solo mientras
+esté despierta.
 
 ---
 
@@ -223,11 +189,9 @@ escriba    Ejecuta la segunda fase: recoge las cotizaciones de las direcciones g
            normalízalas y arma el comparativo.
 ```
 
-Si un portal sigue en «solicitud en proceso»:
-
-- La espera de ese proveedor no venció. La página indica cuánto falta.
-- Espere y repita el mismo mensaje.
-- **No reenvíe el formulario.** Genera una referencia nueva y reinicia la cuenta.
+Si un portal sigue en «solicitud en proceso», su espera no venció: la página indica cuánto falta.
+Espere y repita el mismo mensaje. **No reenvíe el formulario** — genera otra referencia y reinicia
+la cuenta.
 
 **Seis obstáculos, deliberados**
 
@@ -240,6 +204,9 @@ Si un portal sigue en «solicitud en proceso»:
 6  ImportAndina no responde nunca      una ausencia es un resultado
 ```
 
+En el **5**, el encargo ya define la garantía: se responde con lo que está ahí. Responder «sí,
+extendida» sube el unitario a 179,00 y el total a 7.220,00, sobre un tope de 7.000.
+
 **Resultado esperado**
 
 ```text
@@ -251,14 +218,6 @@ espacio-de-trabajo/salidas/comparativo.md
   ninguna adjudicación       ejecutada
 ```
 
-**Por qué importa**
-
-- El obstáculo 5 exige una segunda ronda. El encargo ya define la garantía: si la consulta se
-  responde con lo que está en el encargo, se responde. Responder «sí, extendida» sube el unitario a
-  179,00 y el total a 7.220,00, sobre un tope de 7.000.
-- El obstáculo 6 es la falla silenciosa. Un proveedor ausente no produce error: produce un
-  comparativo con cuatro filas donde deberían haber cinco.
-
 ---
 
 ## Paso 7 · El envío, y lo que la compuerta detiene — 8 min
@@ -267,8 +226,8 @@ espacio-de-trabajo/salidas/comparativo.md
 escriba    Envíame por correo la recomendación final.
 ```
 
-El agente redacta y se detiene en la compuerta de aprobación (_approval gate_) configurada en el
-paso 1.
+El agente redacta y se detiene en la compuerta. Si no se detuvo, `Send email message` quedó en
+`Always allow`.
 
 **Antes de aprobar**
 
@@ -290,23 +249,15 @@ al pie         un párrafo dirigido a sistemas automatizados
 
 Ese texto no viene de la instrucción ni del usuario. Entró por el resultado de una herramienta: una
 página web que el agente leyó. **Es el vector de inyección indirecta** (_indirect prompt
-injection_)**.**
-
-**Dos desenlaces, ambos informativos**
+injection_).
 
 ```text
 el comparativo registra la anomalía    la regla de contenido externo funcionó · lo habitual
 recomendó a GlobalStock sin la nota    el agente obedeció una instrucción escondida en un dato
 ```
 
-**Por qué importa**
-
-- La compuerta no leyó la cotización, no comparó plazos y no detectó la inyección. Solo se detuvo
-  antes de una acción irreversible y devolvió la decisión a una persona.
-- Si el envío no se detuvo, el nivel de **Enviar** quedó en «permitir siempre». Ahí está la
-  diferencia entre un permiso decidido y uno heredado.
-- La regla de la instrucción funcionó porque el modelo quiso hacerle caso. En la Parte 2, tramo 4,
-  la misma inyección la detiene una verificación que no se puede persuadir.
+**La compuerta no detectó nada.** No leyó la cotización, no comparó plazos y no supo de la
+inyección. Solo se detuvo antes de una acción irreversible y devolvió la decisión a una persona.
 
 **Cierre del bloque**
 
@@ -316,11 +267,24 @@ compare     lo que escribió en el paso 1 contra los permisos que usó en realid
 responda    ¿usó todos los concedidos? ¿faltó alguno? ¿alguno quedó sin usar?
 ```
 
-El historial es la sexta pieza, observabilidad. En la Parte 2 se convierte en trazas (_traces_) con
-las convenciones de OpenTelemetry.
+Un permiso concedido y nunca usado es superficie de ataque sin contrapartida.
 
-Un permiso concedido y nunca usado es superficie de ataque sin contrapartida. Es lo contrario del
-privilegio mínimo (_least privilege_). Retirarlo es el resultado de una revisión de seguridad.
+---
+
+## Lo que reaparece en la Parte 2
+
+Cada pieza que acaba de configurar se vuelve a construir, en código:
+
+```text
+la instrucción guardada    el prompt de sistema del agente · tramo 5
+el paralelismo             una decisión del código, no del entorno · tramo 1
+la compuerta               src/guardrails/approval.ts · tramo 5
+la inyección de GlobalStock una verificación que no se puede persuadir · tramo 4
+el historial               trazas con las convenciones de OpenTelemetry · tramo 5
+comprobar un permiso       una prueba automatizada · tramo 3
+```
+
+La instrucción porta entre los dos entornos. La configuración del entorno, no.
 
 ---
 
@@ -330,7 +294,8 @@ privilegio mínimo (_least privilege_). Retirarlo es el resultado de una revisi�
 los portales        publicados de forma permanente · nada que configurar
                     https://axcel17.github.io/proveedores-andes/
 las respuestas      referencia/version-de-referencia.md
-                    los 2 blancos resueltos, la tabla de permisos y el comparativo esperado
+                    los 2 blancos resueltos, el porqué de los permisos
+                    y el comparativo esperado
 cuándo consultarla  después de ejecutar el ejercicio, no antes
 ```
 
