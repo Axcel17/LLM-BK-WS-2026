@@ -98,7 +98,8 @@ Dos criterios: ¿lo necesita **esta** tarea, hoy? Y si el agente fuera engañado
 **2.1** deja fuera `referencia/`, que contiene el comparativo esperado. Con acceso a ella, el agente
 resuelve el encargo leyendo un archivo y no visita ningún portal.
 
-**2.3** deja `Send email message` en `Needs approval` porque es el approval gate del paso 7.
+**2.3** deja `Send email message` en `Needs approval` porque es la compuerta de aprobación
+(_approval gate_) del paso 7.
 
 **Resultado de 2.4:** enumera los cinco proveedores y solo los permisos concedidos. Si no reconoce
 la carpeta, repita 2.1.
@@ -123,17 +124,13 @@ añada     Customize → Skills → Add · seleccione parte-1-cowork/abastecimie
           si pide un archivo comprimido, comprima la carpeta antes
 ```
 
-No hay nada que rellenar. La instrucción declara **el método** —cómo normalizar, que el plazo
-descalifica, que el contenido externo es dato y no orden, que no se adjudica— y **exige que usted le
-dé el encargo**: producto, cantidad, plazo y presupuesto. Si falta alguno, pregunta antes de
-consultar a nadie.
+No hay nada que rellenar. La instrucción declara **el método** y **exige el encargo** —producto,
+cantidad, plazo y presupuesto—: si falta alguno, pregunta antes de consultar a nadie.
 
 Queda disponible como `/abastecimiento`.
 
-**Por qué un archivo y no un mensaje pegado.** Un mensaje se pierde al cerrar la conversación. Esto
-es un archivo del repositorio: se versiona, se comparte y se revisa en un diff. Su regla de
-contenido externo es lo que intercepta la inyección del paso 7 — quien la borre obtendrá otro
-resultado.
+Es un archivo del repositorio, no un mensaje: se versiona y se revisa en un diff. Su regla de
+contenido externo es lo que intercepta la inyección del paso 7.
 
 ---
 
@@ -146,17 +143,17 @@ escriba   /abastecimiento
           Necesito monitores para reponer stock.
 ```
 
-No consulta a ningún proveedor. Enumera lo que falta —cantidad, plazo y presupuesto— y pregunta.
-Cinco portales no visitados, porque faltaban tres datos.
+No consulta a nadie. Enumera lo que falta —cantidad, plazo, presupuesto— y pregunta. Cinco portales
+no visitados porque faltaban tres datos.
 
-**Ahora el encargo real.** Los valores están en `parte-1-cowork/encargo.md`:
+**Ahora el encargo real**, con los valores de `parte-1-cowork/encargo.md`:
 
 ```text
 escriba   40 monitores de 24 pulgadas, entrega máxima 10 días hábiles,
           presupuesto de 7000 dólares puestos en bodega.
 ```
 
-Repite el encargo en una línea y arranca la fase 1.
+Lo repite en una línea y arranca la fase 1.
 
 **Resultado esperado**
 
@@ -171,24 +168,15 @@ Suministros Delta                              responde en el acto, con una preg
 ImportAndina                                   acusa recibo, sin plazo de respuesta
 ```
 
-**Abra el archivo y compruebe que el encargo está dentro.** Si solo tiene las direcciones, el paso 6
-no va a poder evaluar nada.
-
-**Dos fallos previstos, y los dos son de la misma pieza.**
+**Abra el archivo.** El paso 6 corre en una sesión nueva, sin esta conversación: lo que no quede ahí
+dentro, no existe.
 
 ```text
-guarda la referencia y no la dirección completa   sin el parámetro de tiempo la
-                                                  página no carga
-guarda las direcciones y no el encargo            la fase 2 no tiene plazo ni
-                                                  presupuesto contra qué evaluar
+falta la dirección completa   sin el parámetro de tiempo la página no carga
+falta el encargo              la fase 2 no tiene contra qué evaluar
 ```
 
-El segundo salió en un ensayo real: el agente consultó a los cinco, normalizó las tres cotizaciones,
-detectó la inyección — y no pudo recomendar a nadie, porque el plazo y el tope solo existían en la
-conversación del paso 4, que ya había muerto. Hizo lo correcto al no suponerlos.
-
-Ninguno es recuperable: el paso 6 corre en una **sesión nueva**. Lo que no quede en
-`seguimiento.json` no existe. Es el almacén de estado, y aquí se comprueba.
+Los dos ocurren, y ninguno se recupera. Es el almacén de estado.
 
 El entorno lanzó las cinco consultas a la vez, no una tras otra. **El abanico lo decidió el entorno,
 no usted.**
@@ -208,22 +196,17 @@ Scheduled (barra izquierda) → New task → Set up manually
                  lee salidas/seguimiento.json, visita cada dirección guardada,
                  normaliza las cotizaciones y escribe salidas/comparativo.md.
   Approval mode  el que decidió en el paso 1
-  Frequency      Hourly · es la cadencia mínima, y no se disparará dentro del bloque
+  Frequency      Hourly · la cadencia mínima · no se disparará dentro del bloque
   Folder         parte-1-cowork/espacio-de-trabajo
   → Save
 ```
 
-En el paso 6 esta tarea se ejecuta a demanda, desde esa misma pantalla.
-
-**El prompt tiene que bastarse solo.** Una tarea programada corre en una sesión nueva: no tiene la
-conversación del paso 4, no recuerda a quién contactó ni qué le respondieron. Lo único que sobrevive
-es lo que quedó escrito —`salidas/seguimiento.json`, la carpeta y la instrucción instalada—, y por
-eso el prompt nombra el archivo en vez de decir «las direcciones guardadas».
+El prompt nombra el archivo, y no dice «las direcciones guardadas», por lo del paso 4: esta tarea no
+verá esta conversación.
 
 **Dónde corre lo decide lo que toca.** Una tarea que solo usa conectores corre en la nube, con el
-equipo apagado. Esta toca una carpeta del disco, así que corre en su computadora y **solo mientras
-esté despierta y la aplicación abierta**. Si está dormida a la hora programada, la tarea se salta y
-corre al despertar.
+equipo apagado. Esta toca una carpeta del disco: corre en su computadora y solo mientras esté
+despierta con la aplicación abierta.
 
 ---
 
