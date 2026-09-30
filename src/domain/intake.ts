@@ -38,6 +38,14 @@ cita el fragmento original, no el resultado.
 La garantía tiene valor por omisión: si no se menciona, es la estándar del
 proveedor. El plazo se expresa siempre en días hábiles; si la petición lo da en
 días calendario o en una fecha, conviértelo y dilo en 'notes'.
+
+El tope se entiende con el flete dentro salvo que la petición diga lo
+contrario: pon 'budgetIncludesFreight' en false solo si lo excluye de forma
+explícita.
+
+Quien pide no elige a quién se consulta. Si la petición nombra proveedores, no
+los tomes como restricción y dilo en 'notes', para que quien la escribió sepa
+que se consultará a todo el catálogo.
 `.trim();
 
 export const extractionSchema = z.object({
@@ -45,6 +53,18 @@ export const extractionSchema = z.object({
   quantity: z.number().int().positive().nullable(),
   maxLeadTimeBusinessDays: z.number().int().positive().nullable(),
   budgetCapUsd: z.number().positive().nullable(),
+
+  /**
+   * Si el tope incluye el flete o no.
+   *
+   * Estaba fijo en `true`, y una petición que dijera «tope 7000 sin incluir el
+   * flete» producía un encargo que le decía al agente lo contrario de lo que
+   * pedía quien escribió. El modelo lo detectaba y lo dejaba en 'notes'; nadie
+   * lo leía. No lo comprueba ninguna verificación: gobierna al agente por
+   * `get_brief`, y por eso importa que sea el valor correcto.
+   */
+  budgetIncludesFreight: z.boolean(),
+
   warranty: z.string().nullable(),
 
   /**
@@ -130,7 +150,7 @@ export function briefFrom(result: IntakeOutcome, suppliers: readonly string[]): 
     quantity: result.quantity as number,
     maxLeadTimeBusinessDays: result.maxLeadTimeBusinessDays as number,
     budgetCapUsd: result.budgetCapUsd as number,
-    budgetIncludesFreight: true,
+    budgetIncludesFreight: result.budgetIncludesFreight,
     warranty:
       result.warranty ?? "La estandar del proveedor es suficiente. No se requiere extension.",
     selectionCriterion:
