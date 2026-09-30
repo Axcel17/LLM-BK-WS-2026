@@ -30,16 +30,31 @@ export interface Brief {
 }
 
 /**
- * La requisición del caso, o la que traiga el entorno.
+ * La requisición que gobierna la corrida, o la del caso si nadie fijó otra.
  *
- * `BRIEF_JSON` permite correr contra una requisición distinta sin tocar el
- * archivo. El servidor MCP corre en otro proceso, así que es la forma de que
- * `get_brief` sirva lo mismo que verifican las comprobaciones.
+ * `BRIEF_JSON` es el transporte. El servidor MCP corre en otro proceso, así que
+ * una variable de entorno heredada es lo que hace que `get_brief` sirva la misma
+ * requisición contra la que verifican las comprobaciones. Sin eso, el agente
+ * trabajaría sobre un encargo y se lo calificaría contra otro.
  */
 export function readBrief(): Brief {
   const fromEnv = process.env["BRIEF_JSON"];
   if (fromEnv !== undefined && fromEnv.trim() !== "") return JSON.parse(fromEnv) as Brief;
   return JSON.parse(readFileSync(join(DATA_DIR, "brief.json"), "utf8")) as Brief;
+}
+
+/**
+ * Fija la requisición que gobierna el resto de la corrida.
+ *
+ * Va junto a `readBrief` a propósito: son los dos extremos del mismo transporte.
+ * Mientras el que escribía vivía en un script y el que leía aquí, una entrada
+ * podía olvidarse de llamarlo y quedaba consultando el archivo del caso.
+ *
+ * Debe invocarse antes de `connectCatalog`: el servidor MCP hereda el entorno al
+ * nacer, y lo que se fije después no lo alcanza.
+ */
+export function governWith(brief: Brief): void {
+  process.env["BRIEF_JSON"] = JSON.stringify(brief);
 }
 
 /**

@@ -9,6 +9,7 @@
  * calculó.
  */
 
+import type { Admission } from "./admission.js";
 import type { CompletedQuery } from "./agent.js";
 import type { DeniedCall } from "./guardrails/approval.js";
 import type { Finding } from "./guardrails/checks.js";
@@ -72,6 +73,40 @@ export function formatUsage(result: UsageReport): string {
  * Se imprime distinto de un error porque no lo es: el agente hizo lo correcto
  * al detenerse. Lo que hay que ver es qué falta y qué preguntar.
  */
+/**
+ * El resultado de la admisión, antes de que se consulte a nadie.
+ *
+ * Las tres salidas se ven distintas a propósito: admitida muestra con qué queda
+ * gobernada la corrida, y las otras dos dicen que no se gastó una sola consulta.
+ */
+export function formatAdmission(admission: Admission): string {
+  if (admission.status === "admitted") {
+    const { brief } = admission;
+    const notes = admission.outcome.notes;
+    return (
+      `\nADMISIÓN · ${brief.product} · ${brief.quantity} u · ` +
+      `${brief.maxLeadTimeBusinessDays} d hábiles · USD ${brief.budgetCapUsd}\n` +
+      (notes === null ? "" : `  ${notes}\n`)
+    );
+  }
+
+  const lines =
+    admission.status === "incomplete"
+      ? [
+          "",
+          "ADMISIÓN · la petición no alcanza para trabajar",
+          ...admission.outcome.missing.map(({ field, why }) => `  falta ${field}: ${why}`),
+          ...(admission.outcome.question === null ? [] : ["", `  ${admission.outcome.question}`]),
+        ]
+      : [
+          "",
+          "ADMISIÓN · la extracción no se sostiene",
+          ...admission.findings.map(({ detail }) => `  ${detail}`),
+        ];
+
+  return `${[...lines, "", "  No se consultó a ningún proveedor."].join("\n")}\n`;
+}
+
 export function formatEscalation(outcome: {
   status: string;
   missing: ReadonlyArray<{ field: string; why: string }>;

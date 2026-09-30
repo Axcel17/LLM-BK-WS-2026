@@ -354,7 +354,7 @@ npm test
 ```
 
 ```text
-debe dar         175 pruebas pasan y 11 fallan
+debe dar         183 pruebas pasan y 11 fallan
 las 11           los seis TODO · se cierran en los tramos 2, 3 y 4
 si falla otra    es la instalación, no el ejercicio
 el tramo 5       necesita clave: copie .env.example a .env antes de llegar
@@ -696,24 +696,28 @@ recolector.
 
 ### Texto libre
 
-`npm run agent` corre siempre el mismo encargo. En uso real la entrada es prosa, y puede llegar
-incompleta o fuera de alcance.
+En uso real la entrada es prosa, y puede llegar incompleta o fuera de alcance. El texto que se le
+pasa al agente **es la requisición**: pasa por admisión y gobierna la corrida entera.
 
 ```bash
 npm run caso
-npm run caso -- "40 teclados para el viernes, presupuesto ajustado"
-npm run caso -- "40 monitores y 20 teclados, 10 dias habiles, tope 9000 dolares"
-npm run caso -- "100 monitores de 24 pulgadas, plazo maximo 10 dias habiles, tope 20000 dolares"
-npm run caso -- "30 sillas ergonomicas, plazo maximo 15 dias habiles, tope 8000 dolares"
+npm run agent -- "40 teclados para el viernes, presupuesto ajustado"
+npm run agent -- "40 monitores y 20 teclados, 10 dias habiles, tope 9000 dolares"
+npm run agent -- "100 monitores de 24 pulgadas, plazo maximo 10 dias habiles, tope 20000 dolares"
+npm run agent -- "30 sillas ergonomicas, plazo maximo 15 dias habiles, tope 8000 dolares"
 ```
 
 ```text
-sin argumento          el caso validado · afirma la respuesta conocida
+npm run caso           el caso validado · afirma la respuesta conocida
 falta plazo y tope     se detiene y pregunta · cero proveedores consultados
 dos productos          se detiene: una ronda cotiza uno
 100 monitores          cotiza sobre 100 · las verificaciones comprueban contra 100
 30 sillas              solo Delta las maneja · los otros responden sin cotización
 ```
+
+**Un texto es la requisición; `--tarea` es la instrucción.** Son dos puertas porque son dos cosas:
+la primera cambia qué se compra y arrastra consigo el esquema y las siete verificaciones; la segunda
+deja el encargo intacto y cambia qué se le pide al agente sobre él.
 
 **Escalar temprano cuesta una llamada; escalar tarde, seis.** «Para el viernes» no es un plazo en
 días hábiles y «presupuesto ajustado» no es un tope: la admisión lo enumera, pregunta y se detiene
@@ -740,7 +744,7 @@ comprueba que no hayan divergido.
 ### Qué gobierna realmente al agente
 
 ```bash
-npm run agent -- "Averigua únicamente qué proveedores incluyen el flete. No compares totales."
+npm run agent -- --tarea "Averigua únicamente qué proveedores incluyen el flete. No compares totales."
 ```
 
 El plan de herramientas cambia. El resultado, no: entrega el comparativo completo con la misma

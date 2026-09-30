@@ -6,10 +6,12 @@
  * lo demás depende solo de una de las dos.
  *
  *     npm run agent
- *     npm run agent -- "Compara solo a los proveedores que entregan en 8 días o menos"
+ *     npm run agent -- "100 teclados mecánicos, 5 días hábiles, tope 3.000"
+ *     npm run agent -- --tarea "Averigua qué proveedores incluyen el flete"
  *
- * Sin argumento ejecuta el encargo del caso. Con uno, el agente replantea el
- * plan sobre las mismas herramientas.
+ * Sin argumentos ejecuta el encargo del caso. Con un texto, ese texto es la
+ * requisición: pasa por admisión y gobierna la corrida entera. Con `--tarea`,
+ * el encargo no cambia y lo que cambia es lo que se le pide al agente sobre él.
  *
  * Variables de entorno reconocidas:
  *
@@ -20,6 +22,7 @@
  *     DROP_PROMPT_RULE             retira la regla de no adjudicar
  */
 
+import { admitRequest } from "./admission.js";
 import { maxSteps, runAgent, StepLimitReached } from "./agent.js";
 import { checkEscalation, runAllChecks } from "./guardrails/checks.js";
 import { judgeComparison } from "./guardrails/judge.js";
@@ -29,6 +32,7 @@ import { checkToolIntegrity } from "./mcp/integrity.js";
 import { recordRun, recordSteps, runId, type RunRecord } from "./platform/runs.js";
 import { enableTracing, shutdownTracing, tracingRequested } from "./platform/tracing.js";
 import {
+  formatAdmission,
   formatChecks,
   formatComparison,
   formatDenied,
@@ -42,8 +46,25 @@ import {
 async function main(): Promise<void> {
   if (tracingRequested()) enableTracing();
 
-  // Todo lo que siga a `--` se toma como el encargo. Sin argumentos, el del caso.
-  const request = process.argv.slice(2).join(" ");
+  // Dos entradas distintas, porque son dos cosas distintas. Un texto suelto es
+  // una requisición y pasa por admisión. Con `--tarea` es una instrucción sobre
+  // el encargo vigente, y el encargo no cambia. Mientras el mismo argumento
+  // significó las dos, «100 teclados» ponía al agente a cotizar teclados y a
+  // las comprobaciones a calificarlo contra el encargo de monitores.
+  const argv = process.argv.slice(2);
+  const asTask = argv[0] === "--tarea";
+  const text = (asTask ? argv.slice(1) : argv).join(" ").trim();
+
+  const task = asTask && text !== "" ? text : undefined;
+  const requisition = asTask ? "" : text;
+
+  // La admisión va antes de abrir el catálogo: el servidor MCP hereda el
+  // entorno al nacer, así que lo que se fije después no alcanza a `get_brief`.
+  if (requisition !== "") {
+    const admission = await admitRequest(requisition);
+    console.log(formatAdmission(admission));
+    if (admission.status !== "admitted") return;
+  }
 
   const catalog = await connectCatalog();
   const startedAt = Date.now();
@@ -58,7 +79,7 @@ async function main(): Promise<void> {
     provider: process.env["PROVIDER"] ?? "google",
     model: process.env["MODEL"] ?? "(por defecto del proveedor)",
     maxSteps: maxSteps(),
-    request: request.trim() === "" ? null : request,
+    request: text === "" ? null : text,
     outcome: "error",
     steps: [],
     totals: { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0 },
@@ -82,7 +103,7 @@ async function main(): Promise<void> {
     console.log(`\n${formatIntegrity(integrity)}\n`);
     console.log("Ejecutando. El modelo decide qué herramientas pedir y en qué orden.");
 
-    const { outcome, usage, denied, sources } = await runAgent(catalog, request);
+    const { outcome, usage, denied, sources } = await runAgent(catalog, task);
 
     const total = (usage as { usage?: Record<string, number> }).usage ?? {};
     record.outcome = "completa";

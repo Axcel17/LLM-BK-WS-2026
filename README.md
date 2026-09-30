@@ -34,7 +34,7 @@ npm install
 npm test
 ```
 
-El resultado esperado es **175 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
+El resultado esperado es **183 pruebas pasan y 11 fallan**. Las 11 corresponden a los `TODO` sin
 completar. Si falla el typecheck, o si falla alguna de las 6 de `loop.test.ts`, la instalación no
 está correcta.
 
@@ -43,12 +43,12 @@ está correcta.
 Copie `.env.example` a `.env` y coloque la clave.
 
 ```bash
-npm run agent                      # una corrida completa
-npm run agent -- "otro encargo"    # el mismo agente, otra petición
+npm run agent                      # una corrida completa, el encargo del caso
+npm run agent -- "100 teclados, 8 días hábiles, tope 5.000"   # otra requisición
+npm run agent -- --tarea "Averigua quién incluye el flete"    # otra tarea, mismo encargo
 npm run measure -- 6               # seis corridas, con tasa de acierto
 npm run measure-judge -- 3         # el evaluador, contra casos etiquetados
 npm run caso                       # el caso validado, con sus afirmaciones
-npm run caso -- "100 teclados, 5 días"  # requisición propia, tras admisión
 npm run mcp-server                 # el servidor de herramientas, aislado
 ```
 
@@ -71,7 +71,7 @@ npm run mcp-server                 # el servidor de herramientas, aislado
 | `npm run solutions`      | Mantenimiento: escribe las versiones completas sobre `src/`           |
 | `npm run gaps`           | Mantenimiento: restituye el estado de entrega                         |
 | `npm run baseline`       | Registra la huella del catálogo de herramientas                       |
-| `npm run caso`           | Prueba el flujo: el caso validado, o una requisición propia           |
+| `npm run caso`           | Afirma la respuesta conocida del caso validado. Sin argumentos        |
 | `npm run verify-catalog` | Contrasta `data/catalogo.json` contra el que publican los portales    |
 
 ---
@@ -97,6 +97,7 @@ Las carpetas de `src/` corresponden a los roles de un sistema agéntico.
 ```
 src/
   cli.ts              punto de entrada: abre el catálogo y escribe el informe
+  admission.ts        la puerta: una petición en prosa se vuelve requisición
   agent.ts            orquestación: devuelve datos, no imprime
   report.ts           presentación: da forma a lo ya calculado
   loop.ts             el ciclo del agente, sin librería de por medio

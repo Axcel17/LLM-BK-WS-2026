@@ -1,18 +1,16 @@
 /**
- * Prueba el flujo contra el caso validado o contra una petición propia.
+ * Prueba el flujo contra el caso validado y afirma su respuesta conocida.
  *
  *     npm run caso
- *     npm run caso -- "Compara solo a los que entregan en 8 días o menos"
  *
- * Sin argumentos afirma la respuesta conocida y termina con código 1 si alguna
- * afirmación falla. Con un texto no hay verdad declarada, así que informa en
- * lugar de afirmar.
+ * Termina con código 1 si alguna afirmación falla, que es lo que lo vuelve útil
+ * en integración continua. Una petición propia no tiene respuesta que afirmar:
+ * eso es `npm run agent -- "…"`, que además registra la corrida.
  */
 
 import { runAgent, StepLimitReached } from "../src/agent.js";
-import { briefFrom, intake } from "../src/domain/intake.js";
 import { constraintsOf, readBrief } from "../src/domain/catalog.js";
-import { checkEscalation, checkExtraction, runAllChecks } from "../src/guardrails/checks.js";
+import { checkEscalation, runAllChecks } from "../src/guardrails/checks.js";
 import { judgeComparison } from "../src/guardrails/judge.js";
 import { connectCatalog } from "../src/mcp/client.js";
 import {
@@ -82,55 +80,18 @@ function assertions(outcome: Outcome, findings: number): Assertion[] {
   ];
 }
 
-/**
- * Convierte la petición en una requisición y la fija para el resto de la corrida.
- *
- * Devuelve `false` si no alcanza para trabajar. Escalar aquí cuesta una llamada;
- * escalar después de consultar a cinco proveedores cuesta seis.
- */
-async function admit(request: string): Promise<boolean> {
-  console.log(`\n  REQUISICIÓN PROPIA · no hay respuesta conocida que afirmar\n\n  «${request}»\n`);
-
-  const admitted = await intake(request);
-
-  if (admitted.status !== "complete") {
-    console.log("  ADMISIÓN · la petición no alcanza para trabajar\n");
-    for (const { field, why } of admitted.missing) console.log(`    falta ${field}: ${why}`);
-    console.log(`\n    ${admitted.question}\n`);
-    console.log("  No se consultó a ningún proveedor.\n");
-    return false;
-  }
-
-  // La extracción se verifica antes de usarse: un valor que no está en la
-  // petición no puede gobernar lo que sigue.
-  const findings = checkExtraction(admitted, request);
-  if (findings.length > 0) {
-    console.log("  ADMISIÓN · la extracción no se sostiene\n");
-    for (const { detail } of findings) console.log(`    ${detail}`);
-    console.log("\n  No se consultó a ningún proveedor.\n");
-    return false;
-  }
-
-  process.env["BRIEF_JSON"] = JSON.stringify(briefFrom(admitted, readBrief().suppliers));
-  console.log(
-    `  ADMISIÓN · ${admitted.product} · ${admitted.quantity} u · ` +
-      `${admitted.maxLeadTimeBusinessDays} d hábiles · USD ${admitted.budgetCapUsd}\n` +
-      (admitted.notes === null ? "" : `    ${admitted.notes}\n`),
-  );
-  return true;
-}
-
 async function main(): Promise<void> {
-  const request = process.argv.slice(2).join(" ").trim();
-
-  if (request === "") {
-    console.log("\n  CASO VALIDADO · se afirma la respuesta conocida\n");
-  } else if (!(await admit(request))) {
+  if (process.argv.length > 2) {
+    console.error(
+      "\n  `npm run caso` afirma la respuesta del caso validado y no recibe argumentos." +
+        '\n  Para una petición propia: npm run agent -- "…"\n',
+    );
+    process.exitCode = 1;
     return;
   }
 
-  // Después de la admisión: `BRIEF_JSON` ya gobierna qué devuelve `get_brief`,
-  // qué esquema debe cumplir el agente y contra qué se verifica.
+  console.log("\n  CASO VALIDADO · se afirma la respuesta conocida\n");
+
   const requisition = readBrief();
   const constraints = constraintsOf(requisition);
 
@@ -144,12 +105,9 @@ async function main(): Promise<void> {
       console.log(formatEscalation(outcome));
       console.log(formatChecks(findings));
 
-      // Escalar es correcto ante una requisición incompleta y equivocado ante
-      // una completa. El caso validado la trae completa, así que aquí es fallo.
-      if (request === "") {
-        console.log("\n  ✗ El caso validado tiene requisición completa: escalar es equivocarse.\n");
-        process.exitCode = 1;
-      }
+      // El caso validado trae la requisición completa: escalar es equivocarse.
+      console.log("\n  ✗ El caso validado tiene requisición completa: escalar es equivocarse.\n");
+      process.exitCode = 1;
       return;
     }
 
@@ -161,11 +119,6 @@ async function main(): Promise<void> {
       console.log(formatJudgement(await judgeComparison(outcome.comparison)));
     } catch (error) {
       console.log(`\n  Capa 2 no disponible: ${(error as Error).message.slice(0, 80)}`);
-    }
-
-    if (request !== "") {
-      console.log("\n  Sin respuesta conocida: no se afirma nada, se informa.\n");
-      return;
     }
 
     console.log("\n  AFIRMACIONES\n");
