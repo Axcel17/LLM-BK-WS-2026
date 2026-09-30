@@ -1,7 +1,7 @@
 # Versión de referencia
 
-Los dos blancos de la instrucción resueltos y el resultado esperado del comparativo. Los permisos ya
-los dice la guía en el paso 2; aquí está el porqué de cada uno.
+El encargo, los permisos y el comparativo esperado. La guía ya dice qué marcar en el paso 2 y qué
+escribir en el 4; aquí está el porqué de cada decisión.
 
 Destinada a consultarse **después** de ejecutar el ejercicio. Los seis modos de falla del final del
 documento describen comportamientos observables; leerlos antes de provocarlos reduce el valor del
@@ -115,3 +115,9 @@ resultado.
 **Escalamiento de decisiones no definidas.** Ante la consulta de garantía de Delta, el agente se
 negó a responder en nombre del solicitante porque el encargo no la definía. Comportamiento correcto,
 y la razón por la que el encargo ahora incluye esa línea.
+
+**Pérdida del encargo entre fases.** Con el encargo solo en la conversación, la tarea programada
+consultó a los cinco, normalizó el PDF de Zeta, sumó el flete de Tecnoimport y detectó la inyección
+— y no pudo recomendar a nadie: el plazo y el tope no estaban en `seguimiento.json`. Entregó un
+análisis condicional por tramos de plazo, correcto e inservible para decidir. Es la razón por la que
+la fase 1 ahora escribe el encargo admitido dentro del archivo.
