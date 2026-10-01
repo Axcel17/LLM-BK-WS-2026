@@ -118,10 +118,18 @@ export async function POST(request: Request) {
       // conversación larga abriría uno por mensaje.
       void catalog.close();
     },
-    onError: () => void catalog.close(),
+    onError: ({ error }) => {
+      // Sin esto el error se perdía: la interfaz mostraba «An error occurred»
+      // —el texto por omisión del SDK— y en el servidor no quedaba rastro.
+      console.error("[/api/chat]", error);
+      void catalog.close();
+    },
   });
 
   return result.toUIMessageStreamResponse({
+    // El motivo viaja al navegador. Es una consola de taller, no un servicio
+    // expuesto: ocultar la causa aquí solo obliga a adivinar.
+    onError: (error) => (error instanceof Error ? error.message : String(error)),
     sendReasoning: true,
     // El consumo viaja con el mensaje. Sin esto la barra de métricas tendría
     // que estimarlo, y un número estimado que parece medido es peor que no
