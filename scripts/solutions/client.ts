@@ -38,6 +38,24 @@ function textOf(result: unknown): string {
  * arnés: el esquema declarado del lado MCP se vuelve el esquema que el modelo
  * ve, sin duplicarlo a mano.
  */
+/**
+ * El entorno que recibe el servidor de herramientas, sin lo que no le toca.
+ *
+ * El hijo necesita heredar el entorno para que `BRIEF_JSON` le llegue, pero
+ * heredarlo entero le entrega también toda credencial que esté en el `.env`.
+ * El servidor lee archivos del catálogo: no llama a ningún modelo ni a ninguna
+ * API, así que ninguna clave le hace falta.
+ */
+function forChild(env: NodeJS.ProcessEnv): Record<string, string> {
+  const salida: Record<string, string> = {};
+  for (const [clave, valor] of Object.entries(env)) {
+    if (valor === undefined) continue;
+    if (/KEY|TOKEN|SECRET|PASSWORD|ADMIN/i.test(clave)) continue;
+    salida[clave] = valor;
+  }
+  return salida;
+}
+
 export async function connectCatalog(): Promise<CatalogConnection> {
   const client = new Client({ name: "quote-comparison-agent", version: "1.0.0" });
 
@@ -48,7 +66,7 @@ export async function connectCatalog(): Promise<CatalogConnection> {
       // El servidor corre en otro proceso y no hereda el entorno por omisión.
       // Pasarlo es lo que permite que `BRIEF_JSON` alcance a `get_brief`, y que
       // sirva la misma requisición contra la que se verifica.
-      env: process.env as Record<string, string>,
+      env: forChild(process.env),
     }),
   );
 

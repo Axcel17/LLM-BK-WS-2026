@@ -50,6 +50,17 @@ export type Catalog = { tools: ToolSet; close: () => Promise<void> };
  * proceso haría que la de una alcanzara a las otras. Cada conversación levanta
  * su propio servidor y le entrega la suya.
  */
+/** Todo el entorno menos lo que parezca una credencial. */
+function sinCredenciales(env: NodeJS.ProcessEnv): Record<string, string> {
+  const salida: Record<string, string> = {};
+  for (const [clave, valor] of Object.entries(env)) {
+    if (valor === undefined) continue;
+    if (/KEY|TOKEN|SECRET|PASSWORD|ADMIN/i.test(clave)) continue;
+    salida[clave] = valor;
+  }
+  return salida;
+}
+
 export async function connectCatalog(brief?: Requisition): Promise<Catalog> {
   const client = new Client({ name: "panel", version: "1.0.0" });
 
@@ -59,9 +70,11 @@ export async function connectCatalog(brief?: Requisition): Promise<Catalog> {
       args: ["tsx", "src/mcp/server.ts"],
       cwd: REPO_ROOT,
       // El hijo no hereda el entorno por omisión. Sin esto `get_brief` sirve el
-      // archivo del caso aunque se haya admitido otra requisición.
+      // archivo del caso aunque se haya admitido otra requisición. Va filtrado:
+      // el servidor lee archivos del catálogo y no llama a ninguna API, así que
+      // ninguna credencial del `.env` le hace falta.
       env: {
-        ...(process.env as Record<string, string>),
+        ...sinCredenciales(process.env),
         ...(brief === undefined ? {} : { BRIEF_JSON: JSON.stringify(brief) }),
       },
     }),
